@@ -43,9 +43,6 @@
   </Layout>
   <SubComponents>
     <Component class="ewision.sahan.components.action_button.ActionButton" name="view">
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewActionPerformed"/>
-      </Events>
     </Component>
     <Component class="ewision.sahan.components.action_button.ActionButton" name="edit">
     </Component>

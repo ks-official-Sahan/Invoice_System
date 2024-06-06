@@ -1,6 +1,8 @@
 package ewision.sahan.services;
 
 import ewision.sahan.application.Application;
+import ewision.sahan.components.action_button.ActionButton;
+import ewision.sahan.components.action_button.ActionButtonEvent;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 import ewision.sahan.table.TableCheckBoxHeaderRenderer;
@@ -9,6 +11,7 @@ import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableImageCellRenderer;
+import java.util.HashMap;
 
 /**
  *
@@ -16,6 +19,7 @@ import ewision.sahan.table.TableImageCellRenderer;
  */
 public class ServiceList extends javax.swing.JPanel {
 
+    //private HashMap<String, ActionButtonEvent> eventMap = new HashMap<>();
     /**
      * Creates new form NewJPanel
      */
@@ -40,8 +44,19 @@ public class ServiceList extends javax.swing.JPanel {
         jTable1.getColumnModel().getColumn(0).setHeaderRenderer(new TableCheckBoxHeaderRenderer(jTable1, 0));
         jTable1.getColumn("Image").setCellRenderer(new TableImageCellRenderer());
 
+        HashMap<String, ActionButtonEvent> eventMap = new HashMap<>();
+        eventMap.put("delete", (ActionButtonEvent) (int row) -> {
+            System.out.println("Delete");
+        });
+        eventMap.put("view", (ActionButtonEvent) (int row) -> {
+            System.out.println("View");
+        });
+        eventMap.put("edit", (ActionButtonEvent) (int row) -> {
+            System.out.println("Edit");
+        });
+        jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
         //jTable1.getColumnModel().getColumn(8).setCellRenderer(new TableActionCellRender());
-        jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(3));
+
     }
 
     private void loadTestData() {
@@ -178,15 +193,15 @@ public class ServiceList extends javax.swing.JPanel {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -288,7 +303,7 @@ public class ServiceList extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 662, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 764, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1)

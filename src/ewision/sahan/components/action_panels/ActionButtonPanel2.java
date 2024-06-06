@@ -1,14 +1,16 @@
 package ewision.sahan.components.action_panels;
 
+import ewision.sahan.components.action_button.ActionButtonEvent;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import javax.swing.JTable;
 
 public class ActionButtonPanel2 extends javax.swing.JPanel {
 
     private JTable table;
-    
+
     /**
      * Creates new form ActionButtonPanel
      */
@@ -17,7 +19,15 @@ public class ActionButtonPanel2 extends javax.swing.JPanel {
         renderButtons();
         this.table = table;
     }
-    
+
+    public ActionButtonPanel2(JTable table, HashMap eventMap) {
+        initComponents();
+        edit.setEvent((ActionButtonEvent) eventMap.get("edit"));
+        delete.setEvent((ActionButtonEvent) eventMap.get("delete"));
+        renderButtons();
+        this.table = table;
+    }
+
     private void renderButtons() {
         ImageScaler scaler = new ImageScaler();
         delete.setIcon(scaler.getSvgIcon("/delete.svg", 30));
@@ -25,30 +35,29 @@ public class ActionButtonPanel2 extends javax.swing.JPanel {
     }
 
     public void initEvent(int row) {
-        edit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                onEdit(row);
-            }
+        edit.addActionListener((ActionEvent evt) -> {
+            //onEdit(row);
+            edit.getEvent().run(row);
         });
-        delete.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                onDelete(row);
-            }
+        delete.addActionListener((ActionEvent evt) -> {
+            //onDelete(row);
+            edit.getEvent().run(row);
         });
     }
-    
-    private void onEdit(int row) {
-        System.out.println("Edit: " + row);
-    } 
-    private void onDelete(int row) {
-        if (table.isEditing()) {
-            table.getCellEditor().stopCellEditing();
-            System.out.println(String.valueOf(table.getValueAt(row, 3)));
-        }
-        System.out.println("Delete: " + row);
-    } 
+
+//    private void onEdit(int row) {
+//        System.out.println("Edit: " + row);
+//        edit.getEvent().run(row);
+//    }
+//
+//    private void onDelete(int row) {
+//        if (table.isEditing()) {
+//            table.getCellEditor().stopCellEditing();
+//            System.out.println(String.valueOf(table.getValueAt(row, 3)));
+//        }
+//        delete.getEvent().run(row);
+//        //System.out.println("Delete: " + row);
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.

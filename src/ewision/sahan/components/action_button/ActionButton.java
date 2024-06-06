@@ -19,6 +19,8 @@ public class ActionButton extends JButton {
     
     private boolean mousePress;
 
+    private ActionButtonEvent event;
+    
     public ActionButton() {
         setContentAreaFilled(false);
         setBorder(new EmptyBorder(3, 3, 3, 3));
@@ -34,7 +36,15 @@ public class ActionButton extends JButton {
             }
         });
     }
+    
+    public void setEvent(ActionButtonEvent event) {
+        this.event = event;
+    }
 
+    public ActionButtonEvent getEvent() {
+        return event;
+    }
+    
     @Override
     protected void paintComponent(Graphics grphcs) {
         Graphics2D g2 = (Graphics2D) grphcs.create();

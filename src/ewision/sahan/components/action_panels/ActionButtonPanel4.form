@@ -35,9 +35,6 @@
   </Layout>
   <SubComponents>
     <Component class="ewision.sahan.components.action_button.ActionButton" name="delete">
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteActionPerformed"/>
-      </Events>
     </Component>
   </SubComponents>
 </Form>

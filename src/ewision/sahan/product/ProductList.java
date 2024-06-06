@@ -1,6 +1,8 @@
 package ewision.sahan.product;
 
 import ewision.sahan.application.Application;
+import ewision.sahan.components.action_button.ActionButton;
+import ewision.sahan.components.action_button.ActionButtonEvent;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 import ewision.sahan.table.TableCheckBoxHeaderRenderer;
@@ -9,6 +11,7 @@ import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableImageCellRenderer;
+import java.util.HashMap;
 
 /**
  *
@@ -41,7 +44,17 @@ public class ProductList extends javax.swing.JPanel {
         jTable1.getColumn("Image").setCellRenderer(new TableImageCellRenderer());
 
         //jTable1.getColumnModel().getColumn(8).setCellRenderer(new TableActionCellRender());
-        jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(3));
+        HashMap<String, ActionButtonEvent> eventMap = new HashMap<>();
+        eventMap.put("delete", (ActionButtonEvent) (int row) -> {
+            System.out.println("Delete: " + row);
+        });
+        eventMap.put("view", (ActionButtonEvent) (int row) -> {
+            System.out.println("View: " + row);
+        });
+        eventMap.put("edit", (ActionButtonEvent) (int row) -> {
+            System.out.println("Edit: " + row);
+        });
+        jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
     }
 
     private void loadTestData() {

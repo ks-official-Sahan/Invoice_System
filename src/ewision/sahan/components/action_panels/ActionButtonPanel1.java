@@ -1,39 +1,50 @@
 package ewision.sahan.components.action_panels;
 
+import ewision.sahan.components.action_button.ActionButtonEvent;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import javax.swing.JTable;
 
 public class ActionButtonPanel1 extends javax.swing.JPanel {
-    
+
     private JTable table;
 
     /**
      * Creates new form ActionButtonPanel
      */
+    public ActionButtonPanel1(JTable table, HashMap eventMap) {
+        initComponents();
+        actionMenu.setEvent((ActionButtonEvent) eventMap.get("action"));
+        renderButtons();
+        this.table = table;
+    }
+
     public ActionButtonPanel1(JTable table) {
         initComponents();
         renderButtons();
         this.table = table;
     }
-    
+
     private void renderButtons() {
         actionMenu.setIcon(new ImageScaler().getSvgIcon("/action.svg", 30));
     }
-    
+
     public void initEvent(int row) {
         actionMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                onActionMenu(row);
+                //onActionMenu(row);
+                actionMenu.getEvent().run(row);
             }
         });
     }
-    
-    private void onActionMenu(int row) {
-        System.out.println("View: " + row);
-    }
+
+//    private void onActionMenu(int row) {
+//        actionMenu.getEvent().run(row);
+//        //System.out.println("View: " + row);
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.

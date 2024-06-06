@@ -1,14 +1,16 @@
 package ewision.sahan.components.action_panels;
 
+import ewision.sahan.components.action_button.ActionButtonEvent;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import javax.swing.JTable;
 
 public class ActionButtonPanel4 extends javax.swing.JPanel {
 
     private JTable table;
-    
+
     /**
      * Creates new form ActionButtonPanel
      */
@@ -17,27 +19,33 @@ public class ActionButtonPanel4 extends javax.swing.JPanel {
         renderButtons();
         this.table = table;
     }
-    
+
+    public ActionButtonPanel4(JTable table, HashMap eventMap) {
+        initComponents();
+        delete.setEvent((ActionButtonEvent) eventMap.get("delete"));
+        renderButtons();
+        this.table = table;
+    }
+
     private void renderButtons() {
         delete.setIcon(new ImageScaler().getSvgIcon("/delete.svg", 30));
     }
 
     public void initEvent(int row) {
-        delete.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                onDelete(row);
-            }
+        delete.addActionListener((ActionEvent evt) -> {
+            //onDelete(row);
+            delete.getEvent().run(row);
         });
     }
-    
-    private void onDelete(int row) {
-        if (table.isEditing()) {
-            table.getCellEditor().stopCellEditing();
-            System.out.println(String.valueOf(table.getValueAt(row, 3)));
-        }
-        System.out.println("Delete: " + row);
-    } 
+
+//    private void onDelete(int row) {
+//        if (table.isEditing()) {
+//            table.getCellEditor().stopCellEditing();
+//            System.out.println(String.valueOf(table.getValueAt(row, 3)));
+//        }
+//        delete.getEvent().run(row);
+//        //System.out.println("Delete: " + row);
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -49,12 +57,6 @@ public class ActionButtonPanel4 extends javax.swing.JPanel {
     private void initComponents() {
 
         delete = new ewision.sahan.components.action_button.ActionButton();
-
-        delete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -73,10 +75,6 @@ public class ActionButtonPanel4 extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_deleteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -13,7 +13,6 @@ public interface AppService {
 
     public void showPanel(JPanel panel);
 
-    //public void showMainPanel(JPanel mainPanel);
     public void openDashboard();
 
     public void openCreateProduct();
