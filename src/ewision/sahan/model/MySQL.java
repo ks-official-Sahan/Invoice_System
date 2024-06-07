@@ -13,9 +13,9 @@ public class MySQL {
     private static Connection connection;
 
     private static final String URL = "localhost";
-    private static final String DATABASE = "stocky";
-    private static final String USERNAME = "sahan";
-    private static final String PASSWORD = "Sahan@123";
+    private static final String DATABASE = "ewission_db";
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "LeaveMe@666";
     private static final String PORT = "3306";
 
     static {

@@ -79,9 +79,9 @@ public class Application extends javax.swing.JFrame {
                 case 2 ->
                     appService.openCreateService();
                 case 3 ->
-                    appService.openCreateProduct();
+                    appService.openCustomerList();
                 case 4 ->
-                    appService.openServiceList();
+                    appService.openSupplierList();
                 case 5 ->
                     appService.openCreateService();
             }

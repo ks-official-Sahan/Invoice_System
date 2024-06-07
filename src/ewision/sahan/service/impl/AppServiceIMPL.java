@@ -7,6 +7,10 @@ import ewision.sahan.services.CreateService;
 import ewision.sahan.product.ProductList;
 import ewision.sahan.services.ServiceList;
 import ewision.sahan.service.AppService;
+import ewission.sahan.customer.CreateCustomer;
+import ewission.sahan.customer.CustomerList;
+import ewission.sahan.supplier.CreateSupplier;
+import ewission.sahan.supplier.SupplierList;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 
@@ -49,7 +53,6 @@ public class AppServiceIMPL implements AppService {
     //    main.repaint();
     //    main.revalidate();
     //}
-    
     @Override
     public void showPanel(JPanel panel) {
         showMainPanel(panel);
@@ -83,6 +86,26 @@ public class AppServiceIMPL implements AppService {
     public void openServiceList() {
         ServiceList serviceList = new ServiceList();
         showMainPanel((JPanel) serviceList);
+    }
+
+    public void openCustomerList() {
+        CustomerList customerList = new CustomerList();
+        showMainPanel((JPanel) customerList);
+    }
+
+    public void openCreateCustomer() {
+        CreateCustomer createCustomer = new CreateCustomer();
+        showMainPanel((JPanel) createCustomer);
+    }
+
+    public void openCreateSupplier() {
+        CreateSupplier createSupplier = new CreateSupplier();
+        showMainPanel((JPanel) createSupplier);
+    }
+
+    public void openSupplierList() {
+        SupplierList supplierList = new SupplierList();
+        showMainPanel((JPanel) supplierList);
     }
 
 }
