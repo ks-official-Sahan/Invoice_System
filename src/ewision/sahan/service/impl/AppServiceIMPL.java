@@ -7,10 +7,10 @@ import ewision.sahan.services.CreateService;
 import ewision.sahan.product.ProductList;
 import ewision.sahan.services.ServiceList;
 import ewision.sahan.service.AppService;
-import ewission.sahan.customer.CreateCustomer;
-import ewission.sahan.customer.CustomerList;
-import ewission.sahan.supplier.CreateSupplier;
-import ewission.sahan.supplier.SupplierList;
+import ewision.sahan.customer.CreateCustomer;
+import ewision.sahan.customer.CustomerList;
+import ewision.sahan.supplier.CreateSupplier;
+import ewision.sahan.supplier.SupplierList;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 
