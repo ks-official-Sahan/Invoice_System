@@ -144,8 +144,9 @@ public class Menu extends javax.swing.JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        GradientPaint gradientPaint = new GradientPaint(0, 0, Color.decode("#60a5fa"), 0, getHeight(), Color.decode("#047857"));
-        g2.setPaint(gradientPaint);
+//        GradientPaint gradientPaint = new GradientPaint(0, 0, Color.decode("#60a5fa"), 0, getHeight(), Color.decode("#047857"));
+//        g2.setPaint(gradientPaint);
+        g2.setColor(new Color(49,62,74));
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
         super.paintComponent(g);
     }

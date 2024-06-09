@@ -196,7 +196,6 @@ public class CreateProduct extends javax.swing.JPanel {
         jList1 = new javax.swing.JList<>();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        setPreferredSize(null);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
 
