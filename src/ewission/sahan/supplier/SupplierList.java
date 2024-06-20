@@ -1,11 +1,7 @@
 package ewission.sahan.supplier;
 
-import ewission.sahan.customer.*;
-import com.mysql.cj.protocol.Resultset;
-import ewision.sahan.services.*;
-import ewision.sahan.application.Application;
+
 import ewision.sahan.application.main.DialogModal;
-import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 import ewision.sahan.table.TableCheckBoxHeaderRenderer;
 import ewision.sahan.model.Constants;
@@ -35,7 +31,7 @@ public class SupplierList extends javax.swing.JPanel {
 
         try {
 
-            ResultSet resultset = MySQL.execute("SELECT * FROM `supplier`  INNER JOIN `company` ON `supplier`.`company_id`=`company`.`id`");
+            ResultSet resultset = MySQL.execute("SELECT * FROM `supplier`  ");
 
             DefaultTableModel model = (DefaultTableModel) SupplierTable.getModel();
             model.setRowCount(0);
@@ -45,11 +41,9 @@ public class SupplierList extends javax.swing.JPanel {
                 Vector vector = new Vector();
                 vector.add(false);
                 vector.add(resultset.getString("code"));
-                vector.add(resultset.getString("fname"));
-                vector.add(resultset.getString("lname"));
+                vector.add(resultset.getString("name"));
                 vector.add(resultset.getString("mobile"));
                 vector.add(resultset.getString("email"));
-                vector.add(resultset.getString("company.name"));
                 model.addRow(vector);
             }
 
@@ -269,14 +263,14 @@ public class SupplierList extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Select", "Code", "First Name", "Last Name", "Mobile", "Email", "Company", "Action"
+                "Select", "Code", "Name", "Mobile", "Email", "Action"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, false, false, false, false, false, true
+                true, false, false, false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -310,8 +304,6 @@ public class SupplierList extends javax.swing.JPanel {
             SupplierTable.getColumnModel().getColumn(2).setResizable(false);
             SupplierTable.getColumnModel().getColumn(3).setResizable(false);
             SupplierTable.getColumnModel().getColumn(4).setResizable(false);
-            SupplierTable.getColumnModel().getColumn(5).setResizable(false);
-            SupplierTable.getColumnModel().getColumn(6).setResizable(false);
         }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -322,8 +314,7 @@ public class SupplierList extends javax.swing.JPanel {
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 693, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
-                .addContainerGap())
+                .addComponent(jScrollPane1))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -343,9 +334,10 @@ public class SupplierList extends javax.swing.JPanel {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
 
-         SupplierRegistration supplierRegistration = new SupplierRegistration();
-        supplierRegistration.setVisible(true);
-        supplierRegistration.setModel(this);
+        DialogModal modal1 = new DialogModal(this);
+        modal1.openCreateSupplier();
+        modal1.setVisible(true);
+         
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -361,16 +353,7 @@ public class SupplierList extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void SupplierTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SupplierTableMouseClicked
-        // Update UI
-//        Thread t = new Thread(() -> {
-////            jTable1.revalidate();
-////            jTable1.repaint();
-////            try {
-////                SwingUtilities.updateComponentTreeUI(jTable1);
-////            } catch (NullPointerException e) {
-////            }
-//        });
-//        t.start();
+
     }//GEN-LAST:event_SupplierTableMouseClicked
 
     private void SearchTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchTextActionPerformed
@@ -380,7 +363,7 @@ public class SupplierList extends javax.swing.JPanel {
     private void SearchTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SearchTextKeyReleased
         try {
             
-            ResultSet resultSet = MySQL.execute("SELECT * FROM `customer` WHERE `name` LIKE '%"+SearchText.getText()+"%'");
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `supplier` WHERE `name` LIKE '%"+SearchText.getText()+"%'");
             
             DefaultTableModel  tableModel = (DefaultTableModel)SupplierTable.getModel();
             tableModel.setRowCount(0);

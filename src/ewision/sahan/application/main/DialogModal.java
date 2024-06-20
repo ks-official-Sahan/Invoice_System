@@ -28,7 +28,8 @@ public class DialogModal extends javax.swing.JDialog {
     private void init() {
         getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
         //openSelectProduct();
-        openCreateCustomer();
+//        openCreateCustomer();
+        openCreateSupplier();
     }
 
     private void resize(JPanel panel) {
@@ -49,16 +50,16 @@ public class DialogModal extends javax.swing.JDialog {
 //        resize(selectProduct);
 //        SwingUtilities.updateComponentTreeUI(jPanel1);
 //    }
-    public void openCreateCustomer() {
-        CreateCustomer createCustomer = new CreateCustomer();
-        jPanel1.add(createCustomer, BorderLayout.CENTER);
-        resize(createCustomer);
-        SwingUtilities.updateComponentTreeUI(jPanel1);
-    }
+//    public void openCreateCustomer() {
+//        CreateCustomer createCustomer = new CreateCustomer();
+//        jPanel1.add(createCustomer, BorderLayout.CENTER);
+//        resize(createCustomer);
+//        SwingUtilities.updateComponentTreeUI(jPanel1);
+//    }
 
     public void openCreateSupplier() {
-        CreateSupplier createSupplier = new CreateSupplier();
-        jPanel1.add(createSupplier, BorderLayout.CENTER);
+       CreateSupplier createSupplier = new CreateSupplier();
+       jPanel1.add(createSupplier,BorderLayout.CENTER);
         resize(createSupplier);
         SwingUtilities.updateComponentTreeUI(jPanel1);
     }

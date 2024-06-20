@@ -99,7 +99,7 @@ public class CreateSupplier extends javax.swing.JPanel {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Create Supplier");
 
-        jLabel4.setText("Customer Name *");
+        jLabel4.setText("Supplier Name *");
 
         name.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -328,8 +328,8 @@ public class CreateSupplier extends javax.swing.JPanel {
 
                 } else {
 
-                    MySQL.execute("INSERT INTO `customer` (`name`,`mobile`,`email`,`address`,`city_id`) "
-                            + "VALUES ('" + cname + "','" + cmobile + "','" + cemail + "','" + caddress + "','" + cityMap.get(ccity) + "')");
+                    MySQL.execute("INSERT INTO `supplier` (`name`,`mobile`,`email`,`city_id`,`address`) "
+                            + "VALUES ('" + cname + "','" + cmobile + "','" + cemail + "','" + cityMap.get(ccity) + "''" + caddress + "')");
 
                 }
 
@@ -338,7 +338,7 @@ public class CreateSupplier extends javax.swing.JPanel {
             }
 
             reset();
-            Application.appService.openCustomerList();
+            Application.appService.openSupplierList();
 
         }
 
