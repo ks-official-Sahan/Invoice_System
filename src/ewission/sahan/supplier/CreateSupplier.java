@@ -5,6 +5,8 @@ import ewision.sahan.application.Application;
 import ewision.sahan.application.main.DialogModal;
 import ewision.sahan.model.MySQL;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
@@ -16,34 +18,33 @@ import javax.swing.JOptionPane;
  */
 public class CreateSupplier extends javax.swing.JPanel {
 
-    HashMap<String, String> destrictMap = new HashMap<>();
-    HashMap<String, String> cityMap = new HashMap<>();
+    HashMap<String, String> countryMap = new HashMap<>();
 
     /**
      * Creates new form SelectProduct
      */
     public CreateSupplier() {
         initComponents();
-        loadDestrict();
+        loadCountry();
     }
 
-    public void loadDestrict() {
+    public void loadCountry() {
 
         try {
 
-            ResultSet resultSet = MySQL.execute("SELECT * FROM `destrict` ");
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `country` ");
 
             Vector<String> vector = new Vector<>();
-            vector.add("Select Destrict");
+            vector.add("Select Country");
 
             while (resultSet.next()) {
 
-                vector.add(resultSet.getString("destrict"));
-                destrictMap.put(resultSet.getString("destrict"), resultSet.getString("id"));
+                vector.add(resultSet.getString("country"));
+                countryMap.put(resultSet.getString("country"), resultSet.getString("id"));
 
             }
 
-            destrict.setModel(new DefaultComboBoxModel<>(vector));
+            country.setModel(new DefaultComboBoxModel<>(vector));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,8 +57,8 @@ public class CreateSupplier extends javax.swing.JPanel {
         name.setText("");
         email.setText("");
         mobile.setText("");
-        destrict.setSelectedIndex(0);
-        city.setSelectedIndex(0);
+        country.setSelectedIndex(0);
+        cityText.setText("");
         address.setText("");
 
     }
@@ -80,14 +81,14 @@ public class CreateSupplier extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         mobile = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        city = new javax.swing.JComboBox<>();
+        cityText = new javax.swing.JTextField();
         jPanel4 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         email = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         address = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        destrict = new javax.swing.JComboBox<>();
+        country = new javax.swing.JComboBox<>();
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
 
@@ -117,10 +118,9 @@ public class CreateSupplier extends javax.swing.JPanel {
 
         jLabel9.setText("City");
 
-        city.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Destrict First" }));
-        city.addActionListener(new java.awt.event.ActionListener() {
+        cityText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cityActionPerformed(evt);
+                cityTextActionPerformed(evt);
             }
         });
 
@@ -137,9 +137,9 @@ public class CreateSupplier extends javax.swing.JPanel {
                             .addComponent(jLabel4)
                             .addComponent(jLabel7)
                             .addComponent(jLabel9))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(223, Short.MAX_VALUE))
                     .addComponent(mobile)
-                    .addComponent(city, 0, 376, Short.MAX_VALUE)))
+                    .addComponent(cityText)))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -155,8 +155,8 @@ public class CreateSupplier extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(city)
-                .addContainerGap())
+                .addComponent(cityText, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel6.setText("Email *");
@@ -165,10 +165,10 @@ public class CreateSupplier extends javax.swing.JPanel {
 
         jLabel10.setText("Address");
 
-        destrict.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        destrict.addActionListener(new java.awt.event.ActionListener() {
+        country.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        country.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                destrictActionPerformed(evt);
+                countryActionPerformed(evt);
             }
         });
 
@@ -186,7 +186,7 @@ public class CreateSupplier extends javax.swing.JPanel {
                             .addComponent(jLabel8)
                             .addComponent(jLabel10))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(destrict, 0, 353, Short.MAX_VALUE)
+                    .addComponent(country, 0, 327, Short.MAX_VALUE)
                     .addComponent(address)))
         );
         jPanel4Layout.setVerticalGroup(
@@ -199,7 +199,7 @@ public class CreateSupplier extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(destrict, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(country, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -287,8 +287,8 @@ public class CreateSupplier extends javax.swing.JPanel {
         String cname = name.getText();
         String cemail = email.getText();
         String cmobile = mobile.getText();
-        String cdestrict = String.valueOf(this.destrict.getSelectedItem());
-        String ccity = String.valueOf(this.city.getSelectedItem());
+        String ccountryt = String.valueOf(this.country.getSelectedItem());
+        String ccity = cityText.getText();
         String caddress = address.getText();
 
         if (cname.isEmpty()) {
@@ -307,7 +307,7 @@ public class CreateSupplier extends javax.swing.JPanel {
         } else if (!cmobile.matches("^07[01245678]{1}[0-9]{7}$")) {
             JOptionPane.showMessageDialog(this, "Invalid Mobile Number", "Warning", JOptionPane.ERROR_MESSAGE);
 
-        } else if (cdestrict.equals("Select Destrict")) {
+        } else if (ccountryt.equals("Select Destrict")) {
             JOptionPane.showMessageDialog(this, "Select Destrict", "Warning", JOptionPane.ERROR_MESSAGE);
 
         } else if (ccity.equals("Select City")) {
@@ -320,16 +320,19 @@ public class CreateSupplier extends javax.swing.JPanel {
 
             try {
 
-                ResultSet resultSet = MySQL.execute("SELECT * FROM `customer` WHERE `mobile`='" + cmobile + "' OR `email`='" + cemail + "'");
-
+                ResultSet resultSet = MySQL.execute("SELECT * FROM `clients` WHERE `phone`='" + cmobile + "' OR `email`='" + cemail + "'");
                 if (resultSet.next()) {
 
                     JOptionPane.showMessageDialog(this, "Supplier email or mobile already registered", "Warning", JOptionPane.ERROR_MESSAGE);
 
                 } else {
 
-                    MySQL.execute("INSERT INTO `supplier` (`name`,`mobile`,`email`,`city_id`,`address`) "
-                            + "VALUES ('" + cname + "','" + cmobile + "','" + cemail + "','" + cityMap.get(ccity) + "''" + caddress + "')");
+                    Date dt = new Date();
+                    SimpleDateFormat st = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
+                    String tt = st.format(dt);
+
+                    MySQL.execute("INSERT INTO `providers` (`name`,`email`,`phone`,`city`,`address`,`created_at`,`country_id`) "
+                            + "VALUES ('" + cname + "','" + cemail + "','" + cmobile + "','" + ccity + "','" + caddress + "','" + tt + "','" + countryMap.get(ccountryt) + "')");
 
                 }
 
@@ -344,36 +347,36 @@ public class CreateSupplier extends javax.swing.JPanel {
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void cityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cityActionPerformed
+    private void countryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_countryActionPerformed
+
+//        try {
+//
+//            Vector v = new Vector();
+//            v.add("Select City");
+//
+//            ResultSet resultset = MySQL.execute("SELECT * FROM  `city` WHERE `destrict_id`= '" + countryMap.get(String.valueOf(country.getSelectedItem())) + "'  ");
+//
+//            while (resultset.next()) {
+//
+//                v.add(resultset.getString("name"));
+//                country.setModel(new DefaultComboBoxModel<>(v));
+//                cityMap.put(resultset.getString("name"), resultset.getString("id"));
+//            }
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+    }//GEN-LAST:event_countryActionPerformed
+
+    private void cityTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cityTextActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cityActionPerformed
-
-    private void destrictActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_destrictActionPerformed
-
-        try {
-
-            Vector v = new Vector();
-            v.add("Select City");
-
-            ResultSet resultset = MySQL.execute("SELECT * FROM  `city` WHERE `destrict_id`= '" + destrictMap.get(String.valueOf(destrict.getSelectedItem())) + "'  ");
-
-            while (resultset.next()) {
-
-                v.add(resultset.getString("name"));
-                city.setModel(new DefaultComboBoxModel<>(v));
-                cityMap.put(resultset.getString("name"), resultset.getString("id"));
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }//GEN-LAST:event_destrictActionPerformed
+    }//GEN-LAST:event_cityTextActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField address;
-    private javax.swing.JComboBox<String> city;
-    private javax.swing.JComboBox<String> destrict;
+    private javax.swing.JTextField cityText;
+    private javax.swing.JComboBox<String> country;
     private javax.swing.JTextField email;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;

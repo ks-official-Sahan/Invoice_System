@@ -34,7 +34,7 @@ public class CustomerList extends javax.swing.JPanel {
 
         try {
 
-            ResultSet resultset = MySQL.execute("SELECT * FROM `customer` ");
+            ResultSet resultset = MySQL.execute("SELECT * FROM `clients` ");
 
             DefaultTableModel model = (DefaultTableModel) CustomerTable.getModel();
             model.setRowCount(0);
@@ -43,9 +43,9 @@ public class CustomerList extends javax.swing.JPanel {
 
                 Vector vector = new Vector();
                 vector.add(false);
-                vector.add(resultset.getString("code"));
+                vector.add(resultset.getString("id"));
                 vector.add(resultset.getString("name"));
-                vector.add(resultset.getString("mobile"));
+                vector.add(resultset.getString("phone"));
                 vector.add(resultset.getString("email"));
                 model.addRow(vector);
             }
@@ -339,9 +339,9 @@ public class CustomerList extends javax.swing.JPanel {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
 
-//        DialogModal modal = new DialogModal(this);
-//        modal.openCreateCustomer();
-//        modal.setVisible(true);
+        DialogModal modal = new DialogModal(this);
+        modal.openCreateCustomer();
+        modal.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -376,7 +376,7 @@ public class CustomerList extends javax.swing.JPanel {
     private void SearchTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SearchTextKeyReleased
         try {
             
-            ResultSet resultSet = MySQL.execute("SELECT * FROM `customer` WHERE `name` LIKE '%"+SearchText.getText()+"%'");
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `clients` WHERE `name` LIKE '%"+SearchText.getText()+"%'");
             
             DefaultTableModel  tableModel = (DefaultTableModel)CustomerTable.getModel();
             tableModel.setRowCount(0);
@@ -385,9 +385,9 @@ public class CustomerList extends javax.swing.JPanel {
             
                 Vector v = new  Vector();
                 v.add(false);
-                v.add(resultSet.getString("code"));
+                v.add(resultSet.getString("id"));
                 v.add(resultSet.getString("name"));
-                v.add(resultSet.getString("mobile"));
+                v.add(resultSet.getString("phone"));
                 v.add(resultSet.getString("email"));
                 tableModel.addRow(v);
                 

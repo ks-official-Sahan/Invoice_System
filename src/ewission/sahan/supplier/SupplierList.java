@@ -31,7 +31,7 @@ public class SupplierList extends javax.swing.JPanel {
 
         try {
 
-            ResultSet resultset = MySQL.execute("SELECT * FROM `supplier`  ");
+            ResultSet resultset = MySQL.execute("SELECT * FROM `providers`  ");
 
             DefaultTableModel model = (DefaultTableModel) SupplierTable.getModel();
             model.setRowCount(0);
@@ -40,9 +40,9 @@ public class SupplierList extends javax.swing.JPanel {
 
                 Vector vector = new Vector();
                 vector.add(false);
-                vector.add(resultset.getString("code"));
+                vector.add(resultset.getString("id"));
                 vector.add(resultset.getString("name"));
-                vector.add(resultset.getString("mobile"));
+                vector.add(resultset.getString("phone"));
                 vector.add(resultset.getString("email"));
                 model.addRow(vector);
             }
@@ -363,7 +363,7 @@ public class SupplierList extends javax.swing.JPanel {
     private void SearchTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SearchTextKeyReleased
         try {
             
-            ResultSet resultSet = MySQL.execute("SELECT * FROM `supplier` WHERE `name` LIKE '%"+SearchText.getText()+"%'");
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `providers` WHERE `name` LIKE '%"+SearchText.getText()+"%'");
             
             DefaultTableModel  tableModel = (DefaultTableModel)SupplierTable.getModel();
             tableModel.setRowCount(0);
@@ -372,9 +372,9 @@ public class SupplierList extends javax.swing.JPanel {
             
                 Vector v = new  Vector();
                 v.add(false);
-                v.add(resultSet.getString("code"));
+                v.add(resultSet.getString("id"));
                 v.add(resultSet.getString("name"));
-                v.add(resultSet.getString("mobile"));
+                v.add(resultSet.getString("phone"));
                 v.add(resultSet.getString("email"));
                 tableModel.addRow(v);
                 
