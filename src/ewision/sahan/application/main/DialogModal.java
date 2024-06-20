@@ -25,12 +25,12 @@ public class DialogModal extends javax.swing.JDialog {
 
     }
 
-    private void init() {
-        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
-        //openSelectProduct();
-        openCreateCustomer();
-        openCreateSupplier();
-    }
+//    private void init() {
+//        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
+//        //openSelectProduct();
+//        openCreateCustomer();
+//        openCreateSupplier();
+//    }
 
     private void resize(JPanel panel) {
         //if (this.getHeight() < 450 || this.getHeight() == this.getMinimumSize().height) {
