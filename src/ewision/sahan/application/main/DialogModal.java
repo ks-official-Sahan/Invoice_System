@@ -2,8 +2,8 @@ package ewision.sahan.application.main;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
-import ewission.sahan.customer.CreateCustomer;
-import ewission.sahan.supplier.CreateSupplier;
+import ewision.sahan.customer.CreateCustomer;
+import ewision.sahan.supplier.CreateSupplier;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
