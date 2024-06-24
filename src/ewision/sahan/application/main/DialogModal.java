@@ -2,6 +2,8 @@ package ewision.sahan.application.main;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import ewision.sahan.customer.CreateCustomer;
+import ewision.sahan.supplier.CreateSupplier;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -20,19 +22,20 @@ public class DialogModal extends javax.swing.JDialog {
     public DialogModal(javax.swing.JPanel parent) {
         this.parent = parent;
         initComponents();
-        init();
+
     }
 
-    private void init() {
-        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
-        //openSelectProduct();
-        openCreateCustomer();
-    }
+//    private void init() {
+//        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
+//        //openSelectProduct();
+//        openCreateCustomer();
+//        openCreateSupplier();
+//    }
 
     private void resize(JPanel panel) {
         //if (this.getHeight() < 450 || this.getHeight() == this.getMinimumSize().height) {
-            this.setSize(this.getWidth(), panel.getPreferredSize().height + jImagePanel1.getHeight() + jSeparator1.getHeight() + 5);
-            generateCenter();
+        this.setSize(this.getWidth(), panel.getPreferredSize().height + jImagePanel1.getHeight() + jSeparator1.getHeight() + 5);
+        generateCenter();
         //}
     }
 
@@ -41,18 +44,27 @@ public class DialogModal extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }
 
-    public void openSelectProduct() {
-        SelectProduct selectProduct = new SelectProduct();
-        jPanel1.add(selectProduct, BorderLayout.CENTER);
-        resize(selectProduct);
-        SwingUtilities.updateComponentTreeUI(jPanel1);
-    }
-
+//    public void openSelectProduct() {
+//        SelectProduct selectProduct = new SelectProduct();
+//        jPanel1.add(selectProduct, BorderLayout.CENTER);
+//        resize(selectProduct);
+//        SwingUtilities.updateComponentTreeUI(jPanel1);
+//    }
+    
     public void openCreateCustomer() {
         CreateCustomer createCustomer = new CreateCustomer();
         jPanel1.add(createCustomer, BorderLayout.CENTER);
         resize(createCustomer);
         SwingUtilities.updateComponentTreeUI(jPanel1);
+        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
+    }
+
+    public void openCreateSupplier() {
+        CreateSupplier createSupplier = new CreateSupplier();
+        jPanel1.add(createSupplier, BorderLayout.CENTER);
+        resize(createSupplier);
+        SwingUtilities.updateComponentTreeUI(jPanel1);
+        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
     }
 
     /**

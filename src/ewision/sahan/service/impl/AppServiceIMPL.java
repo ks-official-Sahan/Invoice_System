@@ -3,6 +3,16 @@ package ewision.sahan.service.impl;
 import ewision.sahan.application.Application;
 import ewision.sahan.application.main.Dashboard;
 import ewision.sahan.product.CreateProduct;
+import ewision.sahan.services.CreateService;
+import ewision.sahan.product.ProductList;
+import ewision.sahan.services.ServiceList;
+import ewision.sahan.service.AppService;
+import ewision.sahan.customer.CreateCustomer;
+import ewision.sahan.customer.CustomerList;
+import ewision.sahan.supplier.CreateSupplier;
+import ewision.sahan.supplier.SupplierList;
+import java.awt.BorderLayout;
+
 import ewision.sahan.product.CreateProduct1;
 import ewision.sahan.services.CreateService;
 import ewision.sahan.product.ProductList;
@@ -56,4 +66,24 @@ public class AppServiceIMPL extends AppServiceAbstract {
         showMainPanel((JPanel) serviceList);
     }
 
+    //////////// Chathura
+    public void openCustomerList() {
+        CustomerList customerList = new CustomerList();
+        showMainPanel((JPanel) customerList);
+    }
+
+    public void openCreateCustomer() {
+        CreateCustomer createCustomer = new CreateCustomer();
+        showMainPanel((JPanel) createCustomer);
+    }
+
+    public void openCreateSupplier() {
+        CreateSupplier createSupplier = new CreateSupplier();
+        showMainPanel((JPanel) createSupplier);
+    }
+
+    public void openSupplierList() {
+        SupplierList supplierList = new SupplierList();
+        showMainPanel((JPanel) supplierList);
+    }
 }
