@@ -78,13 +78,14 @@ public class Application extends javax.swing.JFrame {
                 case 1 ->
                     appService.openProductList();
                 case 2 ->
-                    appService.openCreateService();
-                case 3 ->
-                    appService.openCreateProduct();
-                case 4 ->
                     appService.openServiceList();
+                case 3 ->
+                    appService.openCustomerList();
+                case 4 ->
+                    appService.openSupplierList();
                 case 5 ->
-                    appService.openCreateService();
+                    // Sale
+                    appService.openCreateSale();
             }
         });
 
@@ -140,17 +141,17 @@ public class Application extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        body.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        body.setBorder(javax.swing.BorderFactory.createEmptyBorder(6, 6, 6, 4));
 
         javax.swing.GroupLayout bodyLayout = new javax.swing.GroupLayout(body);
         body.setLayout(bodyLayout);
         bodyLayout.setHorizontalGroup(
             bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 812, Short.MAX_VALUE)
+            .addGap(0, 810, Short.MAX_VALUE)
         );
         bodyLayout.setVerticalGroup(
             bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 533, Short.MAX_VALUE)
+            .addGap(0, 529, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

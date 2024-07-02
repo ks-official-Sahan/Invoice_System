@@ -1,5 +1,6 @@
 package ewision.sahan.menu;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -34,6 +35,7 @@ public class Bottom extends javax.swing.JPanel {
     private void init() {
         setOpaque(true);
         setBackground(new Color(0, 0, 0, 0));
+        //putClientProperty(FlatClientProperties.STYLE, "background:lighten($Menu.background,10%);");
         //setBackground(new Color(65, 152, 216));
     }
 
@@ -42,7 +44,8 @@ public class Bottom extends javax.swing.JPanel {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
-        g2.setColor(new Color(200, 200, 200, 50));
+        g2.setColor(new Color(30, 30, 35, 70));
+        //g2.setColor(getBackground());
         g2.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 20, 20);
         super.paintComponent(g);
     }

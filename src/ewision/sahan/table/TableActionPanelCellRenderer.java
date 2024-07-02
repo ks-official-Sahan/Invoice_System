@@ -8,6 +8,7 @@ import ewision.sahan.components.action_panels.ActionButtonPanel3;
 import ewision.sahan.components.action_panels.ActionButtonPanel4;
 import java.awt.Component;
 import java.util.HashMap;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -27,23 +28,29 @@ public class TableActionPanelCellRenderer extends DefaultTableCellRenderer {
 
         table.getColumnModel().getColumn(column).setCellEditor(new TableActionPanelCellEditor(buttonPanelType, eventMap));
 
+        JPanel panel;
         if (buttonPanelType == ActionButton.ACTION_BUTTON) {
-            ActionButtonPanel1 panel = new ActionButtonPanel1(table);
+            //ActionButtonPanel1 panel = new ActionButtonPanel1(table);
+            panel = new ActionButtonPanel1(table);
             //panel.initEvent(row);
-            return panel;
+            //return panel;
         } else if (buttonPanelType == ActionButton.EDIT_DELETE_BUTTON) {
-            ActionButtonPanel2 panel = new ActionButtonPanel2(table);
+            //ActionButtonPanel2 panel = new ActionButtonPanel2(table);
+            panel = new ActionButtonPanel2(table);
             //panel.initEvent(row);
-            return panel;
+            //return panel;
         } else if (buttonPanelType == ActionButton.VIEW_EDIT_DELETE_BUTTON) {
-            ActionButtonPanel3 panel = new ActionButtonPanel3(table);
+            //ActionButtonPanel3 panel = new ActionButtonPanel3(table);
+            panel = new ActionButtonPanel3(table);
             //panel.initEvent(row);
-            return panel;
+            //return panel;
         } else {
-            ActionButtonPanel4 panel = new ActionButtonPanel4(table);
-            panel.initEvent(row);
-            return panel;
+            //ActionButtonPanel4 panel = new ActionButtonPanel4(table);
+            panel = new ActionButtonPanel4(table);
+            //panel.initEvent(row);
+            //return panel;
         }
+        return panel;
     }
 
 }

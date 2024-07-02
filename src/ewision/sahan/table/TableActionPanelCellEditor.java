@@ -10,6 +10,7 @@ import java.awt.Component;
 import java.util.HashMap;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 
 public class TableActionPanelCellEditor extends DefaultCellEditor {
@@ -25,23 +26,29 @@ public class TableActionPanelCellEditor extends DefaultCellEditor {
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        JPanel actionPanel;
         if (buttonPanelType == ActionButton.ACTION_BUTTON) {
             ActionButtonPanel1 panel = new ActionButtonPanel1(table, eventMap);
             panel.initEvent(row);
-            return panel;
+            actionPanel = (JPanel) panel;
+            //return panel;
         } else if (buttonPanelType == ActionButton.EDIT_DELETE_BUTTON) {
             ActionButtonPanel2 panel = new ActionButtonPanel2(table);
             panel.initEvent(row);
-            return panel;
+            actionPanel = (JPanel) panel;
+            //return panel;
         } else if (buttonPanelType == ActionButton.VIEW_EDIT_DELETE_BUTTON) {
             ActionButtonPanel3 panel = new ActionButtonPanel3(table, eventMap);
             panel.initEvent(row);
-            return panel;
+            actionPanel = (JPanel) panel;
+            //return panel;
         } else {
             ActionButtonPanel4 panel = new ActionButtonPanel4(table);
             panel.initEvent(row);
-            return panel;
+            actionPanel = (JPanel) panel;
+            //return panel;
         }
+        return actionPanel;
     }
 
 }

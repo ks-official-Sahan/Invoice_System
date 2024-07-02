@@ -3,15 +3,22 @@ package ewision.sahan.product;
 import ewision.sahan.application.Application;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.loggers.DatabaseLogger;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 import ewision.sahan.table.TableCheckBoxHeaderRenderer;
 import ewision.sahan.model.Constants;
+import ewision.sahan.model.MySQL;
 import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableImageCellRenderer;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -34,7 +41,8 @@ public class ProductList extends javax.swing.JPanel {
         cmdSearch.setIcon(new ImageScaler().getSvgIcon("/search", 28));
         cmdSearch.setContentAreaFilled(false);
         renderTable();
-        loadTestData();
+        //loadTestData();
+        loadProducts();
     }
 
     private void renderTable() {
@@ -47,6 +55,7 @@ public class ProductList extends javax.swing.JPanel {
         HashMap<String, ActionButtonEvent> eventMap = new HashMap<>();
         eventMap.put("delete", (ActionButtonEvent) (int row) -> {
             System.out.println("Delete: " + row);
+            System.out.println("Delete: " + String.valueOf(jTable1.getValueAt(row, 8)));
         });
         eventMap.put("view", (ActionButtonEvent) (int row) -> {
             System.out.println("View: " + row);
@@ -69,12 +78,53 @@ public class ProductList extends javax.swing.JPanel {
             ImageIcon image2 = scaler.getScaledIcon(Constants.WHITE_LOGO, jTable1.getRowHeight() + 20, jTable1.getRowHeight() + 20);
             ImageIcon image3 = scaler.getScaledIcon(Constants.WHITE_LOGO, jTable1.getRowHeight() + 20, jTable1.getRowHeight() + 20);
 
-            model.addRow(new Object[]{false, image1, "Gents Shirt", "1234", "Nike", "1000", "1", "20", ""});
-            model.addRow(new Object[]{false, image2, "Gents Short", "1235", "Nike", "1200", "1", "30", ""});
-            model.addRow(new Object[]{false, image3, "Ladies Short", "1235", "Nike", "1200", "1", "30", ""});
+            model.addRow(new Object[]{false, "1", image1, "Gents Shirt", "1234", "Nike", "1000", "1", "20", "1"});
+            model.addRow(new Object[]{false, "2", image2, "Gents Short", "1235", "Nike", "1200", "1", "30", "2"});
+            model.addRow(new Object[]{false, "3", image3, "Ladies Short", "1235", "Nike", "1200", "1", "30", "3"});
             //SwingUtilities.updateComponentTreeUI(jTable1);
         });
         t.start();
+    }
+
+    private void loadProducts() {
+        try {
+            String query = "SELECT * FROM `products` INNER JOIN `brands` ON `products`.`brand_id`=`brands`.`id` INNER JOIN `units` ON `products`.`unit_id`=`units`.`id` ORDER BY `code` ASC";
+            ResultSet resultSet = MySQL.execute(query);
+
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.setRowCount(0);
+
+            ImageIcon image = new ImageScaler().getScaledIcon(Constants.GRADIENT_ICON, jTable1.getRowHeight() + 20, jTable1.getRowHeight() + 20);
+            while (resultSet.next()) {
+                Vector row = new Vector();
+                row.add(false);
+                row.add(resultSet.getInt("id"));
+                row.add(image);
+                row.add(resultSet.getString("name"));
+                row.add(resultSet.getString("code"));
+                row.add(resultSet.getString("brands.name"));
+                //row.add(resultSet.getString("price"));
+                row.add(resultSet.getDouble("price"));
+                //row.add("1" + resultSet.getString("units.ShortName"));
+                row.add(resultSet.getDouble("operator_value") + resultSet.getString("units.ShortName"));
+                //row.add(resultSet.getDouble("operator_value") + resultSet.getString("units.ShortName") + " : " + resultSet.getString("units.name"));
+
+                Double quantity = 0.0;
+                ResultSet qtyRs = MySQL.execute("SELECT * FROM `purchase_details` WHERE `product_id`='" + resultSet.getInt("id") + "'");
+                while (qtyRs.next()) {
+                    double qty = qtyRs.getDouble("quantity");
+                    if (qty > 0) {
+                        quantity += qty;
+                    }
+                }
+                row.add(quantity);
+
+                model.addRow(row);
+            }
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Products loading error: " + ex.getMessage(), ex.getMessage());
+            loadTestData();
+        }
     }
 
     /**
@@ -195,15 +245,15 @@ public class ProductList extends javax.swing.JPanel {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)
+                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 61, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
+                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
+                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
+                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 68, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -252,14 +302,14 @@ public class ProductList extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Select", "Image", "Name", "Code", "Brand", "Price", "Unit", "Quantity", "Action"
+                "Select", "ID", "Image", "Name", "Code", "Brand", "Price", "Unit", "Quantity", "Action"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, false, false, false, false, false, false, true
+                true, false, false, false, false, false, false, false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -288,18 +338,19 @@ public class ProductList extends javax.swing.JPanel {
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
             jTable1.getColumnModel().getColumn(0).setMaxWidth(50);
-            jTable1.getColumnModel().getColumn(1).setMinWidth(75);
-            jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
-            jTable1.getColumnModel().getColumn(2).setMinWidth(150);
-            jTable1.getColumnModel().getColumn(2).setPreferredWidth(300);
-            jTable1.getColumnModel().getColumn(2).setMaxWidth(300);
-            jTable1.getColumnModel().getColumn(3).setResizable(false);
+            jTable1.getColumnModel().getColumn(1).setResizable(false);
+            jTable1.getColumnModel().getColumn(2).setMinWidth(75);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(100);
+            jTable1.getColumnModel().getColumn(3).setMinWidth(150);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(300);
+            jTable1.getColumnModel().getColumn(3).setMaxWidth(300);
             jTable1.getColumnModel().getColumn(4).setResizable(false);
             jTable1.getColumnModel().getColumn(5).setResizable(false);
             jTable1.getColumnModel().getColumn(6).setResizable(false);
             jTable1.getColumnModel().getColumn(7).setResizable(false);
-            jTable1.getColumnModel().getColumn(8).setMinWidth(136);
-            jTable1.getColumnModel().getColumn(8).setMaxWidth(150);
+            jTable1.getColumnModel().getColumn(8).setResizable(false);
+            jTable1.getColumnModel().getColumn(9).setMinWidth(136);
+            jTable1.getColumnModel().getColumn(9).setMaxWidth(150);
         }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -307,7 +358,7 @@ public class ProductList extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 924, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 815, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1)
@@ -327,6 +378,7 @@ public class ProductList extends javax.swing.JPanel {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // Import
+        
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed

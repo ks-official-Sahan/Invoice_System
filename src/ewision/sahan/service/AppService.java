@@ -19,6 +19,8 @@ public interface AppService {
 
     public void openCreateService();
 
+    public void openCreateSale();
+
     public void openProductList();
 
     public void openServiceList();

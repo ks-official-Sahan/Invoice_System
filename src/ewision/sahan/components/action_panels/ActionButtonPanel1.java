@@ -14,6 +14,13 @@ public class ActionButtonPanel1 extends javax.swing.JPanel {
     /**
      * Creates new form ActionButtonPanel
      */
+    public ActionButtonPanel1(JTable table, HashMap eventMap, Object value) {
+        initComponents();
+        actionMenu.setEvent((ActionButtonEvent) eventMap.get("action"));
+        renderButtons();
+        this.table = table;
+    }
+
     public ActionButtonPanel1(JTable table, HashMap eventMap) {
         initComponents();
         actionMenu.setEvent((ActionButtonEvent) eventMap.get("action"));
