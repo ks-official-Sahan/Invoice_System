@@ -14,12 +14,12 @@ import javax.swing.JOptionPane;
  *
  * @author ksoff
  */
-public class unitRegistration extends javax.swing.JPanel {
+public class UnitRegistration extends javax.swing.JPanel {
 
     /**
      * Creates new form SelectProduct
      */
-    public unitRegistration() {
+    public UnitRegistration() {
         initComponents();
 
     }

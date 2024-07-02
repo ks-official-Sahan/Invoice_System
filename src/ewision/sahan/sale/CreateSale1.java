@@ -4,10 +4,13 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import ewision.sahan.loggers.DatabaseLogger;
 import ewision.sahan.model.MySQL;
+import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.utils.ImageScaler;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
 import java.util.logging.Level;
 import javax.swing.JPanel;
@@ -20,7 +23,7 @@ import javax.swing.table.DefaultTableModel;
  * @author ksoff
  */
 public class CreateSale1 extends javax.swing.JPanel {
-    
+
     ImageScaler scaler = new ImageScaler();
 
     /**
@@ -30,13 +33,32 @@ public class CreateSale1 extends javax.swing.JPanel {
         initComponents();
         init();
     }
-    
+
     private void init() {
         render();
         toggleServicePanel();
         styleComponents();
+        renderTables();
+        initData();
     }
-    
+
+    private void initData() {
+        jDateChooser1.setDate(new Date());
+    }
+
+    private void loadStatus() {
+    }
+
+    private void renderTables() {
+        TableCenterCellRenderer tableCenterCellRenderer = new TableCenterCellRenderer();
+        tableCenterCellRenderer.renderTables(customerTable);
+        tableCenterCellRenderer.renderTables(productChargeTable);
+        tableCenterCellRenderer.renderTables(productTable);
+        tableCenterCellRenderer.renderTables(serviceChargeTable);
+        tableCenterCellRenderer.renderTables(serviceTable);
+        tableCenterCellRenderer.renderTables(warehouseTable);
+    }
+
     private void render() {
         JPanel[] containers = {productContainer, serviceContainer, servicePanel, jPanel14, serviceChargePanel, dateContainer, customerContainer, warehouseContainer};
         for (JPanel container : containers) {
@@ -46,33 +68,36 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "arc:20;");
         }
     }
-    
+
     private void styleComponents() {
         headerPanel.putClientProperty(FlatClientProperties.STYLE, "arc:20");
         bodyPanel.putClientProperty(FlatClientProperties.STYLE, "arc:0;"
                 + "background:$Body.background");
         bodyScroll.putClientProperty(FlatClientProperties.STYLE, "arc:20    ;"
                 + "background:$Body.background");
-        
+
         FlatSVGIcon refreshSvgIcon = scaler.getSvgIcon("refresh", 28);
         allCustomersButton.setIcon(refreshSvgIcon);
         allWarehousesButton.setIcon(refreshSvgIcon);
         allProductsButton.setIcon(refreshSvgIcon);
         allServicesButton.setIcon(refreshSvgIcon);
     }
-    
+
     private void toggleServicePanel() {
         jPanel14.setVisible(true);
         servicePanel.setVisible(isServicesBox.isSelected());
         if (!isServicesBox.isSelected()) {
             serviceChargePanel.setVisible(isServicesBox.isSelected());
-            DefaultTableModel model = (DefaultTableModel) serviceChargeTable.getModel();
-            model.setRowCount(0);
+            if (isService) {
+                isService = false;
+                DefaultTableModel model = (DefaultTableModel) serviceChargeTable.getModel();
+                model.setRowCount(0);
+            }
         }
     }
-    
+
     private boolean isService = false;
-    
+
     private void toggleServiceChargePanel() {
         serviceChargePanel.setVisible(isService);
     }
@@ -83,15 +108,15 @@ public class CreateSale1 extends javax.swing.JPanel {
     private String customer = "";
     private String warehouse = "";
     private String product = "";
-    
+
     private void loadProducts(String product) {
         productContainer.setVisible(true);
-        
+
         DefaultTableModel model = (DefaultTableModel) productTable.getModel();
         model.setRowCount(0);
-        
+
         model.addRow(new Object[]{0, "Apple", "1025", "150.00", "-", "Fruit"});
-        
+
         String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` ";
         if (!product.isEmpty()) {
             query += "WHERE `products`.`name` LIKE '%" + product + "%' "
@@ -99,35 +124,35 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `products`.`code` LIKE '%" + product + "%' ";
         }
         query += "ORDER BY `products`.`name` ASC";
-        
+
         try {
             ResultSet resultSet = MySQL.execute(query);
-            
+
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-                
+
                 rowData.add(resultSet.getString("products.id"));
                 rowData.add(resultSet.getString("products.name"));
                 rowData.add(resultSet.getString("products.code"));
                 rowData.add(resultSet.getString("products.price"));
                 rowData.add(resultSet.getString("brands.name"));
                 rowData.add(resultSet.getString("categories.name"));
-                
+
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
             DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Products Search: " + e.getMessage(), e.getMessage());
         }
     }
-    
+
     private void loadServices(String service) {
         serviceContainer.setVisible(true);
-        
+
         DefaultTableModel model = (DefaultTableModel) serviceTable.getModel();
         model.setRowCount(0);
-        
+
         model.addRow(new Object[]{0, "Service", "0602", "1500.00", "service", "Assembly Charge"});
-        
+
         String query = "SELECT * FROM `services` INNER JOIN `categories` ON `categories`.`id`=`services`.`categories_id` ";
         if (!service.isEmpty()) {
             query += "WHERE `services`.`name` LIKE '%" + service + "%' "
@@ -135,35 +160,35 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `services`.`code` LIKE '%" + service + "%' ";
         }
         query += "ORDER BY `services`.`name` ASC";
-        
+
         try {
             ResultSet resultSet = MySQL.execute(query);
-            
+
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-                
+
                 rowData.add(resultSet.getString("services.id"));
                 rowData.add(resultSet.getString("services.name"));
                 rowData.add(resultSet.getString("services.code"));
                 rowData.add(resultSet.getString("services.price"));
                 rowData.add(resultSet.getString("categories.name"));
                 rowData.add(resultSet.getString("services.description"));
-                
+
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
             DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Services Search: " + e.getMessage(), e.getMessage());
         }
     }
-    
+
     private void loadCustomers(String customer) {
         customerContainer.setVisible(true);
-        
+
         DefaultTableModel model = (DefaultTableModel) customerTable.getModel();
         model.setRowCount(0);
-        
+
         model.addRow(new Object[]{0, "walk-in-customer", "default", "default"});
-        
+
         String query = "SELECT * FROM `clients` ";
         if (!customer.isEmpty()) {
             query += "  WHERE `name` LIKE '%" + customer + "%' "
@@ -172,33 +197,33 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `id` LIKE '%" + customer + "%' "
                     + "OR `code` LIKE '%" + customer + "%'";
         }
-        
+
         try {
             ResultSet resultSet = MySQL.execute(query);
-            
+
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-                
+
                 rowData.add(resultSet.getString("id"));
                 rowData.add(resultSet.getString("name"));
                 rowData.add(resultSet.getString("email"));
                 rowData.add(resultSet.getString("phone"));
-                
+
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
             DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Customer Search: " + e.getMessage(), e.getMessage());
         }
     }
-    
+
     private void loadWarehouses(String warehouse) {
         warehouseContainer.setVisible(true);
-        
+
         DefaultTableModel model = (DefaultTableModel) warehouseTable.getModel();
         model.setRowCount(0);
-        
+
         model.addRow(new Object[]{0, "default", "default", "default"});
-        
+
         String query = "SELECT * FROM `warehouses`";
         if (!warehouse.isEmpty()) {
             query += "  WHERE `name` LIKE '%" + warehouse + "%' "
@@ -206,19 +231,19 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `mobile` LIKE '%" + warehouse + "%' "
                     + "OR `id` LIKE '%" + warehouse + "%' ";
         }
-        
+
         try {
-            
+
             ResultSet resultSet = MySQL.execute(query);
-            
+
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-                
+
                 rowData.add(resultSet.getString("id"));
                 rowData.add(resultSet.getString("name"));
                 rowData.add(resultSet.getString("email"));
                 rowData.add(resultSet.getString("mobile"));
-                
+
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
@@ -229,7 +254,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             }
         }
     }
-    
+
     private void reset() {
         this.customer = "";
         this.warehouse = "";
@@ -403,7 +428,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -625,7 +650,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addComponent(warehouseField)
+                .addComponent(warehouseField, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(allWarehousesButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -670,11 +695,11 @@ public class CreateSale1 extends javax.swing.JPanel {
         searchPanelContainerLayout.setHorizontalGroup(
             searchPanelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(searchPanelContainerLayout.createSequentialGroup()
-                .addComponent(datePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(datePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(customerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(warehousePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(warehousePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         searchPanelContainerLayout.setVerticalGroup(
             searchPanelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -899,9 +924,11 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         jLabel15.setText("Order Tax");
 
+        jFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+
         jLabel18.setText("Status *");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Completed", "Pending", "Ordered" }));
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -934,9 +961,11 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         jLabel16.setText("Discount");
 
+        jFormattedTextField2.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00%"))));
+
         jLabel19.setText("Payment Status *");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Paid" }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Paid", "Pending", "Partial" }));
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
@@ -968,6 +997,8 @@ public class CreateSale1 extends javax.swing.JPanel {
         jPanel1.add(jPanel9);
 
         jLabel17.setText("Shopping");
+
+        jFormattedTextField3.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
 
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
@@ -1210,24 +1241,26 @@ public class CreateSale1 extends javax.swing.JPanel {
         detailPanel.setLayout(detailPanelLayout);
         detailPanelLayout.setHorizontalGroup(
             detailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(detailPanelLayout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addGroup(detailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, detailPanelLayout.createSequentialGroup()
+                .addGroup(detailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(detailPanelLayout.createSequentialGroup()
-                        .addComponent(isServicesBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jSeparator3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(detailPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(servicePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(detailPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(serviceChargePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(12, 12, 12)
+                        .addGroup(detailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(detailPanelLayout.createSequentialGroup()
+                                .addComponent(isServicesBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jSeparator3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(servicePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(detailPanelLayout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(serviceChargePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(12, 12, 12))
         );
         detailPanelLayout.setVerticalGroup(
@@ -1259,6 +1292,11 @@ public class CreateSale1 extends javax.swing.JPanel {
         botomPanel.setMinimumSize(new java.awt.Dimension(20, 5));
 
         submitButton.setText("Submit");
+        submitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout botomPanelLayout = new javax.swing.GroupLayout(botomPanel);
         botomPanel.setLayout(botomPanelLayout);
@@ -1343,7 +1381,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         // Select Customer
         if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
             int selectedRow = customerTable.getSelectedRow();
-            
+
             if (selectedRow != -1) {
                 this.customer = String.valueOf(customerTable.getValueAt(selectedRow, 0));
                 customerField.setText(String.valueOf(customerTable.getValueAt(selectedRow, 1)));
@@ -1368,7 +1406,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         // Select Warehouse
         if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
             int selectedRow = warehouseTable.getSelectedRow();
-            
+
             if (selectedRow != -1) {
                 this.warehouse = String.valueOf(warehouseTable.getValueAt(selectedRow, 0));
                 warehouseField.setText(String.valueOf(warehouseTable.getValueAt(selectedRow, 1)));
@@ -1415,7 +1453,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         // Select Product
         if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
             int selectedRow = productTable.getSelectedRow();
-            
+
             if (selectedRow != -1) {
                 this.product = String.valueOf(productTable.getValueAt(selectedRow, 0));
                 productField.setText(String.valueOf(productTable.getValueAt(selectedRow, 1)));
@@ -1440,7 +1478,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         // Select Service
         if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
             int selectedRow = serviceTable.getSelectedRow();
-            
+
             if (selectedRow != -1) {
                 //this.service = String.valueOf(serviceTable.getValueAt(selectedRow, 0));
                 this.isService = true;
@@ -1484,6 +1522,12 @@ public class CreateSale1 extends javax.swing.JPanel {
             loadProducts("");
         }
     }//GEN-LAST:event_allProductsButtonActionPerformed
+
+    private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
+        // Submit
+        Date date = jDateChooser1.getDate();
+        String dateFormatString = jDateChooser1.getDateFormatString();
+    }//GEN-LAST:event_submitButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -4,6 +4,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import ewision.sahan.menu.Menu;
 import ewision.sahan.model.ModelMenu;
 import ewision.sahan.service.impl.AppServiceIMPL;
@@ -175,8 +176,8 @@ public class Application extends javax.swing.JFrame {
     public static void main(String args[]) {
         FlatRobotoFont.install(); // Font Install
         FlatLaf.registerCustomDefaultsSource("ewision.sahan.theme");
-        FlatDarkLaf.setup();
-        //FlatMacDarkLaf.setup();
+        //FlatDarkLaf.setup();
+        FlatMacDarkLaf.setup();
         //FlatMacLightLaf.setup();
 
         /* Create and display the form */
