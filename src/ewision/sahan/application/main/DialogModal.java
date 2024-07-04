@@ -3,6 +3,8 @@ package ewision.sahan.application.main;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import ewision.sahan.customer.CreateCustomer;
+import ewision.sahan.sale.CreateSale1;
+import ewision.sahan.sale.SelectStock1;
 import ewision.sahan.supplier.CreateSupplier;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
@@ -67,6 +69,15 @@ public class DialogModal extends javax.swing.JDialog {
         getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
     }
 
+    public void openSelectStock(CreateSale1 createSale, String pid, String pname) {
+        SelectStock1 selectStock = new SelectStock1(createSale, pid, pname);
+        jPanel1.add(selectStock, BorderLayout.CENTER);
+        resize(selectStock);
+        SwingUtilities.updateComponentTreeUI(jPanel1);
+        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
+    }
+
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

@@ -2,6 +2,7 @@ package ewision.sahan.sale;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import ewision.sahan.application.main.DialogModal;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
 import ewision.sahan.loggers.DatabaseLogger;
@@ -139,7 +140,9 @@ public class CreateSale1 extends javax.swing.JPanel {
         }
     }
 
-    private void styleComponents() {        
+    private void styleComponents() {
+        productField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search products by keywords");
+
         headerPanel.putClientProperty(FlatClientProperties.STYLE, "arc:20");
         bodyPanel.putClientProperty(FlatClientProperties.STYLE, "arc:0;"
                 + "background:$Body.background");
@@ -363,6 +366,11 @@ public class CreateSale1 extends javax.swing.JPanel {
         }
     }
 
+    public void addProductToInvoice(String stock_id, String quantity, String discount, String tax) {
+        System.out.println(stock_id + " : " + quantity + " : " + discount + " : " + tax);
+    }
+    
+    
     private void reset() {
         this.customer = "";
         this.warehouse = "";
@@ -533,7 +541,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 .addGap(0, 0, 0))
         );
 
-        jDateChooser1.setDateFormatString("y-m-d");
+        jDateChooser1.setDateFormatString("y-M-d");
         jDateChooser1.setMinSelectableDate(new java.util.Date(1640979067000L));
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
@@ -1581,10 +1589,13 @@ public class CreateSale1 extends javax.swing.JPanel {
             int selectedRow = productTable.getSelectedRow();
 
             if (selectedRow != -1) {
-                this.product = String.valueOf(productTable.getValueAt(selectedRow, 0));
-                productField.setText(String.valueOf(productTable.getValueAt(selectedRow, 1)));
-                productContainer.setVisible(false);
+//                this.product = String.valueOf(productTable.getValueAt(selectedRow, 0));
+//                productField.setText(String.valueOf(productTable.getValueAt(selectedRow, 1)));
+//                productContainer.setVisible(false);
                 //loadPassengerTable();
+                DialogModal modal = new DialogModal(this);
+                modal.openSelectStock(this, String.valueOf(productTable.getValueAt(selectedRow, 0)), String.valueOf(productTable.getValueAt(selectedRow, 1)));
+                modal.setVisible(true);
             }
         }
     }//GEN-LAST:event_productTableMouseClicked
