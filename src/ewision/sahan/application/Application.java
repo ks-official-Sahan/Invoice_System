@@ -100,6 +100,7 @@ public class Application extends javax.swing.JFrame {
         menu.addMenu(new ModelMenu("Customers", scaler.getSvgIcon("customer.svg", 30)));
         menu.addMenu(new ModelMenu("Suppliers", scaler.getSvgIcon("supplier.svg", 30)));
         menu.addMenu(new ModelMenu("Invoice", scaler.getSvgIcon("bill.svg", 30)));
+        menu.addMenu(new ModelMenu("Purchase", scaler.getSvgIcon("bill.svg", 30)));
 
         appService.openDashboard();
     }
