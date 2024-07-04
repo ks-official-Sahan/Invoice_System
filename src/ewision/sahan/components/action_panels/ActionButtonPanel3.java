@@ -1,6 +1,7 @@
 package ewision.sahan.components.action_panels;
 
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.model.Constants;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,7 +9,7 @@ import java.util.HashMap;
 import javax.swing.JTable;
 
 public class ActionButtonPanel3 extends javax.swing.JPanel {
-
+    
     private JTable table;
     //private HashMap<String, ActionButtonEvent> eventMap;
 
@@ -19,29 +20,34 @@ public class ActionButtonPanel3 extends javax.swing.JPanel {
     public ActionButtonPanel3(JTable table, HashMap eventMap) {
         initComponents();
         //this.eventMap = eventMap;
-        edit.setEvent((ActionButtonEvent) eventMap.get("edit"));
-        delete.setEvent((ActionButtonEvent) eventMap.get("delete"));
-        view.setEvent((ActionButtonEvent) eventMap.get("view"));
         //edit.setEvent(editEvent);
         //delete.setEvent(deleteEvent);
         //view.setEvent(viewEvent);
-        renderButtons();
+        init(eventMap);
         this.table = table;
     }
-
+    
     public ActionButtonPanel3(JTable table) {
         initComponents();
         renderButtons();
         this.table = table;
     }
-
+    
+    private void init(HashMap eventMap) {
+        renderButtons();
+        edit.setEvent((ActionButtonEvent) eventMap.get("edit"));
+        delete.setEvent((ActionButtonEvent) eventMap.get("delete"));
+        view.setEvent((ActionButtonEvent) eventMap.get("view"));
+        //setBackground(Constants.TRANSPARENT);
+    }
+    
     private void renderButtons() {
         ImageScaler scaler = new ImageScaler();
         delete.setIcon(scaler.getSvgIcon("/delete.svg", 30));
         edit.setIcon(scaler.getSvgIcon("/edit.svg", 30));
         view.setIcon(scaler.getSvgIcon("/view.svg", 30));
     }
-
+    
     public void initEvent(int row) {
         edit.addActionListener(new ActionListener() {
             @Override
@@ -116,12 +122,12 @@ public class ActionButtonPanel3 extends javax.swing.JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(view, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(edit, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(view, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+                    .addComponent(delete, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+                    .addComponent(edit, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 

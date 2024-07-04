@@ -1,6 +1,7 @@
 package ewision.sahan.components.action_panels;
 
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.model.Constants;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,11 +23,17 @@ public class ActionButtonPanel4 extends javax.swing.JPanel {
 
     public ActionButtonPanel4(JTable table, HashMap eventMap) {
         initComponents();
-        delete.setEvent((ActionButtonEvent) eventMap.get("delete"));
-        renderButtons();
+        init(eventMap);
         this.table = table;
     }
 
+        private void init(HashMap eventMap) {
+        renderButtons();
+        delete.setEvent((ActionButtonEvent) eventMap.get("delete"));
+        //setBackground(Constants.TRANSPARENT);
+    }
+
+    
     private void renderButtons() {
         delete.setIcon(new ImageScaler().getSvgIcon("/delete.svg", 30));
     }
@@ -70,9 +77,9 @@ public class ActionButtonPanel4 extends javax.swing.JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(delete, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 

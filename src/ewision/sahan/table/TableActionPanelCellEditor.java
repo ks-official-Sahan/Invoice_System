@@ -33,7 +33,7 @@ public class TableActionPanelCellEditor extends DefaultCellEditor {
             actionPanel = (JPanel) panel;
             //return panel;
         } else if (buttonPanelType == ActionButton.EDIT_DELETE_BUTTON) {
-            ActionButtonPanel2 panel = new ActionButtonPanel2(table);
+            ActionButtonPanel2 panel = new ActionButtonPanel2(table, eventMap);
             panel.initEvent(row);
             actionPanel = (JPanel) panel;
             //return panel;
@@ -43,7 +43,7 @@ public class TableActionPanelCellEditor extends DefaultCellEditor {
             actionPanel = (JPanel) panel;
             //return panel;
         } else {
-            ActionButtonPanel4 panel = new ActionButtonPanel4(table);
+            ActionButtonPanel4 panel = new ActionButtonPanel4(table, eventMap);
             panel.initEvent(row);
             actionPanel = (JPanel) panel;
             //return panel;

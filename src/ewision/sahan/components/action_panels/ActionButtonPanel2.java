@@ -1,6 +1,7 @@
 package ewision.sahan.components.action_panels;
 
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.model.Constants;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,10 +23,14 @@ public class ActionButtonPanel2 extends javax.swing.JPanel {
 
     public ActionButtonPanel2(JTable table, HashMap eventMap) {
         initComponents();
+        init(eventMap);
+        this.table = table;
+    }
+
+    private void init(HashMap eventMap) {
+        renderButtons();
         edit.setEvent((ActionButtonEvent) eventMap.get("edit"));
         delete.setEvent((ActionButtonEvent) eventMap.get("delete"));
-        renderButtons();
-        this.table = table;
     }
 
     private void renderButtons() {
@@ -41,7 +46,7 @@ public class ActionButtonPanel2 extends javax.swing.JPanel {
         });
         delete.addActionListener((ActionEvent evt) -> {
             //onDelete(row);
-            edit.getEvent().run(row);
+            delete.getEvent().run(row);
         });
     }
 
@@ -58,7 +63,6 @@ public class ActionButtonPanel2 extends javax.swing.JPanel {
 //        delete.getEvent().run(row);
 //        //System.out.println("Delete: " + row);
 //    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -70,6 +74,10 @@ public class ActionButtonPanel2 extends javax.swing.JPanel {
 
         edit = new ewision.sahan.components.action_button.ActionButton();
         delete = new ewision.sahan.components.action_button.ActionButton();
+
+        edit.setDoubleBuffered(true);
+
+        delete.setDoubleBuffered(true);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -85,11 +93,11 @@ public class ActionButtonPanel2 extends javax.swing.JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(edit, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(delete, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+                    .addComponent(edit, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 

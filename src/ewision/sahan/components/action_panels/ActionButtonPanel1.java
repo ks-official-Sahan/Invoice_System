@@ -1,6 +1,7 @@
 package ewision.sahan.components.action_panels;
 
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.model.Constants;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,15 +17,13 @@ public class ActionButtonPanel1 extends javax.swing.JPanel {
      */
     public ActionButtonPanel1(JTable table, HashMap eventMap, Object value) {
         initComponents();
-        actionMenu.setEvent((ActionButtonEvent) eventMap.get("action"));
-        renderButtons();
+        init(eventMap);
         this.table = table;
     }
 
     public ActionButtonPanel1(JTable table, HashMap eventMap) {
         initComponents();
-        actionMenu.setEvent((ActionButtonEvent) eventMap.get("action"));
-        renderButtons();
+        init(eventMap);
         this.table = table;
     }
 
@@ -32,6 +31,11 @@ public class ActionButtonPanel1 extends javax.swing.JPanel {
         initComponents();
         renderButtons();
         this.table = table;
+    }
+
+    private void init(HashMap eventMap) {
+        renderButtons();
+        actionMenu.setEvent((ActionButtonEvent) eventMap.get("action"));
     }
 
     private void renderButtons() {
@@ -52,7 +56,6 @@ public class ActionButtonPanel1 extends javax.swing.JPanel {
 //        actionMenu.getEvent().run(row);
 //        //System.out.println("View: " + row);
 //    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -82,9 +85,9 @@ public class ActionButtonPanel1 extends javax.swing.JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(actionMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(actionMenu, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 

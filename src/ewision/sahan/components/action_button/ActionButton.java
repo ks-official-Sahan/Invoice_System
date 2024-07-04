@@ -38,6 +38,7 @@ public class ActionButton extends JButton {
     }
     
     public void setEvent(ActionButtonEvent event) {
+        event.toString();
         this.event = event;
     }
 

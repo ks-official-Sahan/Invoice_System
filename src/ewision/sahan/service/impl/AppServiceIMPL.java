@@ -16,6 +16,7 @@ import java.awt.BorderLayout;
 import ewision.sahan.product.CreateProduct1;
 import ewision.sahan.services.CreateService;
 import ewision.sahan.product.ProductList;
+import ewision.sahan.purchase.CreatePurchase;
 import ewision.sahan.sale.CreateSale;
 import ewision.sahan.sale.CreateSale1;
 import ewision.sahan.services.ServiceList;
@@ -93,5 +94,11 @@ public class AppServiceIMPL extends AppServiceAbstract {
     public void openSupplierList() {
         SupplierList supplierList = new SupplierList();
         showMainPanel((JPanel) supplierList);
+    }
+
+    @Override
+    public void openCreatePurchase() {
+        CreatePurchase createPurchase = new CreatePurchase();
+        showMainPanel((JPanel) createPurchase);
     }
 }

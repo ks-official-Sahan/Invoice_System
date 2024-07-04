@@ -30,22 +30,19 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="view" min="-2" pref="36" max="-2" attributes="0"/>
-                  <Component id="delete" min="-2" pref="36" max="-2" attributes="0"/>
-                  <Component id="edit" min="-2" pref="36" max="-2" attributes="0"/>
+                  <Component id="view" pref="36" max="32767" attributes="0"/>
+                  <Component id="delete" pref="36" max="32767" attributes="0"/>
+                  <Component id="edit" pref="36" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
     <Component class="ewision.sahan.components.action_button.ActionButton" name="view">
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewActionPerformed"/>
-      </Events>
     </Component>
     <Component class="ewision.sahan.components.action_button.ActionButton" name="edit">
     </Component>
