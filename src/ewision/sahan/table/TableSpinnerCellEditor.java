@@ -1,5 +1,6 @@
 package ewision.sahan.table;
 
+import ewision.sahan.purchase.CreatePurchase;
 import java.awt.Component;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
@@ -124,6 +125,7 @@ public class TableSpinnerCellEditor extends DefaultCellEditor {
 
             double newTotal = qty * price;
             table.setValueAt(newTotal, row, totalColumn);
+            
         } catch (NumberFormatException | NullPointerException e) {
             System.out.println(e.getMessage());
         }
