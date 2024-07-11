@@ -1,4 +1,4 @@
-package ewision.sahan.table;
+package ewision.sahan.table.header;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.util.UIScale;

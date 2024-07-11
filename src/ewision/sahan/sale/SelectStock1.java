@@ -4,6 +4,8 @@ import com.formdev.flatlaf.FlatClientProperties;
 import ewision.sahan.application.main.DialogModal;
 import ewision.sahan.loggers.DatabaseLogger;
 import ewision.sahan.model.MySQL;
+import ewision.sahan.model.Product;
+import ewision.sahan.model.Stock;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -21,6 +23,8 @@ import javax.swing.table.DefaultTableModel;
 public class SelectStock1 extends javax.swing.JPanel {
 
     private CreateSale1 createSale;
+    private Product product;
+    private Stock stock;
     private String stock_id;
 
     /**
@@ -39,11 +43,40 @@ public class SelectStock1 extends javax.swing.JPanel {
         init();
     }
 
+    public SelectStock1(CreateSale1 createSale, Product product) {
+        initComponents();
+        this.createSale = createSale;
+        this.product = product;
+        setUIData();
+        init();
+    }
+
+    private void setUIData() {
+        productId.setText(String.valueOf(product.getId()));
+        productName.setText(product.getName());
+    }
+
     private void init() {
         styleComponents();
         searchField.grabFocus();
         searchField.requestFocus();
         loadStocks("");
+        toggleFields(false);
+        reset();
+    }
+
+    private void toggleFields(boolean enable) {
+        quantitySpinner.setEnabled(enable);
+        taxField.setEnabled(enable);
+        discountField.setEnabled(enable);
+        addButton.setEnabled(enable);
+    }
+
+    private void reset() {
+        toggleFields(false);
+        taxField.setText("0.00");
+        discountField.setText("0.00");
+        quantitySpinner.setValue(1);
     }
 
     private void styleComponents() {
@@ -70,7 +103,8 @@ public class SelectStock1 extends javax.swing.JPanel {
                 + "INNER JOIN `products` ON `stocks`.`products_id`=`products`.`id` "
                 + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
                 + "INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` "
-                + "WHERE `products_id`='" + productId.getText() + "' AND `stocks`.`quantity`>'0' ";
+                //+ "WHERE `products_id`='" + productId.getText() + "' AND `stocks`.`quantity`>'0' ";
+                + "WHERE `products_id`='" + product.getId() + "' AND `stocks`.`quantity`>'0' ";
         if (!stock.isBlank()) {
             query += "AND (`stocks`.`id` LIKE '%" + stock + "%' "
                     + "OR `stocks`.`name` LIKE '%" + stock + "%' "
@@ -113,6 +147,13 @@ public class SelectStock1 extends javax.swing.JPanel {
         }
     }
 
+    private void calculate() {
+        double quantity = Double.valueOf(String.valueOf(quantitySpinner.getValue()));
+        double discount = Double.parseDouble(discountField.getText());
+        double tax = Double.parseDouble(taxField.getText());
+        subTotalField.setText(String.valueOf(((stock == null) ? 0 : stock.getStock_price() * quantity) - discount - tax));
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -135,6 +176,7 @@ public class SelectStock1 extends javax.swing.JPanel {
         discountField = new javax.swing.JFormattedTextField();
         jLabel4 = new javax.swing.JLabel();
         taxField = new javax.swing.JFormattedTextField();
+        subTotalField = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         searchField = new javax.swing.JTextField();
@@ -182,6 +224,11 @@ public class SelectStock1 extends javax.swing.JPanel {
 
         quantitySpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 1.0d, null, 1.0d));
         quantitySpinner.setNextFocusableComponent(addButton);
+        quantitySpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                quantitySpinnerStateChanged(evt);
+            }
+        });
 
         addButton.setText("Add");
         addButton.setNextFocusableComponent(discountField);
@@ -198,12 +245,25 @@ public class SelectStock1 extends javax.swing.JPanel {
         discountField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         discountField.setText("0.00");
         discountField.setNextFocusableComponent(taxField);
+        discountField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                discountFieldKeyReleased(evt);
+            }
+        });
 
         jLabel4.setText("Tax");
 
         taxField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         taxField.setText("0.00");
         taxField.setNextFocusableComponent(searchField);
+        taxField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                taxFieldKeyReleased(evt);
+            }
+        });
+
+        subTotalField.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        subTotalField.setText("0");
 
         javax.swing.GroupLayout addPanelLayout = new javax.swing.GroupLayout(addPanel);
         addPanel.setLayout(addPanelLayout);
@@ -213,7 +273,7 @@ public class SelectStock1 extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
-                    .addComponent(discountField, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(discountField, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(taxField, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
@@ -223,7 +283,9 @@ public class SelectStock1 extends javax.swing.JPanel {
                     .addComponent(quantitySpinner, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
                     .addComponent(jLabel2))
                 .addGap(18, 18, 18)
-                .addComponent(addButton)
+                .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(addButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(subTotalField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         addPanelLayout.setVerticalGroup(
@@ -238,7 +300,8 @@ public class SelectStock1 extends javax.swing.JPanel {
                     .addGroup(addPanelLayout.createSequentialGroup()
                         .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
-                            .addComponent(jLabel2))
+                            .addComponent(jLabel2)
+                            .addComponent(subTotalField))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(quantitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -335,7 +398,35 @@ public class SelectStock1 extends javax.swing.JPanel {
             int selectedRow = stockTable.getSelectedRow();
 
             if (selectedRow != -1) {
-                this.stock_id = String.valueOf(stockTable.getValueAt(selectedRow, 0));
+                //if (stock == null) {
+                //    stock = new Stock();
+                //}
+                stock = new Stock();
+                stock.setProduct(product);
+
+                stock.setStock_id(String.valueOf(stockTable.getValueAt(selectedRow, 0)));
+                if (!(String.valueOf(stockTable.getValueAt(selectedRow, 1)).isBlank())) {
+                    stock.setStock_name(String.valueOf(stockTable.getValueAt(selectedRow, 1)));
+                }
+                if (!(String.valueOf(stockTable.getValueAt(selectedRow, 2)).isBlank())) {
+                    stock.setStock_code(String.valueOf(stockTable.getValueAt(selectedRow, 2)));
+                }
+
+                stock.setStock_quantity(String.valueOf(stockTable.getValueAt(selectedRow, 3)));
+                stock.setStock_cost(String.valueOf(stockTable.getValueAt(selectedRow, 4)));
+                stock.setStock_price(String.valueOf(stockTable.getValueAt(selectedRow, 5)));
+                if (!(String.valueOf(stockTable.getValueAt(selectedRow, 6)).isBlank())) {
+                    stock.setExp_date(String.valueOf(stockTable.getValueAt(selectedRow, 6)));
+                }
+                if (!(String.valueOf(stockTable.getValueAt(selectedRow, 7)).isBlank())) {
+                    stock.setMfd_date(String.valueOf(stockTable.getValueAt(selectedRow, 7)));
+                }
+
+                subTotalField.setText(String.valueOf(stock.getStock_price()));
+
+                reset();
+                toggleFields(true);
+
                 SpinnerNumberModel model = (SpinnerNumberModel) quantitySpinner.getModel();
                 model.setMaximum(Double.valueOf(String.valueOf(stockTable.getValueAt(selectedRow, 3))));
                 quantitySpinner.requestFocus();
@@ -347,9 +438,36 @@ public class SelectStock1 extends javax.swing.JPanel {
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         // Add to Invoice
         if (createSale != null) {
-            createSale.addProductToInvoice(stock_id, String.valueOf(quantitySpinner.getValue()), discountField.getText(), taxField.getText());
+            if (stock == null) {
+                stockTable.requestFocus();
+            } else {
+                stock.setQuantity(String.valueOf(quantitySpinner.getValue()));
+                stock.setStock_discount(discountField.getText());
+                stock.setStock_tax(taxField.getText());
+
+                //createSale.addProductToInvoice(stock_id, String.valueOf(quantitySpinner.getValue()), discountField.getText(), taxField.getText());
+                createSale.addProductToInvoice(stock);
+                reset();
+                createSale.closeModal();
+            }
         }
     }//GEN-LAST:event_addButtonActionPerformed
+
+    private void quantitySpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_quantitySpinnerStateChanged
+        // Quantity Change
+        //System.out.println(String.valueOf(quantitySpinner.getValue()));
+        calculate();
+    }//GEN-LAST:event_quantitySpinnerStateChanged
+
+    private void discountFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_discountFieldKeyReleased
+        // Discount Change
+        calculate();
+    }//GEN-LAST:event_discountFieldKeyReleased
+
+    private void taxFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_taxFieldKeyReleased
+        // Tax Change
+        calculate();
+    }//GEN-LAST:event_taxFieldKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -368,6 +486,7 @@ public class SelectStock1 extends javax.swing.JPanel {
     private javax.swing.JSpinner quantitySpinner;
     private javax.swing.JTextField searchField;
     private javax.swing.JTable stockTable;
+    private javax.swing.JLabel subTotalField;
     private javax.swing.JFormattedTextField taxField;
     // End of variables declaration//GEN-END:variables
 }

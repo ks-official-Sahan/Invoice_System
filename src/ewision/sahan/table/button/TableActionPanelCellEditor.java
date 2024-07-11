@@ -1,4 +1,4 @@
-package ewision.sahan.table;
+package ewision.sahan.table.button;
 
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;

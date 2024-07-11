@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2024-07-05T07:29:57.369930900Z</date>
+  <millis>1720164597369</millis>
+  <nanos>930900</nanos>
+  <sequence>0</sequence>
+  <logger>ewision.sahan.loggers.DatabaseLogger</logger>
+  <level>INFO</level>
+  <class>ewision.sahan.model.MySQL</class>
+  <method>creteConnection</method>
+  <thread>28</thread>
+  <message>1720164597366 :: DB CONNECTED -- </message>
+</record>
+</log>

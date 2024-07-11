@@ -29,6 +29,7 @@ public class MySQL {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://" + URL + ":" + PORT + "/" + DATABASE, USERNAME, PASSWORD);
+            DatabaseLogger.logger.log(Level.INFO, System.currentTimeMillis() + " :: DB CONNECTED ");
         } catch (ClassNotFoundException | SQLException e) {
             // System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);

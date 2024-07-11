@@ -7,9 +7,12 @@ import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
 import ewision.sahan.loggers.DatabaseLogger;
 import ewision.sahan.model.MySQL;
-import ewision.sahan.table.TableActionPanelCellRenderer;
+import ewision.sahan.model.Product;
+import ewision.sahan.model.Service;
+import ewision.sahan.model.Stock;
+import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableCenterCellRenderer;
-import ewision.sahan.table.TableSpinnerCellEditor;
+import ewision.sahan.table.spinner.TableSpinnerCellEditor;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.Color;
 import java.sql.ResultSet;
@@ -21,6 +24,7 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.logging.Level;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -31,8 +35,6 @@ import javax.swing.table.DefaultTableModel;
  * @author ksoff
  */
 public class CreateSale1 extends javax.swing.JPanel {
-
-    ImageScaler scaler = new ImageScaler();
 
     /**
      * Creates new form CreateSale
@@ -52,37 +54,35 @@ public class CreateSale1 extends javax.swing.JPanel {
 
     private void initData() {
         jDateChooser1.setDate(new Date());
-        loadOrderProducts("");
+        //loadOrderProducts("");
         loadStatus();
         loadPaymentStatus();
     }
 
-    private void loadStatus() {
-        DefaultComboBoxModel model = new DefaultComboBoxModel();
-
-        Vector data = new Vector();
-        data.add("Completed");
-        data.add("Pending");
-        data.add("Ordered");
-
-        model.addAll(data);
-        model.setSelectedItem("Completed");
-
-        statusComboBox.setModel(model);
+    private void render() {
+        FlatSVGIcon refreshSvgIcon = new ImageScaler().getSvgIcon("refresh", 28);
+        allCustomersButton.setIcon(refreshSvgIcon);
+        allWarehousesButton.setIcon(refreshSvgIcon);
+        allProductsButton.setIcon(refreshSvgIcon);
+        allServicesButton.setIcon(refreshSvgIcon);
     }
 
-    private void loadPaymentStatus() {
-        DefaultComboBoxModel model = new DefaultComboBoxModel();
+    private void styleComponents() {
+        productField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search products by keywords");
 
-        Vector data = new Vector();
-        data.add("Paid");
-        data.add("Pending");
-        data.add("Partial");
+        JPanel[] containers = {productContainer, serviceContainer, servicePanel, jPanel14, serviceChargePanel, dateContainer, customerContainer, warehouseContainer};
+        for (JPanel container : containers) {
+            container.setVisible(false);
+            container.putClientProperty(FlatClientProperties.STYLE, ""
+                    + "background:$SubPanel.background;"
+                    + "arc:20;");
+        }
 
-        model.addAll(data);
-        model.setSelectedItem("Paid");
-
-        paymentStatusComboBox.setModel(model);
+        headerPanel.putClientProperty(FlatClientProperties.STYLE, "arc:20");
+        bodyPanel.putClientProperty(FlatClientProperties.STYLE, "arc:0;"
+                + "background:$Body.background");
+        bodyScroll.putClientProperty(FlatClientProperties.STYLE, "arc:20    ;"
+                + "background:$Body.background");
     }
 
     private void renderTables() {
@@ -98,6 +98,10 @@ public class CreateSale1 extends javax.swing.JPanel {
         setupServiceChargeTable();
     }
 
+    /*
+    *
+    * Table Operations Setup
+     */
     private void setupProductChargeTable() {
         TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(2, 7, 3);
         productChargeTable.getColumnModel().getColumn(4).setCellEditor(tableSpinnerCellEditor);
@@ -130,31 +134,11 @@ public class CreateSale1 extends javax.swing.JPanel {
         serviceChargeTable.getColumnModel().getColumn(7).setCellRenderer(tableActionPanelCellRenderer);
     }
 
-    private void render() {
-        JPanel[] containers = {productContainer, serviceContainer, servicePanel, jPanel14, serviceChargePanel, dateContainer, customerContainer, warehouseContainer};
-        for (JPanel container : containers) {
-            container.setVisible(false);
-            container.putClientProperty(FlatClientProperties.STYLE, ""
-                    + "background:$SubPanel.background;"
-                    + "arc:20;");
-        }
-    }
-
-    private void styleComponents() {
-        productField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search products by keywords");
-
-        headerPanel.putClientProperty(FlatClientProperties.STYLE, "arc:20");
-        bodyPanel.putClientProperty(FlatClientProperties.STYLE, "arc:0;"
-                + "background:$Body.background");
-        bodyScroll.putClientProperty(FlatClientProperties.STYLE, "arc:20    ;"
-                + "background:$Body.background");
-
-        FlatSVGIcon refreshSvgIcon = scaler.getSvgIcon("refresh", 28);
-        allCustomersButton.setIcon(refreshSvgIcon);
-        allWarehousesButton.setIcon(refreshSvgIcon);
-        allProductsButton.setIcon(refreshSvgIcon);
-        allServicesButton.setIcon(refreshSvgIcon);
-    }
+    /*
+    *
+    * Service UI Actions
+     */
+    private boolean isService = false;
 
     private void toggleServicePanel() {
         jPanel14.setVisible(true);
@@ -169,13 +153,14 @@ public class CreateSale1 extends javax.swing.JPanel {
         }
     }
 
-    private boolean isService = false;
-
     private void toggleServiceChargePanel() {
         serviceChargePanel.setVisible(isService);
     }
 
     /*
+    *
+    * Data Loading
+    * &
     * Selection
      */
     private String customer = "";
@@ -190,7 +175,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         model.addRow(new Object[]{0, "Apple", "1025", "150.00", "-", "Fruit"});
 
-        String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` ";
+        String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` INNER JOIN `units` ON `units`.`id`=`products`.`unit_id` ";
         if (!product.isEmpty()) {
             query += "WHERE `products`.`name` LIKE '%" + product + "%' "
                     + "OR `products`.`id` LIKE '%" + product + "%' "
@@ -207,7 +192,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 rowData.add(resultSet.getString("products.id"));
                 rowData.add(resultSet.getString("products.name"));
                 rowData.add(resultSet.getString("products.code"));
-                rowData.add(resultSet.getString("products.price"));
+                rowData.add(resultSet.getString("units.shortName"));
                 rowData.add(resultSet.getString("brands.name"));
                 rowData.add(resultSet.getString("categories.name"));
 
@@ -215,44 +200,6 @@ public class CreateSale1 extends javax.swing.JPanel {
             }
         } catch (SQLException e) {
             DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Products Search: " + e.getMessage(), e.getMessage());
-        }
-    }
-
-    private void loadOrderProducts(String product) {
-        DefaultTableModel model = (DefaultTableModel) productChargeTable.getModel();
-        model.setRowCount(0);
-
-        model.addRow(new Object[]{0, "Apple", "150.00", "1025", "10", "10", "10", "1500", ""});
-
-        String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` ";
-        if (!product.isEmpty()) {
-            query += "WHERE `products`.`name` LIKE '%" + product + "%' "
-                    + "OR `products`.`id` LIKE '%" + product + "%' "
-                    + "OR `products`.`code` LIKE '%" + product + "%' ";
-        }
-        query += "ORDER BY `products`.`name` ASC";
-
-        try {
-            ResultSet resultSet = MySQL.execute(query);
-
-            while (resultSet.next()) {
-                Vector rowData = new Vector();
-
-                rowData.add(resultSet.getString("products.id"));
-                rowData.add(resultSet.getString("products.name"));
-                rowData.add(resultSet.getString("products.price"));
-                //rowData.add(resultSet.getString("100"));
-                rowData.add("100");
-                rowData.add("2");
-                rowData.add("10");
-                rowData.add("10");
-                rowData.add(Double.parseDouble(resultSet.getString("products.price")) * 2);
-                rowData.add("");
-
-                model.addRow(rowData);
-            }
-        } catch (SQLException e) {
-            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Order Products Search: " + e.getMessage(), e.getMessage());
         }
     }
 
@@ -358,19 +305,80 @@ public class CreateSale1 extends javax.swing.JPanel {
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
-            if (e.getErrorCode() != 1146) {
-                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Warehouse Search: " + e.getMessage(), e.getMessage());
-            } else {
+            if (e.getErrorCode() == 1146) {
                 System.out.println("Warehouse table isn't in the DB");
+            } else {
+                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Warehouse Search: " + e.getMessage(), e.getMessage());
             }
         }
     }
 
-    public void addProductToInvoice(String stock_id, String quantity, String discount, String tax) {
-        System.out.println(stock_id + " : " + quantity + " : " + discount + " : " + tax);
+    private void loadStatus() {
+        DefaultComboBoxModel model = new DefaultComboBoxModel();
+
+        Vector data = new Vector();
+        data.add("Completed");
+        data.add("Pending");
+        data.add("Ordered");
+
+        model.addAll(data);
+        model.setSelectedItem("Completed");
+
+        statusComboBox.setModel(model);
     }
-    
-    
+
+    private void loadPaymentStatus() {
+        DefaultComboBoxModel model = new DefaultComboBoxModel();
+
+        Vector data = new Vector();
+        data.add("Paid");
+        data.add("Pending");
+        data.add("Partial");
+
+        model.addAll(data);
+        model.setSelectedItem("Paid");
+
+        paymentStatusComboBox.setModel(model);
+    }
+
+    private void loadOrderProducts(String product) {
+        DefaultTableModel model = (DefaultTableModel) productChargeTable.getModel();
+        model.setRowCount(0);
+
+        model.addRow(new Object[]{0, "Apple", "150.00", "1025", "10", "10", "10", "1500", ""});
+
+        String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` ";
+        if (!product.isEmpty()) {
+            query += "WHERE `products`.`name` LIKE '%" + product + "%' "
+                    + "OR `products`.`id` LIKE '%" + product + "%' "
+                    + "OR `products`.`code` LIKE '%" + product + "%' ";
+        }
+        query += "ORDER BY `products`.`name` ASC";
+
+        try {
+            ResultSet resultSet = MySQL.execute(query);
+
+            while (resultSet.next()) {
+                Vector rowData = new Vector();
+
+                rowData.add(resultSet.getString("products.id"));
+                rowData.add(resultSet.getString("products.name"));
+                rowData.add(resultSet.getString("products.price"));
+                //rowData.add(resultSet.getString("100"));
+                rowData.add("100");
+                rowData.add("2");
+                rowData.add("10");
+                rowData.add("10");
+                rowData.add(Double.parseDouble(resultSet.getString("products.price")) * 2);
+                rowData.add("");
+
+                model.addRow(rowData);
+            }
+        } catch (SQLException e) {
+            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Order Products Search: " + e.getMessage(), e.getMessage());
+        }
+    }
+
     private void reset() {
         this.customer = "";
         this.warehouse = "";
@@ -384,6 +392,151 @@ public class CreateSale1 extends javax.swing.JPanel {
         }
         //jDateChooser1.setDate();
         //loadPassengerTable();
+    }
+
+    private void toggleProductSearch() {
+        this.product = "";
+        productField.setText("");
+        if (productContainer.isVisible()) {
+            productContainer.setVisible(!productContainer.isVisible());
+        } else {
+            loadProducts("");
+        }
+        productField.requestFocus();
+    }
+
+    private void toggleServiceSearch() {
+        serviceField.setText("");
+        if (serviceContainer.isVisible()) {
+            serviceContainer.setVisible(!serviceContainer.isVisible());
+        } else {
+            loadServices("");
+        }
+        serviceField.requestFocus();
+    }
+
+    /*
+    *
+    * Stock Selection
+     */
+    //public void addProductToInvoice(String stock_id, String quantity, String discount, String tax) {
+    //    System.out.println(stock_id + " : " + quantity + " : " + discount + " : " + tax);
+    //}
+    private DialogModal modal;
+
+    public void addProductToInvoice(Stock stock) {
+        //System.out.println(stock.getStock_id() + " : " + stock.getQuantity() + " : " + stock.getStock_discount() + " : " + stock.getStock_tax());
+
+        if (stockMap.get(stock.getStringStock_id()) == null) {
+            stockMap.put(stock.getStringStock_id(), stock);
+        } else {
+            Stock currentStock = stockMap.get(stock.getStringStock_id());
+            int result = JOptionPane.showConfirmDialog(modal, "Do you want to update the Quantity?", "Message", JOptionPane.YES_NO_OPTION);
+            if (result == JOptionPane.YES_OPTION) {
+                double qty = currentStock.getQuantity() + stock.getQuantity();
+                currentStock.setQuantity((qty > stock.getStock_quantity() ? stock.getStock_quantity() : qty));
+                currentStock.setStock_discount(currentStock.getStock_discount() + stock.getStock_discount());
+                currentStock.setStock_tax(currentStock.getStock_tax() + stock.getStock_tax());
+            }
+        }
+        loadOrderItems();
+        toggleProductSearch();
+        //reset();
+    }
+
+    public void closeModal() {
+        modal.dispose();
+        modal = null;
+        System.gc();
+    }
+
+    private HashMap<String, Stock> stockMap = new HashMap<>();
+
+    private void loadOrderItems() {
+        DefaultTableModel tModel = (DefaultTableModel) productChargeTable.getModel();
+        tModel.setRowCount(0);
+
+        //double total = 0;
+        double total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText());
+
+        //int count = 0;
+        for (Stock stock : stockMap.values()) {
+            Vector<String> rowData = new Vector<>();
+
+            //rowData.add(String.valueOf(++count));
+            rowData.add(stock.getStringStock_id());
+            rowData.add(stock.getName());
+            //rowData.add(stock.getCode());
+            rowData.add(String.valueOf(stock.getStock_price()));
+            rowData.add(String.valueOf(stock.getStock_quantity()));
+            rowData.add(String.valueOf(stock.getQuantity()));
+            rowData.add(String.valueOf(stock.getStock_discount()));
+            rowData.add(String.valueOf(stock.getStock_tax()));
+
+            double itemTotal = (stock.getQuantity() * stock.getStock_price()) - stock.getStock_discount() + stock.getStock_tax();
+            total += itemTotal;
+
+            rowData.add(String.valueOf(itemTotal));
+
+            tModel.addRow(rowData);
+        }
+
+        totalLabel.setText(String.valueOf(total));
+        //calculate();
+    }
+
+    public void addServiceeToInvoice(Service service) {
+        System.out.println(service.getId() + " : " + service.getQuantity() + " : " + service.getDiscount() + " : " + service.getTax());
+
+        if (serviceMap.get(service.getStringId()) == null) {
+            serviceMap.put(service.getStringId(), service);
+        } else {
+            Service currentService = serviceMap.get(service.getStringId());
+            int result = JOptionPane.showConfirmDialog(modal, "Do you want to update the Quantity?", "Message", JOptionPane.YES_NO_OPTION);
+            if (result == JOptionPane.YES_OPTION) {
+                double qty = currentService.getQuantity() + service.getQuantity();
+                currentService.setQuantity(qty);
+                currentService.setDiscount(currentService.getDiscount() + service.getDiscount());
+                currentService.setTax(currentService.getTax() + service.getTax());
+            }
+        }
+        loadServiceItems();
+        toggleServiceSearch();
+        //reset();
+    }
+
+    private HashMap<String, Service> serviceMap = new HashMap<>();
+
+    private void loadServiceItems() {
+        DefaultTableModel tModel = (DefaultTableModel) serviceChargeTable.getModel();
+        tModel.setRowCount(0);
+
+        //double total = 0;
+        double total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText().replace("Rs.", ""));
+
+        //int count = 0;
+        for (Service service : serviceMap.values()) {
+            Vector<String> rowData = new Vector<>();
+
+            //rowData.add(String.valueOf(++count));
+            rowData.add(service.getStringId());
+            rowData.add(service.getName());
+            //rowData.add(stock.getCode());
+            rowData.add(String.valueOf(service.getPrice()));
+            rowData.add(String.valueOf(service.getQuantity()));
+            rowData.add(String.valueOf(service.getDiscount()));
+            rowData.add(String.valueOf(service.getTax()));
+
+            double itemTotal = (service.getQuantity() * service.getPrice()) - service.getDiscount() + service.getTax();
+            total += itemTotal;
+
+            rowData.add(String.valueOf(itemTotal));
+
+            tModel.addRow(rowData);
+        }
+
+        totalLabel.setText(String.valueOf(total));
+        //calculate();
     }
 
     /**
@@ -435,13 +588,13 @@ public class CreateSale1 extends javax.swing.JPanel {
         productChargeTable = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        discountLabel = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        totalLabel = new javax.swing.JLabel();
+        taxLabel = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
+        shippingLabel = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -841,7 +994,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Name", "Code", "Price", "Brand", "Category"
+                "ID", "Name", "Code", "Unit", "Brand", "Category"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -893,6 +1046,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             }
         });
 
+        productField.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 5, 1));
         productField.setMinimumSize(new java.awt.Dimension(20, 5));
         productField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -947,10 +1101,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         productChargeTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null}
+
             },
             new String [] {
                 "ID", "Product", "Unit Price", "Stock", "Qty", "Discount", "Tax", "Subtotal", "Action"
@@ -974,28 +1125,27 @@ public class CreateSale1 extends javax.swing.JPanel {
         jScrollPane1.setViewportView(productChargeTable);
         if (productChargeTable.getColumnModel().getColumnCount() > 0) {
             productChargeTable.getColumnModel().getColumn(0).setMaxWidth(70);
-            productChargeTable.getColumnModel().getColumn(3).setHeaderValue("Stock");
         }
 
         jPanel2.setMinimumSize(new java.awt.Dimension(20, 5));
 
         jLabel8.setText("Order Tax");
 
-        jLabel9.setText("Rs.0.00");
+        discountLabel.setText("Rs.0.00");
 
         jLabel10.setText("Discount");
 
         jLabel12.setText("Shipping");
 
-        jLabel13.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
-        jLabel13.setText("Rs.0.00");
+        totalLabel.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
+        totalLabel.setText("Rs.0.00");
 
-        jLabel4.setText("Rs.0.00 (0%)");
+        taxLabel.setText("Rs.0.00 (0%)");
 
         jLabel14.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         jLabel14.setText("Grand Total");
 
-        jLabel11.setText("Rs.0.00");
+        shippingLabel.setText("Rs.0.00");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -1007,19 +1157,19 @@ public class CreateSale1 extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(totalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(taxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(discountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(shippingLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, 0))
         );
         jPanel2Layout.setVerticalGroup(
@@ -1027,19 +1177,19 @@ public class CreateSale1 extends javax.swing.JPanel {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(0, 0, 0)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(taxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(discountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(shippingLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(totalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0))
         );
@@ -1122,7 +1272,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         jPanel1.add(jPanel9);
 
-        jLabel17.setText("Shopping");
+        jLabel17.setText("Shipping");
 
         shoppingField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
 
@@ -1322,10 +1472,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         serviceChargeTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+
             },
             new String [] {
                 "ID", "Service", "Serv. Price", "Count", "Discount", "Tax", "Subtotal", "Action"
@@ -1339,7 +1486,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        serviceChargeTable.setRowHeight(30);
+        serviceChargeTable.setRowHeight(50);
         serviceChargeTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 serviceChargeTableMouseClicked(evt);
@@ -1589,12 +1736,19 @@ public class CreateSale1 extends javax.swing.JPanel {
             int selectedRow = productTable.getSelectedRow();
 
             if (selectedRow != -1) {
-//                this.product = String.valueOf(productTable.getValueAt(selectedRow, 0));
-//                productField.setText(String.valueOf(productTable.getValueAt(selectedRow, 1)));
-//                productContainer.setVisible(false);
-                //loadPassengerTable();
-                DialogModal modal = new DialogModal(this);
-                modal.openSelectStock(this, String.valueOf(productTable.getValueAt(selectedRow, 0)), String.valueOf(productTable.getValueAt(selectedRow, 1)));
+                //this.product = String.valueOf(productTable.getValueAt(selectedRow, 0));
+                //productField.setText(String.valueOf(productTable.getValueAt(selectedRow, 1)));
+                //productContainer.setVisible(false);
+                Product product = new Product();
+                product.setProductData(
+                        Integer.parseInt(String.valueOf(productTable.getValueAt(selectedRow, 0))),
+                        String.valueOf(productTable.getValueAt(selectedRow, 1)),
+                        String.valueOf(productTable.getValueAt(selectedRow, 2)),
+                        String.valueOf(productTable.getValueAt(selectedRow, 3)));
+
+                modal = new DialogModal(this);
+                //modal.openSelectStock(this, String.valueOf(productTable.getValueAt(selectedRow, 0)), String.valueOf(productTable.getValueAt(selectedRow, 1)));
+                modal.openSelectStock(this, product);
                 modal.setVisible(true);
             }
         }
@@ -1614,25 +1768,45 @@ public class CreateSale1 extends javax.swing.JPanel {
     private void serviceTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_serviceTableMouseClicked
         // Select Service
         if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
-            int selectedRow = serviceTable.getSelectedRow();
-
-            if (selectedRow != -1) {
-                //this.service = String.valueOf(serviceTable.getValueAt(selectedRow, 0));
-                this.isService = true;
-                toggleServiceChargePanel();
-                serviceField.setText(String.valueOf(serviceTable.getValueAt(selectedRow, 1)));
-                serviceContainer.setVisible(false);
-            }
+//            int selectedRow = serviceTable.getSelectedRow();
+//
+//            if (selectedRow != -1) {
+//                //this.service = String.valueOf(serviceTable.getValueAt(selectedRow, 0));
+//                this.isService = true;
+//                toggleServiceChargePanel();
+//                serviceField.setText(String.valueOf(serviceTable.getValueAt(selectedRow, 1)));
+//                serviceContainer.setVisible(false);
+//            }
+            addService();
         }
     }//GEN-LAST:event_serviceTableMouseClicked
 
+    private void addService() {
+        Service service = new Service();
+
+        int selectedRow = serviceTable.getSelectedRow();
+
+        if (selectedRow != -1) {
+
+            service.setId(String.valueOf(serviceTable.getValueAt(selectedRow, 0)));
+            service.setName(String.valueOf(serviceTable.getValueAt(selectedRow, 1)));
+
+            service.setPrice(String.valueOf(serviceTable.getValueAt(selectedRow, 3)));
+
+            service.setQuantity(1);
+            service.setDiscount(String.valueOf(0));
+            service.setTax(String.valueOf(0));
+
+            addServiceeToInvoice(service);
+            this.isService = true;
+            toggleServiceChargePanel();
+            serviceContainer.setVisible(false);
+        }
+    }
+
     private void allServicesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allServicesButtonActionPerformed
         // Search All Services
-        if (serviceContainer.isVisible()) {
-            serviceContainer.setVisible(!serviceContainer.isVisible());
-        } else {
-            loadServices("");
-        }
+        toggleServiceSearch();
     }//GEN-LAST:event_allServicesButtonActionPerformed
 
     private void serviceFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_serviceFieldKeyReleased
@@ -1652,12 +1826,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
     private void allProductsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allProductsButtonActionPerformed
         // Search All Products
-        this.product = "";
-        if (productContainer.isVisible()) {
-            productContainer.setVisible(!productContainer.isVisible());
-        } else {
-            loadProducts("");
-        }
+        toggleProductSearch();
     }//GEN-LAST:event_allProductsButtonActionPerformed
 
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
@@ -1695,6 +1864,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 //                String price = String.valueOf(serviceChargeTable.getValueAt(selectedRow, 2));
 //                String qty = String.valueOf(serviceChargeTable.getValueAt(selectedRow, 3));
 //
+
 //                try {
 //                    double subtotal = Double.parseDouble(price) * Double.parseDouble(qty);
 //
@@ -1726,14 +1896,13 @@ public class CreateSale1 extends javax.swing.JPanel {
     private javax.swing.JPanel datePanel;
     private javax.swing.JPanel detailPanel;
     private javax.swing.JFormattedTextField discountField;
+    private javax.swing.JLabel discountLabel;
     private javax.swing.JPanel headerPanel;
     private javax.swing.JCheckBox isServicesBox;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
@@ -1744,12 +1913,10 @@ public class CreateSale1 extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel14;
@@ -1785,9 +1952,12 @@ public class CreateSale1 extends javax.swing.JPanel {
     private javax.swing.JPanel servicePanel;
     private javax.swing.JScrollPane serviceScroll1;
     private javax.swing.JTable serviceTable;
+    private javax.swing.JLabel shippingLabel;
     private javax.swing.JFormattedTextField shoppingField;
     private javax.swing.JComboBox<String> statusComboBox;
     private javax.swing.JButton submitButton;
+    private javax.swing.JLabel taxLabel;
+    private javax.swing.JLabel totalLabel;
     private javax.swing.JPanel warehouseContainer;
     private javax.swing.JTextField warehouseField;
     private javax.swing.JPanel warehousePanel;

@@ -754,7 +754,7 @@
                                 <Column editable="false" title="ID" type="java.lang.Object"/>
                                 <Column editable="false" title="Name" type="java.lang.Object"/>
                                 <Column editable="false" title="Code" type="java.lang.Object"/>
-                                <Column editable="false" title="Price" type="java.lang.Object"/>
+                                <Column editable="false" title="Unit" type="java.lang.Object"/>
                                 <Column editable="false" title="Brand" type="java.lang.Object"/>
                                 <Column editable="false" title="Category" type="java.lang.Object"/>
                               </Table>
@@ -860,6 +860,11 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="productField">
                       <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                            <EmptyBorder bottom="5" left="5" right="1" top="1"/>
+                          </Border>
+                        </Property>
                         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                           <Dimension value="[20, 5]"/>
                         </Property>
@@ -955,7 +960,7 @@
                     <Component class="javax.swing.JTable" name="productChargeTable">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                          <Table columnCount="9" rowCount="4">
+                          <Table columnCount="9" rowCount="0">
                             <Column editable="false" title="ID" type="java.lang.Object"/>
                             <Column editable="false" title="Product" type="java.lang.Object"/>
                             <Column editable="false" title="Unit Price" type="java.lang.Object"/>
@@ -985,7 +990,7 @@
                               <Renderer/>
                             </Column>
                             <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                              <Title value="Stock"/>
+                              <Title/>
                               <Editor/>
                               <Renderer/>
                             </Column>
@@ -1046,22 +1051,22 @@
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="jLabel14" min="-2" pref="94" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jLabel13" min="-2" pref="167" max="-2" attributes="0"/>
+                                      <Component id="totalLabel" min="-2" pref="167" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="jLabel8" min="-2" pref="94" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabel4" min="-2" pref="167" max="-2" attributes="0"/>
+                                      <Component id="taxLabel" min="-2" pref="167" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="jLabel10" min="-2" pref="94" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabel9" min="-2" pref="167" max="-2" attributes="0"/>
+                                      <Component id="discountLabel" min="-2" pref="167" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="jLabel12" min="-2" pref="94" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabel11" min="-2" pref="167" max="-2" attributes="0"/>
+                                      <Component id="shippingLabel" min="-2" pref="167" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
@@ -1073,22 +1078,22 @@
                           <Group type="102" attributes="0">
                               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jLabel4" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <Component id="taxLabel" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                   <Component id="jLabel8" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jLabel9" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <Component id="discountLabel" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                   <Component id="jLabel10" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jLabel11" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <Component id="shippingLabel" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                   <Component id="jLabel12" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jLabel13" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <Component id="totalLabel" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                   <Component id="jLabel14" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
@@ -1102,7 +1107,7 @@
                         <Property name="text" type="java.lang.String" value="Order Tax"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JLabel" name="jLabel9">
+                    <Component class="javax.swing.JLabel" name="discountLabel">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Rs.0.00"/>
                       </Properties>
@@ -1117,7 +1122,7 @@
                         <Property name="text" type="java.lang.String" value="Shipping"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JLabel" name="jLabel13">
+                    <Component class="javax.swing.JLabel" name="totalLabel">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                           <Font name="SansSerif" size="13" style="1"/>
@@ -1125,7 +1130,7 @@
                         <Property name="text" type="java.lang.String" value="Rs.0.00"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JLabel" name="jLabel4">
+                    <Component class="javax.swing.JLabel" name="taxLabel">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Rs.0.00 (0%)"/>
                       </Properties>
@@ -1138,7 +1143,7 @@
                         <Property name="text" type="java.lang.String" value="Grand Total"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JLabel" name="jLabel11">
+                    <Component class="javax.swing.JLabel" name="shippingLabel">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Rs.0.00"/>
                       </Properties>
@@ -1351,7 +1356,7 @@
                           <SubComponents>
                             <Component class="javax.swing.JLabel" name="jLabel17">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="Shopping"/>
+                                <Property name="text" type="java.lang.String" value="Shipping"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JFormattedTextField" name="shoppingField">
@@ -1678,7 +1683,7 @@
                         <Component class="javax.swing.JTable" name="serviceChargeTable">
                           <Properties>
                             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                              <Table columnCount="8" rowCount="4">
+                              <Table columnCount="8" rowCount="0">
                                 <Column editable="false" title="ID" type="java.lang.Object"/>
                                 <Column editable="false" title="Service" type="java.lang.Object"/>
                                 <Column editable="false" title="Serv. Price" type="java.lang.Object"/>
@@ -1733,7 +1738,7 @@
                                 </Column>
                               </TableColumnModel>
                             </Property>
-                            <Property name="rowHeight" type="int" value="30"/>
+                            <Property name="rowHeight" type="int" value="50"/>
                             <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
                               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
                             </Property>

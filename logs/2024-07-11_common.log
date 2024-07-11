@@ -1,0 +1,4 @@
+Jul 11, 2024 12:11:55 PM ewision.sahan.model.Service setDiscount
+SEVERE: ParseException in ewision.sahan.model.Service set Stock Discount: For input string: "Service"
+Jul 11, 2024 12:11:55 PM ewision.sahan.model.Service setTax
+SEVERE: ParseException in ewision.sahan.model.Service set Stock Tax: For input string: "null"

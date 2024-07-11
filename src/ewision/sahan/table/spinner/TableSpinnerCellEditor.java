@@ -1,6 +1,8 @@
-package ewision.sahan.table;
+package ewision.sahan.table.spinner;
 
+import ewision.sahan.loggers.CommonLogger;
 import java.awt.Component;
+import java.util.logging.Level;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
 import javax.swing.JSpinner;
@@ -13,7 +15,7 @@ public class TableSpinnerCellEditor extends DefaultCellEditor {
 
     private JSpinner spinner;
     private JTable table;
-    private int currntQty;
+    private double currntQty;
     private int row;
     private int priceColumn;
     private int totalColumn;
@@ -51,6 +53,14 @@ public class TableSpinnerCellEditor extends DefaultCellEditor {
         this.spinner = new JSpinner();
         SpinnerNumberModel model = (SpinnerNumberModel) spinner.getModel();
         model.setMinimum(1); // Initial Value
+        if (isMax) {
+            try {
+                double max = Double.parseDouble(String.valueOf(table.getValueAt(row, maxColumn)));
+                model.setMaximum(max); // Max Value        
+            } catch (NumberFormatException | NullPointerException e) {
+                System.out.println(e.getMessage());
+            }
+        }
 
         // Making changes apply on edit
         JSpinner.NumberEditor editor = (JSpinner.NumberEditor) spinner.getEditor();
@@ -78,16 +88,16 @@ public class TableSpinnerCellEditor extends DefaultCellEditor {
         this.row = row;
 
         SpinnerNumberModel model = (SpinnerNumberModel) spinner.getModel();
-        if (isMax) {
-            try {
-                int max = Integer.parseInt(String.valueOf(table.getValueAt(row, maxColumn)));
-                model.setMaximum(max); // Max Value        
-            } catch (NumberFormatException | NullPointerException e) {
-                System.out.println(e.getMessage());
-            }
-        }
+//        if (isMax) {
+//            try {
+//                double max = Double.parseDouble(String.valueOf(table.getValueAt(row, maxColumn)));
+//                model.setMaximum(max); // Max Value        
+//            } catch (NumberFormatException | NullPointerException e) {
+//                System.out.println(e.getMessage());
+//            }
+//        }
 
-        int qty = Integer.parseInt(String.valueOf(value));
+        double qty = Double.parseDouble(String.valueOf(value));
         this.currntQty = qty;
 
         spinner.setValue(qty);
@@ -116,7 +126,7 @@ public class TableSpinnerCellEditor extends DefaultCellEditor {
 
     private void inputChange(int priceColumn, int totalColumn) {
         try {
-            int qty = Integer.parseInt(String.valueOf(spinner.getValue()));
+            double qty = Double.parseDouble(String.valueOf(spinner.getValue()));
 
             //double total = Double.parseDouble(String.valueOf(table.getValueAt(row, 4)));
             //double price = total / currntQty;
@@ -125,7 +135,7 @@ public class TableSpinnerCellEditor extends DefaultCellEditor {
             double newTotal = qty * price;
             table.setValueAt(newTotal, row, totalColumn);
         } catch (NumberFormatException | NullPointerException e) {
-            System.out.println(e.getMessage());
+            CommonLogger.logger.log(Level.SEVERE, e.getMessage(), e.getMessage());
         }
     }
 
