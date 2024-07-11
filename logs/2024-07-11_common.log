@@ -1,4 +1,2 @@
-Jul 11, 2024 12:11:55 PM ewision.sahan.model.Service setDiscount
-SEVERE: ParseException in ewision.sahan.model.Service set Stock Discount: For input string: "Service"
-Jul 11, 2024 12:11:55 PM ewision.sahan.model.Service setTax
-SEVERE: ParseException in ewision.sahan.model.Service set Stock Tax: For input string: "null"
+Jul 11, 2024 1:20:00 PM ewision.sahan.table.spinner.TableSpinnerCellEditor initSpinner
+SEVERE: Exception in ewision.sahan.table.spinner.TableSpinnerCellEditor InitSpinner: Cannot invoke "javax.swing.JTable.getValueAt(int, int)" because "this.table" is null
