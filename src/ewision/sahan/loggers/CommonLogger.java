@@ -17,7 +17,10 @@ public class CommonLogger {
     static {
 
         try {
-            FileHandler fileHandler = new FileHandler("logs//" + new SQLDateFormatter().getStringDate(new Date()) + "_common.log");
+            FileHandler fileHandler = new FileHandler("logs//common//" + new SQLDateFormatter().getStringDate(new Date()) + "_" + System.currentTimeMillis() + "_common.log");
+            //FileHandler fileHandler = new FileHandler("logs//" + new SQLDateFormatter().getStringDate(new Date()) + "_" + System.currentTimeMillis() + "_common.log");
+            //FileHandler fileHandler = new FileHandler("logs//" + new SQLDateFormatter().getStringDate(new Date()) + "_common.log");
+            //FileHandler fileHandler = new FileHandler("logs//" + System.currentTimeMillis() + "_common.log");
             fileHandler.setFormatter(new SimpleFormatter());
             logger.addHandler(fileHandler);
         } catch (IOException e) {

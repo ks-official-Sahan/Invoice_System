@@ -19,8 +19,6 @@ import ewision.sahan.utils.ImageScaler;
 import java.awt.Color;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
@@ -46,7 +44,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         initComponents();
         init();
     }
-
+    
     private void init() {
         render();
         toggleServicePanel();
@@ -54,14 +52,14 @@ public class CreateSale1 extends javax.swing.JPanel {
         renderTables();
         initData();
     }
-
+    
     private void initData() {
         jDateChooser1.setDate(new Date());
         //loadOrderProducts("");
         loadStatus();
         loadPaymentStatus();
     }
-
+    
     private void render() {
         FlatSVGIcon refreshSvgIcon = new ImageScaler().getSvgIcon("refresh", 28);
         allCustomersButton.setIcon(refreshSvgIcon);
@@ -69,10 +67,10 @@ public class CreateSale1 extends javax.swing.JPanel {
         allProductsButton.setIcon(refreshSvgIcon);
         allServicesButton.setIcon(refreshSvgIcon);
     }
-
+    
     private void styleComponents() {
         productField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search products by keywords");
-
+        
         JPanel[] containers = {productContainer, serviceContainer, servicePanel, jPanel14, serviceChargePanel, dateContainer, customerContainer, warehouseContainer};
         for (JPanel container : containers) {
             container.setVisible(false);
@@ -80,14 +78,14 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "background:$SubPanel.background;"
                     + "arc:20;");
         }
-
+        
         headerPanel.putClientProperty(FlatClientProperties.STYLE, "arc:20");
         bodyPanel.putClientProperty(FlatClientProperties.STYLE, "arc:0;"
                 + "background:$Body.background");
         bodyScroll.putClientProperty(FlatClientProperties.STYLE, "arc:20    ;"
                 + "background:$Body.background");
     }
-
+    
     private void renderTables() {
         TableCenterCellRenderer tableCenterCellRenderer = new TableCenterCellRenderer();
         tableCenterCellRenderer.renderTables(customerTable);
@@ -96,7 +94,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         tableCenterCellRenderer.renderTables(serviceChargeTable);
         tableCenterCellRenderer.renderTables(serviceTable);
         tableCenterCellRenderer.renderTables(warehouseTable);
-
+        
         setupProductChargeTable();
         setupServiceChargeTable();
     }
@@ -109,24 +107,25 @@ public class CreateSale1 extends javax.swing.JPanel {
         SpinnerChangeEvent event = (int row, JSpinner spinner) -> {
             try {
                 double qty = Double.parseDouble(String.valueOf(spinner.getValue()));
-
+                
                 double price = Double.parseDouble(String.valueOf(productChargeTable.getValueAt(row, 2)));
-
+                
                 double newTotal = qty * price;
                 productChargeTable.setValueAt(newTotal, row, 7);
-
+                
                 Stock currentStock = stockMap.get(String.valueOf(productChargeTable.getValueAt(row, 0)));
                 currentStock.setQuantity(qty);
-
+                
+                calculate();
             } catch (NumberFormatException | NullPointerException e) {
-                CommonLogger.logger.log(Level.SEVERE, e.getMessage(), e.getMessage());
+                CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " Product Spinner Event: " + e.getMessage(), e.getMessage());
             }
         };
-
+        
         TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(event, 3);
         //TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(2, 7, 3);
         productChargeTable.getColumnModel().getColumn(4).setCellEditor(tableSpinnerCellEditor);
-
+        
         HashMap<String, ActionButtonEvent> actionButtonEventMap = new HashMap<>();
         actionButtonEventMap.put("delete", (ActionButtonEvent) (int row) -> {
             System.out.println("Delete: " + row);
@@ -138,29 +137,30 @@ public class CreateSale1 extends javax.swing.JPanel {
         TableActionPanelCellRenderer tableActionPanelCellRenderer = new TableActionPanelCellRenderer(ActionButton.EDIT_DELETE_BUTTON, actionButtonEventMap);
         productChargeTable.getColumnModel().getColumn(8).setCellRenderer(tableActionPanelCellRenderer);
     }
-
+    
     private void setupServiceChargeTable() {
         SpinnerChangeEvent event = (int row, JSpinner spinner) -> {
             try {
                 double qty = Double.parseDouble(String.valueOf(spinner.getValue()));
-
+                
                 double price = Double.parseDouble(String.valueOf(serviceChargeTable.getValueAt(row, 2)));
-
+                
                 double newTotal = qty * price;
                 serviceChargeTable.setValueAt(newTotal, row, 6);
-
+                
                 Service currentService = serviceMap.get(String.valueOf(serviceChargeTable.getValueAt(row, 0)));
                 currentService.setQuantity(qty);
-
+                
+                calculate();
             } catch (NumberFormatException | NullPointerException e) {
-                CommonLogger.logger.log(Level.SEVERE, e.getMessage(), e.getMessage());
+                CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " Service Spinner Event: " + e.getMessage(), e.getMessage());
             }
         };
-
+        
         TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(event);
         //TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(2, 6);
         serviceChargeTable.getColumnModel().getColumn(3).setCellEditor(tableSpinnerCellEditor);
-
+        
         HashMap<String, ActionButtonEvent> actionButtonEventMap = new HashMap<>();
         actionButtonEventMap.put("delete", (ActionButtonEvent) (int row) -> {
             System.out.println("Delete: " + row);
@@ -178,7 +178,7 @@ public class CreateSale1 extends javax.swing.JPanel {
     * Service UI Actions
      */
     private boolean isService = false;
-
+    
     private void toggleServicePanel() {
         jPanel14.setVisible(true);
         servicePanel.setVisible(isServicesBox.isSelected());
@@ -191,7 +191,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             }
         }
     }
-
+    
     private void toggleServiceChargePanel() {
         serviceChargePanel.setVisible(isService);
     }
@@ -205,15 +205,16 @@ public class CreateSale1 extends javax.swing.JPanel {
     private String customer = "";
     private String warehouse = "";
     private String product = "";
-
+    private String currency = "Rs.";
+    
     private void loadProducts(String product) {
         productContainer.setVisible(true);
-
+        
         DefaultTableModel model = (DefaultTableModel) productTable.getModel();
         model.setRowCount(0);
-
+        
         model.addRow(new Object[]{0, "Apple", "1025", "150.00", "-", "Fruit"});
-
+        
         String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` INNER JOIN `units` ON `units`.`id`=`products`.`unit_id` ";
         if (!product.isEmpty()) {
             query += "WHERE `products`.`name` LIKE '%" + product + "%' "
@@ -221,35 +222,35 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `products`.`code` LIKE '%" + product + "%' ";
         }
         query += "ORDER BY `products`.`name` ASC";
-
+        
         try {
             ResultSet resultSet = MySQL.execute(query);
-
+            
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-
+                
                 rowData.add(resultSet.getString("products.id"));
                 rowData.add(resultSet.getString("products.name"));
                 rowData.add(resultSet.getString("products.code"));
                 rowData.add(resultSet.getString("units.shortName"));
                 rowData.add(resultSet.getString("brands.name"));
                 rowData.add(resultSet.getString("categories.name"));
-
+                
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
-            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Products Search: " + e.getMessage(), e.getMessage());
+            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Products Search: " + e.getMessage(), e.getMessage());
         }
     }
-
+    
     private void loadServices(String service) {
         serviceContainer.setVisible(true);
-
+        
         DefaultTableModel model = (DefaultTableModel) serviceTable.getModel();
         model.setRowCount(0);
-
+        
         model.addRow(new Object[]{0, "Service", "0602", "1500.00", "service", "Assembly Charge"});
-
+        
         String query = "SELECT * FROM `services` INNER JOIN `categories` ON `categories`.`id`=`services`.`categories_id` ";
         if (!service.isEmpty()) {
             query += "WHERE `services`.`name` LIKE '%" + service + "%' "
@@ -257,35 +258,35 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `services`.`code` LIKE '%" + service + "%' ";
         }
         query += "ORDER BY `services`.`name` ASC";
-
+        
         try {
             ResultSet resultSet = MySQL.execute(query);
-
+            
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-
+                
                 rowData.add(resultSet.getString("services.id"));
                 rowData.add(resultSet.getString("services.name"));
                 rowData.add(resultSet.getString("services.code"));
                 rowData.add(resultSet.getString("services.price"));
                 rowData.add(resultSet.getString("categories.name"));
                 rowData.add(resultSet.getString("services.description"));
-
+                
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
-            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Services Search: " + e.getMessage(), e.getMessage());
+            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Services Search: " + e.getMessage(), e.getMessage());
         }
     }
-
+    
     private void loadCustomers(String customer) {
         customerContainer.setVisible(true);
-
+        
         DefaultTableModel model = (DefaultTableModel) customerTable.getModel();
         model.setRowCount(0);
-
+        
         model.addRow(new Object[]{0, "walk-in-customer", "default", "default"});
-
+        
         String query = "SELECT * FROM `clients` ";
         if (!customer.isEmpty()) {
             query += "  WHERE `name` LIKE '%" + customer + "%' "
@@ -294,33 +295,33 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `id` LIKE '%" + customer + "%' "
                     + "OR `code` LIKE '%" + customer + "%'";
         }
-
+        
         try {
             ResultSet resultSet = MySQL.execute(query);
-
+            
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-
+                
                 rowData.add(resultSet.getString("id"));
                 rowData.add(resultSet.getString("name"));
                 rowData.add(resultSet.getString("email"));
                 rowData.add(resultSet.getString("phone"));
-
+                
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
-            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Customer Search: " + e.getMessage(), e.getMessage());
+            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Customer Search: " + e.getMessage(), e.getMessage());
         }
     }
-
+    
     private void loadWarehouses(String warehouse) {
         warehouseContainer.setVisible(true);
-
+        
         DefaultTableModel model = (DefaultTableModel) warehouseTable.getModel();
         model.setRowCount(0);
-
+        
         model.addRow(new Object[]{0, "default", "default", "default"});
-
+        
         String query = "SELECT * FROM `warehouses`";
         if (!warehouse.isEmpty()) {
             query += "  WHERE `name` LIKE '%" + warehouse + "%' "
@@ -328,64 +329,64 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `mobile` LIKE '%" + warehouse + "%' "
                     + "OR `id` LIKE '%" + warehouse + "%' ";
         }
-
+        
         try {
-
+            
             ResultSet resultSet = MySQL.execute(query);
-
+            
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-
+                
                 rowData.add(resultSet.getString("id"));
                 rowData.add(resultSet.getString("name"));
                 rowData.add(resultSet.getString("email"));
                 rowData.add(resultSet.getString("mobile"));
-
+                
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
             if (e.getErrorCode() == 1146) {
                 System.out.println("Warehouse table isn't in the DB");
             } else {
-                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Warehouse Search: " + e.getMessage(), e.getMessage());
+                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Warehouse Search: " + e.getMessage(), e.getMessage());
             }
         }
     }
-
+    
     private void loadStatus() {
         DefaultComboBoxModel model = new DefaultComboBoxModel();
-
+        
         Vector data = new Vector();
         data.add("Completed");
         data.add("Pending");
         data.add("Ordered");
-
+        
         model.addAll(data);
         model.setSelectedItem("Completed");
-
+        
         statusComboBox.setModel(model);
     }
-
+    
     private void loadPaymentStatus() {
         DefaultComboBoxModel model = new DefaultComboBoxModel();
-
+        
         Vector data = new Vector();
         data.add("Paid");
         data.add("Pending");
         data.add("Partial");
-
+        
         model.addAll(data);
         model.setSelectedItem("Paid");
-
+        
         paymentStatusComboBox.setModel(model);
     }
-
+    
     private void loadOrderProducts(String product) {
         DefaultTableModel model = (DefaultTableModel) productChargeTable.getModel();
         model.setRowCount(0);
-
+        
         model.addRow(new Object[]{0, "Apple", "150.00", "1025", "10", "10", "10", "1500", ""});
-
+        
         String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` ";
         if (!product.isEmpty()) {
             query += "WHERE `products`.`name` LIKE '%" + product + "%' "
@@ -393,13 +394,13 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `products`.`code` LIKE '%" + product + "%' ";
         }
         query += "ORDER BY `products`.`name` ASC";
-
+        
         try {
             ResultSet resultSet = MySQL.execute(query);
-
+            
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-
+                
                 rowData.add(resultSet.getString("products.id"));
                 rowData.add(resultSet.getString("products.name"));
                 rowData.add(resultSet.getString("products.price"));
@@ -410,14 +411,14 @@ public class CreateSale1 extends javax.swing.JPanel {
                 rowData.add("10");
                 rowData.add(Double.parseDouble(resultSet.getString("products.price")) * 2);
                 rowData.add("");
-
+                
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
-            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in Order Products Search: " + e.getMessage(), e.getMessage());
+            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Order Products Search: " + e.getMessage(), e.getMessage());
         }
     }
-
+    
     private void reset() {
         this.customer = "";
         this.warehouse = "";
@@ -432,7 +433,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         //jDateChooser1.setDate();
         //loadPassengerTable();
     }
-
+    
     private void toggleProductSearch() {
         this.product = "";
         productField.setText("");
@@ -443,7 +444,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         }
         productField.requestFocus();
     }
-
+    
     private void toggleServiceSearch() {
         serviceField.setText("");
         if (serviceContainer.isVisible()) {
@@ -462,7 +463,7 @@ public class CreateSale1 extends javax.swing.JPanel {
     //    System.out.println(stock_id + " : " + quantity + " : " + discount + " : " + tax);
     //}
     private DialogModal modal;
-
+    
     public void addProductToInvoice(Stock stock) {
         //System.out.println(stock.getStock_id() + " : " + stock.getQuantity() + " : " + stock.getStock_discount() + " : " + stock.getStock_tax());
 
@@ -482,22 +483,26 @@ public class CreateSale1 extends javax.swing.JPanel {
         toggleProductSearch();
         //reset();
     }
-
+    
     public void closeModal() {
         modal.dispose();
         modal = null;
         System.gc();
     }
-
+    
     private HashMap<String, Stock> stockMap = new HashMap<>();
-
+    
     private void loadOrderItems() {
         DefaultTableModel tModel = (DefaultTableModel) productChargeTable.getModel();
         tModel.setRowCount(0);
-
-        //double total = 0;
+        
+        double total = 0;
         //double total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText());
-        double total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText().replace("Rs.", ""));
+        try {
+            total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText().replace(getCurrency(), ""));
+        } catch (NumberFormatException | NullPointerException e) {
+            CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " loadOrderItems: " + e.getMessage(), e.getMessage());
+        }
 
         //int count = 0;
         for (Stock stock : stockMap.values()) {
@@ -512,22 +517,22 @@ public class CreateSale1 extends javax.swing.JPanel {
             rowData.add(String.valueOf(stock.getQuantity()));
             rowData.add(String.valueOf(stock.getStock_discount()));
             rowData.add(String.valueOf(stock.getStock_tax()));
-
+            
             double itemTotal = (stock.getQuantity() * stock.getStock_price()) - stock.getStock_discount() + stock.getStock_tax();
             total += itemTotal;
-
+            
             rowData.add(String.valueOf(itemTotal));
-
+            
             tModel.addRow(rowData);
         }
-
+        
         totalLabel.setText(String.valueOf(total));
-        //calculate();
+        calculate();
     }
-
+    
     public void addServiceeToInvoice(Service service) {
         System.out.println(service.getId() + " : " + service.getQuantity() + " : " + service.getDiscount() + " : " + service.getTax());
-
+        
         if (serviceMap.get(service.getStringId()) == null) {
             serviceMap.put(service.getStringId(), service);
         } else {
@@ -544,16 +549,20 @@ public class CreateSale1 extends javax.swing.JPanel {
         toggleServiceSearch();
         //reset();
     }
-
+    
     private HashMap<String, Service> serviceMap = new HashMap<>();
-
+    
     private void loadServiceItems() {
         DefaultTableModel tModel = (DefaultTableModel) serviceChargeTable.getModel();
         tModel.setRowCount(0);
-
-        //double total = 0;
+        
+        double total = 0;
         //double total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText());
-        double total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText().replace("Rs.", ""));
+        try {
+            total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText().replace(getCurrency(), ""));
+        } catch (NumberFormatException | NullPointerException e) {
+            CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " loadServiceItems: " + e.getMessage(), e.getMessage());
+        }
 
         //int count = 0;
         for (Service service : serviceMap.values()) {
@@ -567,17 +576,85 @@ public class CreateSale1 extends javax.swing.JPanel {
             rowData.add(String.valueOf(service.getQuantity()));
             rowData.add(String.valueOf(service.getDiscount()));
             rowData.add(String.valueOf(service.getTax()));
-
+            
             double itemTotal = (service.getQuantity() * service.getPrice()) - service.getDiscount() + service.getTax();
             total += itemTotal;
-
+            
             rowData.add(String.valueOf(itemTotal));
-
+            
             tModel.addRow(rowData);
         }
-
+        
         totalLabel.setText(String.valueOf(total));
-        //calculate();
+        calculate();
+    }
+    
+    private void calculate() {
+        double subtotal = 0.00;
+        
+        for (Stock stock : stockMap.values()) {
+            subtotal += ((stock.getStock_price() * stock.getQuantity()) - stock.getStock_discount()) + stock.getStock_tax();
+        }
+        
+        if (isService) {
+            System.out.println("2");
+            for (Service service : serviceMap.values()) {
+                subtotal += ((service.getPrice() * service.getQuantity()) - service.getDiscount()) + service.getTax();
+            }
+        }
+        
+        double orderTax = 0.00;
+        try {
+            orderTax = Double.parseDouble(String.valueOf(orderTaxField.getText()));
+            //orderTax = Double.valueOf(String.valueOf(orderTaxField.getText().replace(currency, "")));
+            int taxAmount = (int) (subtotal * (orderTax / 100));
+            taxLabel.setText(getCurrency() + taxAmount + "(" + orderTax + "%)");
+        } catch (NumberFormatException | NullPointerException e) {
+            CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate tax: " + e.getMessage(), e.getMessage());
+        }
+        double orderDiscount = 0.00;
+        try {
+            orderDiscount = Double.parseDouble(String.valueOf(discountField.getText()));
+            //orderDiscount = Double.valueOf(String.valueOf(discountField.getText().replace(currency, "")));
+            discountLabel.setText(getCurrency() + orderDiscount);
+        } catch (NumberFormatException | NullPointerException e) {
+            CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate discount: " + e.getMessage(), e.getMessage());
+        }
+        double orderShipping = 0.00;
+        try {
+            orderShipping = Double.parseDouble(String.valueOf(shippingField.getText()));
+            //orderShipping = Double.valueOf(String.valueOf(shippingField.getText().replace(currency, "")));
+            shippingLabel.setText(getCurrency() + orderShipping);
+        } catch (NumberFormatException | NullPointerException e) {
+            CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate shipping: " + e.getMessage(), e.getMessage());
+        }
+        
+        double sub = (subtotal - orderDiscount) + orderShipping;
+        int tax = (int) (sub * (orderTax / 100));
+        
+        double total = 0.00;
+        //total = subtotal - orderDiscount + orderShipping + orderTax;
+        total = sub + tax;
+        
+        shippingLabel.setText(getCurrency() + orderShipping);
+        discountLabel.setText(getCurrency() + orderDiscount);
+        taxLabel.setText(getCurrency() + tax + "(" + orderTax + "%)");
+        totalLabel.setText(getCurrency() + total);
+        
+        double payment = 0.00;
+        try {
+            payment = Double.parseDouble(String.valueOf(paymentField.getText()));
+            //payment = Double.valueOf(String.valueOf(paymentField.getText().replace(currency, "")));
+        } catch (NumberFormatException | NullPointerException e) {
+            CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate payment: " + e.getMessage(), e.getMessage());
+        }
+        
+        double balance = 0.00;
+        balance = payment - total;
+        
+        paymentLabel.setText(currency + payment);
+        balanceLabel.setText(currency + balance);
+        balanceLabel.setForeground(balance >= 0 ? paymentLabel.getForeground() : Color.RED);
     }
 
     /**
@@ -636,6 +713,12 @@ public class CreateSale1 extends javax.swing.JPanel {
         taxLabel = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         shippingLabel = new javax.swing.JLabel();
+        jSeparator4 = new javax.swing.JSeparator();
+        jLabel13 = new javax.swing.JLabel();
+        paymentLabel = new javax.swing.JLabel();
+        jSeparator5 = new javax.swing.JSeparator();
+        jLabel23 = new javax.swing.JLabel();
+        balanceLabel = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -650,7 +733,9 @@ public class CreateSale1 extends javax.swing.JPanel {
         paymentStatusComboBox = new javax.swing.JComboBox<>();
         jPanel10 = new javax.swing.JPanel();
         jLabel17 = new javax.swing.JLabel();
-        shoppingField = new javax.swing.JFormattedTextField();
+        shippingField = new javax.swing.JFormattedTextField();
+        jLabel22 = new javax.swing.JLabel();
+        paymentField = new javax.swing.JFormattedTextField();
         notePanel = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         noteText = new javax.swing.JTextArea();
@@ -804,6 +889,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             }
         });
         customerTable.setMinimumSize(new java.awt.Dimension(20, 5));
+        customerTable.setNextFocusableComponent(warehouseField);
         customerTable.setShowHorizontalLines(true);
         customerTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -837,12 +923,15 @@ public class CreateSale1 extends javax.swing.JPanel {
         allCustomersButton.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
         allCustomersButton.setIconTextGap(2);
         allCustomersButton.setMargin(new java.awt.Insets(2, 2, 3, 3));
+        allCustomersButton.setNextFocusableComponent(customerTable);
         allCustomersButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 allCustomersButtonActionPerformed(evt);
             }
         });
 
+        customerField.setFocusCycleRoot(true);
+        customerField.setNextFocusableComponent(allCustomersButton);
         customerField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 customerFieldKeyReleased(evt);
@@ -916,6 +1005,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
+        warehouseTable.setNextFocusableComponent(productField);
         warehouseTable.setShowHorizontalLines(true);
         warehouseTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -944,6 +1034,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 .addGap(0, 0, 0))
         );
 
+        warehouseField.setNextFocusableComponent(allWarehousesButton);
         warehouseField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 warehouseFieldKeyReleased(evt);
@@ -953,6 +1044,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         allWarehousesButton.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
         allWarehousesButton.setIconTextGap(2);
         allWarehousesButton.setMargin(new java.awt.Insets(2, 2, 3, 3));
+        allWarehousesButton.setNextFocusableComponent(warehouseTable);
         allWarehousesButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 allWarehousesButtonActionPerformed(evt);
@@ -1047,6 +1139,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             }
         });
         productTable.setMinimumSize(new java.awt.Dimension(20, 5));
+        productTable.setNextFocusableComponent(productChargeTable);
         productTable.setShowHorizontalLines(true);
         productTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -1071,7 +1164,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             productContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(productContainerLayout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addComponent(productScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
+                .addComponent(productScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
 
@@ -1081,6 +1174,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         allProductsButton.setIconTextGap(2);
         allProductsButton.setMargin(new java.awt.Insets(2, 2, 3, 3));
         allProductsButton.setMinimumSize(new java.awt.Dimension(20, 5));
+        allProductsButton.setNextFocusableComponent(productTable);
         allProductsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 allProductsButtonActionPerformed(evt);
@@ -1089,6 +1183,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         productField.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 5, 1));
         productField.setMinimumSize(new java.awt.Dimension(20, 5));
+        productField.setNextFocusableComponent(allProductsButton);
         productField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 productFieldKeyReleased(evt);
@@ -1133,7 +1228,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
                 .addComponent(productContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(0, 5, Short.MAX_VALUE))
+                .addGap(0, 12, Short.MAX_VALUE))
         );
 
         detailPanel.setMinimumSize(new java.awt.Dimension(20, 5));
@@ -1157,6 +1252,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             }
         });
         productChargeTable.setMinimumSize(new java.awt.Dimension(20, 5));
+        productChargeTable.setNextFocusableComponent(isServicesBox);
         productChargeTable.setRowHeight(50);
         productChargeTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -1179,6 +1275,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         jLabel12.setText("Shipping");
 
         totalLabel.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
+        totalLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         totalLabel.setText("Rs.0.00");
 
         taxLabel.setText("Rs.0.00 (0%)");
@@ -1188,6 +1285,18 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         shippingLabel.setText("Rs.0.00");
 
+        jLabel13.setText("Payment");
+
+        paymentLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        paymentLabel.setText("Rs.0.00");
+
+        jLabel23.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
+        jLabel23.setText("Balance");
+
+        balanceLabel.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
+        balanceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        balanceLabel.setText("Rs.0.00");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -1195,23 +1304,37 @@ public class CreateSale1 extends javax.swing.JPanel {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(totalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(taxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(discountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(shippingLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, 0))
+                        .addComponent(paymentLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jSeparator5, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jSeparator4, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(totalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(taxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(discountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(shippingLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(balanceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1229,9 +1352,21 @@ public class CreateSale1 extends javax.swing.JPanel {
                     .addComponent(shippingLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                    .addComponent(totalLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, 0)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(totalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(paymentLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(balanceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0))
         );
 
@@ -1241,11 +1376,19 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         jLabel15.setText("Order Tax");
 
-        orderTaxField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        orderTaxField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        orderTaxField.setText("0");
+        orderTaxField.setNextFocusableComponent(discountField);
+        orderTaxField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                orderTaxFieldKeyReleased(evt);
+            }
+        });
 
         jLabel18.setText("Status *");
 
         statusComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Completed", "Pending", "Ordered" }));
+        statusComboBox.setNextFocusableComponent(paymentStatusComboBox);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -1278,11 +1421,19 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         jLabel16.setText("Discount");
 
-        discountField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00%"))));
+        discountField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        discountField.setText("0.00");
+        discountField.setNextFocusableComponent(shippingField);
+        discountField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                discountFieldKeyReleased(evt);
+            }
+        });
 
         jLabel19.setText("Payment Status *");
 
         paymentStatusComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Paid", "Pending", "Partial" }));
+        paymentStatusComboBox.setNextFocusableComponent(noteText);
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
@@ -1315,7 +1466,25 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         jLabel17.setText("Shipping");
 
-        shoppingField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        shippingField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        shippingField.setText("0.00");
+        shippingField.setNextFocusableComponent(paymentField);
+        shippingField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                shippingFieldKeyReleased(evt);
+            }
+        });
+
+        jLabel22.setText("Payment");
+
+        paymentField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        paymentField.setText("0.00");
+        paymentField.setNextFocusableComponent(submitButton);
+        paymentField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                paymentFieldKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
@@ -1324,9 +1493,17 @@ public class CreateSale1 extends javax.swing.JPanel {
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel17)
-                    .addComponent(shoppingField, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE))
-                .addGap(20, 20, 20))
+                    .addGroup(jPanel10Layout.createSequentialGroup()
+                        .addComponent(jLabel22)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel10Layout.createSequentialGroup()
+                        .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(paymentField, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel10Layout.createSequentialGroup()
+                                .addComponent(jLabel17)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(shippingField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE))
+                        .addGap(20, 20, 20))))
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1334,14 +1511,19 @@ public class CreateSale1 extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel17)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(shoppingField, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(78, Short.MAX_VALUE))
+                .addComponent(shippingField, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel22)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(paymentField, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(10, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel10);
 
         noteText.setColumns(20);
         noteText.setRows(5);
+        noteText.setNextFocusableComponent(submitButton);
         jScrollPane4.setViewportView(noteText);
 
         jLabel20.setText("Note");
@@ -1417,6 +1599,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             }
         });
         serviceTable.setMinimumSize(new java.awt.Dimension(20, 5));
+        serviceTable.setNextFocusableComponent(serviceChargeTable);
         serviceTable.setShowHorizontalLines(true);
         serviceTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -1439,7 +1622,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         );
         serviceContainerLayout.setVerticalGroup(
             serviceContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(serviceScroll1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)
+            .addComponent(serviceScroll1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
         );
 
         jPanel14.setMinimumSize(new java.awt.Dimension(20, 5));
@@ -1448,6 +1631,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         allServicesButton.setIconTextGap(2);
         allServicesButton.setMargin(new java.awt.Insets(2, 2, 3, 3));
         allServicesButton.setMinimumSize(new java.awt.Dimension(20, 5));
+        allServicesButton.setNextFocusableComponent(serviceTable);
         allServicesButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 allServicesButtonActionPerformed(evt);
@@ -1455,6 +1639,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         });
 
         serviceField.setMinimumSize(new java.awt.Dimension(20, 5));
+        serviceField.setNextFocusableComponent(allServicesButton);
         serviceField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 serviceFieldKeyReleased(evt);
@@ -1503,6 +1688,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         isServicesBox.setText("Add Service Charges");
         isServicesBox.setMinimumSize(new java.awt.Dimension(20, 5));
+        isServicesBox.setNextFocusableComponent(serviceField);
         isServicesBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 isServicesBoxActionPerformed(evt);
@@ -1527,6 +1713,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
+        serviceChargeTable.setNextFocusableComponent(orderTaxField);
         serviceChargeTable.setRowHeight(50);
         serviceChargeTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -1600,7 +1787,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 .addComponent(serviceChargePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(6, 6, 6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1612,6 +1799,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         botomPanel.setMinimumSize(new java.awt.Dimension(20, 5));
 
         submitButton.setText("Submit");
+        submitButton.setNextFocusableComponent(statusComboBox);
         submitButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 submitButtonActionPerformed(evt);
@@ -1703,7 +1891,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         // Select Customer
         if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
             int selectedRow = customerTable.getSelectedRow();
-
+            
             if (selectedRow != -1) {
                 this.customer = String.valueOf(customerTable.getValueAt(selectedRow, 0));
                 customerField.setText(String.valueOf(customerTable.getValueAt(selectedRow, 1)));
@@ -1728,7 +1916,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         // Select Warehouse
         if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
             int selectedRow = warehouseTable.getSelectedRow();
-
+            
             if (selectedRow != -1) {
                 this.warehouse = String.valueOf(warehouseTable.getValueAt(selectedRow, 0));
                 warehouseField.setText(String.valueOf(warehouseTable.getValueAt(selectedRow, 1)));
@@ -1775,7 +1963,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         // Select Product
         if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
             int selectedRow = productTable.getSelectedRow();
-
+            
             if (selectedRow != -1) {
                 //this.product = String.valueOf(productTable.getValueAt(selectedRow, 0));
                 //productField.setText(String.valueOf(productTable.getValueAt(selectedRow, 1)));
@@ -1786,7 +1974,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                         String.valueOf(productTable.getValueAt(selectedRow, 1)),
                         String.valueOf(productTable.getValueAt(selectedRow, 2)),
                         String.valueOf(productTable.getValueAt(selectedRow, 3)));
-
+                
                 modal = new DialogModal(this);
                 //modal.openSelectStock(this, String.valueOf(productTable.getValueAt(selectedRow, 0)), String.valueOf(productTable.getValueAt(selectedRow, 1)));
                 modal.openSelectStock(this, product);
@@ -1821,23 +2009,23 @@ public class CreateSale1 extends javax.swing.JPanel {
             addService();
         }
     }//GEN-LAST:event_serviceTableMouseClicked
-
+    
     private void addService() {
         Service service = new Service();
-
+        
         int selectedRow = serviceTable.getSelectedRow();
-
+        
         if (selectedRow != -1) {
-
+            
             service.setId(String.valueOf(serviceTable.getValueAt(selectedRow, 0)));
             service.setName(String.valueOf(serviceTable.getValueAt(selectedRow, 1)));
-
+            
             service.setPrice(String.valueOf(serviceTable.getValueAt(selectedRow, 3)));
-
+            
             service.setQuantity(1);
             service.setDiscount(String.valueOf(0));
             service.setTax(String.valueOf(0));
-
+            
             addServiceeToInvoice(service);
             this.isService = true;
             toggleServiceChargePanel();
@@ -1919,12 +2107,37 @@ public class CreateSale1 extends javax.swing.JPanel {
 //        }
     }//GEN-LAST:event_serviceChargeTableMouseClicked
 
+    private void orderTaxFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_orderTaxFieldKeyReleased
+        // Order Tax
+        orderTaxField.setText(orderTaxField.getText().isBlank() ? "0" : orderTaxField.getText());
+        calculate();
+    }//GEN-LAST:event_orderTaxFieldKeyReleased
+
+    private void discountFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_discountFieldKeyReleased
+        // Order Discount
+        discountField.setText(discountField.getText().isBlank() ? "0.00" : discountField.getText());
+        calculate();
+    }//GEN-LAST:event_discountFieldKeyReleased
+
+    private void shippingFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_shippingFieldKeyReleased
+        // Order Shipping
+        shippingField.setText(shippingField.getText().isBlank() ? "0.00" : shippingField.getText());
+        calculate();
+    }//GEN-LAST:event_shippingFieldKeyReleased
+
+    private void paymentFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_paymentFieldKeyReleased
+        // Payment
+        paymentField.setText(paymentField.getText().isBlank() ? "0.00" : paymentField.getText());
+        calculate();
+    }//GEN-LAST:event_paymentFieldKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton allCustomersButton;
     private javax.swing.JButton allProductsButton;
     private javax.swing.JButton allServicesButton;
     private javax.swing.JButton allWarehousesButton;
+    private javax.swing.JLabel balanceLabel;
     private javax.swing.JPanel bodyPanel;
     private javax.swing.JScrollPane bodyScroll;
     private javax.swing.JPanel botomPanel;
@@ -1944,6 +2157,7 @@ public class CreateSale1 extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
@@ -1953,6 +2167,8 @@ public class CreateSale1 extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -1974,9 +2190,13 @@ public class CreateSale1 extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JPanel notePanel;
     private javax.swing.JTextArea noteText;
     private javax.swing.JFormattedTextField orderTaxField;
+    private javax.swing.JFormattedTextField paymentField;
+    private javax.swing.JLabel paymentLabel;
     private javax.swing.JComboBox<String> paymentStatusComboBox;
     private javax.swing.JTable productChargeTable;
     private javax.swing.JPanel productContainer;
@@ -1993,8 +2213,8 @@ public class CreateSale1 extends javax.swing.JPanel {
     private javax.swing.JPanel servicePanel;
     private javax.swing.JScrollPane serviceScroll1;
     private javax.swing.JTable serviceTable;
+    private javax.swing.JFormattedTextField shippingField;
     private javax.swing.JLabel shippingLabel;
-    private javax.swing.JFormattedTextField shoppingField;
     private javax.swing.JComboBox<String> statusComboBox;
     private javax.swing.JButton submitButton;
     private javax.swing.JLabel taxLabel;
@@ -2005,4 +2225,12 @@ public class CreateSale1 extends javax.swing.JPanel {
     private javax.swing.JScrollPane warehouseScroll;
     private javax.swing.JTable warehouseTable;
     // End of variables declaration//GEN-END:variables
+
+    public String getCurrency() {
+        return currency;
+    }
+    
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
 }

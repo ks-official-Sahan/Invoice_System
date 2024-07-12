@@ -1,0 +1,4 @@
+Jul 11, 2024 10:55:48 PM ewision.sahan.sale.CreateSale1 calculate
+SEVERE: Exception in ewision.sahan.sale.CreateSale1 calculate tax: empty String
+Jul 11, 2024 10:58:05 PM ewision.sahan.sale.CreateSale1 calculate
+SEVERE: Exception in ewision.sahan.sale.CreateSale1 calculate tax: For input string: "10.00%"

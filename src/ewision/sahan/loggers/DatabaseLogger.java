@@ -19,7 +19,10 @@ public class DatabaseLogger {
     static {
 
         try {
-            FileHandler fileHandler = new FileHandler("logs//" + new SQLDateFormatter().getStringDate(new Date()) + "_db.log");
+            FileHandler fileHandler = new FileHandler("logs//db//" + new SQLDateFormatter().getStringDate(new Date()) + "_" + System.currentTimeMillis() + "_db.log");
+            //FileHandler fileHandler = new FileHandler("logs//" + new SQLDateFormatter().getStringDate(new Date()) + "_" + System.currentTimeMillis() + "_db.log");
+            //FileHandler fileHandler = new FileHandler("logs//" + new SQLDateFormatter().getStringDate(new Date()) + "_db.log");
+            //FileHandler fileHandler = new FileHandler("logs//" + System.currentTimeMillis() + "_db.log");
             fileHandler.setFormatter(new SimpleFormatter());
             logger.addHandler(fileHandler);
         } catch (IOException e) {
