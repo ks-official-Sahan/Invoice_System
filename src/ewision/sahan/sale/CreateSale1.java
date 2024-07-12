@@ -16,6 +16,7 @@ import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.spinner.SpinnerChangeEvent;
 import ewision.sahan.table.spinner.TableSpinnerCellEditor;
 import ewision.sahan.utils.ImageScaler;
+import ewision.sahan.utils.SQLDateFormatter;
 import java.awt.Color;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,7 +45,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         initComponents();
         init();
     }
-    
+
     private void init() {
         render();
         toggleServicePanel();
@@ -52,14 +53,14 @@ public class CreateSale1 extends javax.swing.JPanel {
         renderTables();
         initData();
     }
-    
+
     private void initData() {
         jDateChooser1.setDate(new Date());
         //loadOrderProducts("");
         loadStatus();
         loadPaymentStatus();
     }
-    
+
     private void render() {
         FlatSVGIcon refreshSvgIcon = new ImageScaler().getSvgIcon("refresh", 28);
         allCustomersButton.setIcon(refreshSvgIcon);
@@ -67,10 +68,10 @@ public class CreateSale1 extends javax.swing.JPanel {
         allProductsButton.setIcon(refreshSvgIcon);
         allServicesButton.setIcon(refreshSvgIcon);
     }
-    
+
     private void styleComponents() {
         productField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search products by keywords");
-        
+
         JPanel[] containers = {productContainer, serviceContainer, servicePanel, jPanel14, serviceChargePanel, dateContainer, customerContainer, warehouseContainer};
         for (JPanel container : containers) {
             container.setVisible(false);
@@ -78,14 +79,14 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "background:$SubPanel.background;"
                     + "arc:20;");
         }
-        
+
         headerPanel.putClientProperty(FlatClientProperties.STYLE, "arc:20");
         bodyPanel.putClientProperty(FlatClientProperties.STYLE, "arc:0;"
                 + "background:$Body.background");
         bodyScroll.putClientProperty(FlatClientProperties.STYLE, "arc:20    ;"
                 + "background:$Body.background");
     }
-    
+
     private void renderTables() {
         TableCenterCellRenderer tableCenterCellRenderer = new TableCenterCellRenderer();
         tableCenterCellRenderer.renderTables(customerTable);
@@ -94,7 +95,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         tableCenterCellRenderer.renderTables(serviceChargeTable);
         tableCenterCellRenderer.renderTables(serviceTable);
         tableCenterCellRenderer.renderTables(warehouseTable);
-        
+
         setupProductChargeTable();
         setupServiceChargeTable();
     }
@@ -107,25 +108,25 @@ public class CreateSale1 extends javax.swing.JPanel {
         SpinnerChangeEvent event = (int row, JSpinner spinner) -> {
             try {
                 double qty = Double.parseDouble(String.valueOf(spinner.getValue()));
-                
+
                 double price = Double.parseDouble(String.valueOf(productChargeTable.getValueAt(row, 2)));
-                
+
                 double newTotal = qty * price;
                 productChargeTable.setValueAt(newTotal, row, 7);
-                
+
                 Stock currentStock = stockMap.get(String.valueOf(productChargeTable.getValueAt(row, 0)));
                 currentStock.setQuantity(qty);
-                
+
                 calculate();
             } catch (NumberFormatException | NullPointerException e) {
                 CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " Product Spinner Event: " + e.getMessage(), e.getMessage());
             }
         };
-        
+
         TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(event, 3);
         //TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(2, 7, 3);
         productChargeTable.getColumnModel().getColumn(4).setCellEditor(tableSpinnerCellEditor);
-        
+
         HashMap<String, ActionButtonEvent> actionButtonEventMap = new HashMap<>();
         actionButtonEventMap.put("delete", (ActionButtonEvent) (int row) -> {
             System.out.println("Delete: " + row);
@@ -137,30 +138,30 @@ public class CreateSale1 extends javax.swing.JPanel {
         TableActionPanelCellRenderer tableActionPanelCellRenderer = new TableActionPanelCellRenderer(ActionButton.EDIT_DELETE_BUTTON, actionButtonEventMap);
         productChargeTable.getColumnModel().getColumn(8).setCellRenderer(tableActionPanelCellRenderer);
     }
-    
+
     private void setupServiceChargeTable() {
         SpinnerChangeEvent event = (int row, JSpinner spinner) -> {
             try {
                 double qty = Double.parseDouble(String.valueOf(spinner.getValue()));
-                
+
                 double price = Double.parseDouble(String.valueOf(serviceChargeTable.getValueAt(row, 2)));
-                
+
                 double newTotal = qty * price;
                 serviceChargeTable.setValueAt(newTotal, row, 6);
-                
+
                 Service currentService = serviceMap.get(String.valueOf(serviceChargeTable.getValueAt(row, 0)));
                 currentService.setQuantity(qty);
-                
+
                 calculate();
             } catch (NumberFormatException | NullPointerException e) {
                 CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " Service Spinner Event: " + e.getMessage(), e.getMessage());
             }
         };
-        
+
         TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(event);
         //TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(2, 6);
         serviceChargeTable.getColumnModel().getColumn(3).setCellEditor(tableSpinnerCellEditor);
-        
+
         HashMap<String, ActionButtonEvent> actionButtonEventMap = new HashMap<>();
         actionButtonEventMap.put("delete", (ActionButtonEvent) (int row) -> {
             System.out.println("Delete: " + row);
@@ -178,7 +179,7 @@ public class CreateSale1 extends javax.swing.JPanel {
     * Service UI Actions
      */
     private boolean isService = false;
-    
+
     private void toggleServicePanel() {
         jPanel14.setVisible(true);
         servicePanel.setVisible(isServicesBox.isSelected());
@@ -191,7 +192,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             }
         }
     }
-    
+
     private void toggleServiceChargePanel() {
         serviceChargePanel.setVisible(isService);
     }
@@ -206,15 +207,15 @@ public class CreateSale1 extends javax.swing.JPanel {
     private String warehouse = "";
     private String product = "";
     private String currency = "Rs.";
-    
+
     private void loadProducts(String product) {
         productContainer.setVisible(true);
-        
+
         DefaultTableModel model = (DefaultTableModel) productTable.getModel();
         model.setRowCount(0);
-        
+
         model.addRow(new Object[]{0, "Apple", "1025", "150.00", "-", "Fruit"});
-        
+
         String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` INNER JOIN `units` ON `units`.`id`=`products`.`unit_id` ";
         if (!product.isEmpty()) {
             query += "WHERE `products`.`name` LIKE '%" + product + "%' "
@@ -222,35 +223,35 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `products`.`code` LIKE '%" + product + "%' ";
         }
         query += "ORDER BY `products`.`name` ASC";
-        
+
         try {
             ResultSet resultSet = MySQL.execute(query);
-            
+
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-                
+
                 rowData.add(resultSet.getString("products.id"));
                 rowData.add(resultSet.getString("products.name"));
                 rowData.add(resultSet.getString("products.code"));
                 rowData.add(resultSet.getString("units.shortName"));
                 rowData.add(resultSet.getString("brands.name"));
                 rowData.add(resultSet.getString("categories.name"));
-                
+
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
             DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Products Search: " + e.getMessage(), e.getMessage());
         }
     }
-    
+
     private void loadServices(String service) {
         serviceContainer.setVisible(true);
-        
+
         DefaultTableModel model = (DefaultTableModel) serviceTable.getModel();
         model.setRowCount(0);
-        
+
         model.addRow(new Object[]{0, "Service", "0602", "1500.00", "service", "Assembly Charge"});
-        
+
         String query = "SELECT * FROM `services` INNER JOIN `categories` ON `categories`.`id`=`services`.`categories_id` ";
         if (!service.isEmpty()) {
             query += "WHERE `services`.`name` LIKE '%" + service + "%' "
@@ -258,35 +259,35 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `services`.`code` LIKE '%" + service + "%' ";
         }
         query += "ORDER BY `services`.`name` ASC";
-        
+
         try {
             ResultSet resultSet = MySQL.execute(query);
-            
+
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-                
+
                 rowData.add(resultSet.getString("services.id"));
                 rowData.add(resultSet.getString("services.name"));
                 rowData.add(resultSet.getString("services.code"));
                 rowData.add(resultSet.getString("services.price"));
                 rowData.add(resultSet.getString("categories.name"));
                 rowData.add(resultSet.getString("services.description"));
-                
+
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
             DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Services Search: " + e.getMessage(), e.getMessage());
         }
     }
-    
+
     private void loadCustomers(String customer) {
         customerContainer.setVisible(true);
-        
+
         DefaultTableModel model = (DefaultTableModel) customerTable.getModel();
         model.setRowCount(0);
-        
+
         model.addRow(new Object[]{0, "walk-in-customer", "default", "default"});
-        
+
         String query = "SELECT * FROM `clients` ";
         if (!customer.isEmpty()) {
             query += "  WHERE `name` LIKE '%" + customer + "%' "
@@ -295,33 +296,33 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `id` LIKE '%" + customer + "%' "
                     + "OR `code` LIKE '%" + customer + "%'";
         }
-        
+
         try {
             ResultSet resultSet = MySQL.execute(query);
-            
+
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-                
+
                 rowData.add(resultSet.getString("id"));
                 rowData.add(resultSet.getString("name"));
                 rowData.add(resultSet.getString("email"));
                 rowData.add(resultSet.getString("phone"));
-                
+
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
             DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Customer Search: " + e.getMessage(), e.getMessage());
         }
     }
-    
+
     private void loadWarehouses(String warehouse) {
         warehouseContainer.setVisible(true);
-        
+
         DefaultTableModel model = (DefaultTableModel) warehouseTable.getModel();
         model.setRowCount(0);
-        
+
         model.addRow(new Object[]{0, "default", "default", "default"});
-        
+
         String query = "SELECT * FROM `warehouses`";
         if (!warehouse.isEmpty()) {
             query += "  WHERE `name` LIKE '%" + warehouse + "%' "
@@ -329,19 +330,19 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `mobile` LIKE '%" + warehouse + "%' "
                     + "OR `id` LIKE '%" + warehouse + "%' ";
         }
-        
+
         try {
-            
+
             ResultSet resultSet = MySQL.execute(query);
-            
+
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-                
+
                 rowData.add(resultSet.getString("id"));
                 rowData.add(resultSet.getString("name"));
                 rowData.add(resultSet.getString("email"));
                 rowData.add(resultSet.getString("mobile"));
-                
+
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
@@ -352,41 +353,41 @@ public class CreateSale1 extends javax.swing.JPanel {
             }
         }
     }
-    
+
     private void loadStatus() {
         DefaultComboBoxModel model = new DefaultComboBoxModel();
-        
+
         Vector data = new Vector();
         data.add("Completed");
         data.add("Pending");
         data.add("Ordered");
-        
+
         model.addAll(data);
         model.setSelectedItem("Completed");
-        
+
         statusComboBox.setModel(model);
     }
-    
+
     private void loadPaymentStatus() {
         DefaultComboBoxModel model = new DefaultComboBoxModel();
-        
+
         Vector data = new Vector();
         data.add("Paid");
         data.add("Pending");
         data.add("Partial");
-        
+
         model.addAll(data);
         model.setSelectedItem("Paid");
-        
+
         paymentStatusComboBox.setModel(model);
     }
-    
+
     private void loadOrderProducts(String product) {
         DefaultTableModel model = (DefaultTableModel) productChargeTable.getModel();
         model.setRowCount(0);
-        
+
         model.addRow(new Object[]{0, "Apple", "150.00", "1025", "10", "10", "10", "1500", ""});
-        
+
         String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` ";
         if (!product.isEmpty()) {
             query += "WHERE `products`.`name` LIKE '%" + product + "%' "
@@ -394,13 +395,13 @@ public class CreateSale1 extends javax.swing.JPanel {
                     + "OR `products`.`code` LIKE '%" + product + "%' ";
         }
         query += "ORDER BY `products`.`name` ASC";
-        
+
         try {
             ResultSet resultSet = MySQL.execute(query);
-            
+
             while (resultSet.next()) {
                 Vector rowData = new Vector();
-                
+
                 rowData.add(resultSet.getString("products.id"));
                 rowData.add(resultSet.getString("products.name"));
                 rowData.add(resultSet.getString("products.price"));
@@ -411,14 +412,14 @@ public class CreateSale1 extends javax.swing.JPanel {
                 rowData.add("10");
                 rowData.add(Double.parseDouble(resultSet.getString("products.price")) * 2);
                 rowData.add("");
-                
+
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
             DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Order Products Search: " + e.getMessage(), e.getMessage());
         }
     }
-    
+
     private void reset() {
         this.customer = "";
         this.warehouse = "";
@@ -433,7 +434,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         //jDateChooser1.setDate();
         //loadPassengerTable();
     }
-    
+
     private void toggleProductSearch() {
         this.product = "";
         productField.setText("");
@@ -444,7 +445,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         }
         productField.requestFocus();
     }
-    
+
     private void toggleServiceSearch() {
         serviceField.setText("");
         if (serviceContainer.isVisible()) {
@@ -463,7 +464,7 @@ public class CreateSale1 extends javax.swing.JPanel {
     //    System.out.println(stock_id + " : " + quantity + " : " + discount + " : " + tax);
     //}
     private DialogModal modal;
-    
+
     public void addProductToInvoice(Stock stock) {
         //System.out.println(stock.getStock_id() + " : " + stock.getQuantity() + " : " + stock.getStock_discount() + " : " + stock.getStock_tax());
 
@@ -483,19 +484,19 @@ public class CreateSale1 extends javax.swing.JPanel {
         toggleProductSearch();
         //reset();
     }
-    
+
     public void closeModal() {
         modal.dispose();
         modal = null;
         System.gc();
     }
-    
+
     private HashMap<String, Stock> stockMap = new HashMap<>();
-    
+
     private void loadOrderItems() {
         DefaultTableModel tModel = (DefaultTableModel) productChargeTable.getModel();
         tModel.setRowCount(0);
-        
+
         double total = 0;
         //double total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText());
         try {
@@ -517,22 +518,22 @@ public class CreateSale1 extends javax.swing.JPanel {
             rowData.add(String.valueOf(stock.getQuantity()));
             rowData.add(String.valueOf(stock.getStock_discount()));
             rowData.add(String.valueOf(stock.getStock_tax()));
-            
+
             double itemTotal = (stock.getQuantity() * stock.getStock_price()) - stock.getStock_discount() + stock.getStock_tax();
             total += itemTotal;
-            
+
             rowData.add(String.valueOf(itemTotal));
-            
+
             tModel.addRow(rowData);
         }
-        
+
         totalLabel.setText(String.valueOf(total));
         calculate();
     }
-    
+
     public void addServiceeToInvoice(Service service) {
         System.out.println(service.getId() + " : " + service.getQuantity() + " : " + service.getDiscount() + " : " + service.getTax());
-        
+
         if (serviceMap.get(service.getStringId()) == null) {
             serviceMap.put(service.getStringId(), service);
         } else {
@@ -549,13 +550,13 @@ public class CreateSale1 extends javax.swing.JPanel {
         toggleServiceSearch();
         //reset();
     }
-    
+
     private HashMap<String, Service> serviceMap = new HashMap<>();
-    
+
     private void loadServiceItems() {
         DefaultTableModel tModel = (DefaultTableModel) serviceChargeTable.getModel();
         tModel.setRowCount(0);
-        
+
         double total = 0;
         //double total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText());
         try {
@@ -576,33 +577,33 @@ public class CreateSale1 extends javax.swing.JPanel {
             rowData.add(String.valueOf(service.getQuantity()));
             rowData.add(String.valueOf(service.getDiscount()));
             rowData.add(String.valueOf(service.getTax()));
-            
+
             double itemTotal = (service.getQuantity() * service.getPrice()) - service.getDiscount() + service.getTax();
             total += itemTotal;
-            
+
             rowData.add(String.valueOf(itemTotal));
-            
+
             tModel.addRow(rowData);
         }
-        
+
         totalLabel.setText(String.valueOf(total));
         calculate();
     }
-    
+
     private void calculate() {
         double subtotal = 0.00;
-        
+
         for (Stock stock : stockMap.values()) {
             subtotal += ((stock.getStock_price() * stock.getQuantity()) - stock.getStock_discount()) + stock.getStock_tax();
         }
-        
+
         if (isService) {
             System.out.println("2");
             for (Service service : serviceMap.values()) {
                 subtotal += ((service.getPrice() * service.getQuantity()) - service.getDiscount()) + service.getTax();
             }
         }
-        
+
         double orderTax = 0.00;
         try {
             orderTax = Double.parseDouble(String.valueOf(orderTaxField.getText()));
@@ -628,19 +629,19 @@ public class CreateSale1 extends javax.swing.JPanel {
         } catch (NumberFormatException | NullPointerException e) {
             CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate shipping: " + e.getMessage(), e.getMessage());
         }
-        
+
         double sub = (subtotal - orderDiscount) + orderShipping;
         int tax = (int) (sub * (orderTax / 100));
-        
+
         double total = 0.00;
         //total = subtotal - orderDiscount + orderShipping + orderTax;
         total = sub + tax;
-        
+
         shippingLabel.setText(getCurrency() + orderShipping);
         discountLabel.setText(getCurrency() + orderDiscount);
         taxLabel.setText(getCurrency() + tax + "(" + orderTax + "%)");
         totalLabel.setText(getCurrency() + total);
-        
+
         double payment = 0.00;
         try {
             payment = Double.parseDouble(String.valueOf(paymentField.getText()));
@@ -648,10 +649,10 @@ public class CreateSale1 extends javax.swing.JPanel {
         } catch (NumberFormatException | NullPointerException e) {
             CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate payment: " + e.getMessage(), e.getMessage());
         }
-        
+
         double balance = 0.00;
         balance = payment - total;
-        
+
         paymentLabel.setText(currency + payment);
         balanceLabel.setText(currency + balance);
         balanceLabel.setForeground(balance >= 0 ? paymentLabel.getForeground() : Color.RED);
@@ -1891,7 +1892,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         // Select Customer
         if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
             int selectedRow = customerTable.getSelectedRow();
-            
+
             if (selectedRow != -1) {
                 this.customer = String.valueOf(customerTable.getValueAt(selectedRow, 0));
                 customerField.setText(String.valueOf(customerTable.getValueAt(selectedRow, 1)));
@@ -1916,7 +1917,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         // Select Warehouse
         if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
             int selectedRow = warehouseTable.getSelectedRow();
-            
+
             if (selectedRow != -1) {
                 this.warehouse = String.valueOf(warehouseTable.getValueAt(selectedRow, 0));
                 warehouseField.setText(String.valueOf(warehouseTable.getValueAt(selectedRow, 1)));
@@ -1963,7 +1964,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         // Select Product
         if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
             int selectedRow = productTable.getSelectedRow();
-            
+
             if (selectedRow != -1) {
                 //this.product = String.valueOf(productTable.getValueAt(selectedRow, 0));
                 //productField.setText(String.valueOf(productTable.getValueAt(selectedRow, 1)));
@@ -1974,7 +1975,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                         String.valueOf(productTable.getValueAt(selectedRow, 1)),
                         String.valueOf(productTable.getValueAt(selectedRow, 2)),
                         String.valueOf(productTable.getValueAt(selectedRow, 3)));
-                
+
                 modal = new DialogModal(this);
                 //modal.openSelectStock(this, String.valueOf(productTable.getValueAt(selectedRow, 0)), String.valueOf(productTable.getValueAt(selectedRow, 1)));
                 modal.openSelectStock(this, product);
@@ -2009,23 +2010,23 @@ public class CreateSale1 extends javax.swing.JPanel {
             addService();
         }
     }//GEN-LAST:event_serviceTableMouseClicked
-    
+
     private void addService() {
         Service service = new Service();
-        
+
         int selectedRow = serviceTable.getSelectedRow();
-        
+
         if (selectedRow != -1) {
-            
+
             service.setId(String.valueOf(serviceTable.getValueAt(selectedRow, 0)));
             service.setName(String.valueOf(serviceTable.getValueAt(selectedRow, 1)));
-            
+
             service.setPrice(String.valueOf(serviceTable.getValueAt(selectedRow, 3)));
-            
+
             service.setQuantity(1);
             service.setDiscount(String.valueOf(0));
             service.setTax(String.valueOf(0));
-            
+
             addServiceeToInvoice(service);
             this.isService = true;
             toggleServiceChargePanel();
@@ -2060,9 +2061,89 @@ public class CreateSale1 extends javax.swing.JPanel {
 
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
         // Submit
-        Date date = jDateChooser1.getDate();
-        String dateFormatString = jDateChooser1.getDateFormatString();
+        submitSale();
     }//GEN-LAST:event_submitButtonActionPerformed
+
+    private boolean submitSale() {
+        Date date;
+
+        String customerName = customerField.getText();
+        String customerId = this.customer;
+
+        String warehouseName = warehouseField.getText();
+        String warehouseId = this.warehouse;
+
+        int itemCount = stockMap.size();
+        int serviceCount = serviceMap.size();
+
+        String payment = paymentField.getText();
+
+        if (jDateChooser1.getDate() == null) {
+            JOptionPane.showMessageDialog(this, "Please select Date!", "Warning", JOptionPane.WARNING_MESSAGE);
+            jDateChooser1.requestFocus();
+        } else if (customerName.isBlank() && !customerId.equals("0")) {
+            JOptionPane.showMessageDialog(this, "Please select Customer!", "Warning", JOptionPane.WARNING_MESSAGE);
+            customerField.requestFocus();
+            this.customer = "0";
+        } else if (warehouseName.isBlank() && !warehouseId.equals("0")) {
+            JOptionPane.showMessageDialog(this, "Please select Warehouse!", "Warning", JOptionPane.WARNING_MESSAGE);
+            warehouseField.requestFocus();
+            this.warehouse = "0";
+        } else if (itemCount == 0 && serviceCount == 0) {
+            JOptionPane.showMessageDialog(this, "Please add atlease one Product or a Service!", "Warning", JOptionPane.WARNING_MESSAGE);
+            productField.requestFocus();
+            if (itemCount == 0 && isServicesBox.isSelected()) {
+                serviceField.requestFocus();
+            }
+        } else {
+
+            String status = String.valueOf(statusComboBox.getSelectedItem());
+            String paymentStatus = String.valueOf(paymentStatusComboBox.getSelectedItem());
+
+            boolean isValidPayment = true;
+            if (payment.isBlank() || payment.equals("0.00")) {
+                if (paymentStatus.equalsIgnoreCase("paid")) {
+                    isValidPayment = false;
+                    int result = JOptionPane.showConfirmDialog(this, "Are you sure payment been low? Does it need to make partial?", "Payment Warning", JOptionPane.YES_NO_OPTION);
+                    if (result == JOptionPane.YES_OPTION) {
+                        paymentStatusComboBox.requestFocus();
+                    } else {
+                        paymentField.requestFocus();
+                    }
+                } else if (paymentStatus.equalsIgnoreCase("partial")) {
+                    int result = JOptionPane.showConfirmDialog(this, "Are you sure payment need to be partial?", "Payment Warning", JOptionPane.YES_NO_OPTION);
+                    if (result == JOptionPane.NO_OPTION) {
+                        paymentStatusComboBox.requestFocus();
+                        isValidPayment = false;
+                    }
+                }
+            }
+
+            if (isValidPayment) {
+
+                try {
+                    double paymentAmount = Double.parseDouble(payment);
+                    double total = Double.parseDouble(totalLabel.getText().replace(currency, ""));
+                    if (paymentStatus.equalsIgnoreCase("paid") && total > paymentAmount) {
+                        JOptionPane.showMessageDialog(this, "Payment is not enough", "Invalid Payment", JOptionPane.WARNING_MESSAGE);
+                        paymentField.requestFocus();
+                        return false;
+                    }
+                } catch (NumberFormatException | NullPointerException e) {
+                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " submit sale payment|total: " + e.getMessage(), e.getMessage());
+                }
+
+                date = jDateChooser1.getDate();
+                String stringDate = new SQLDateFormatter().getStringDate(date);
+
+                customerName = customerName.isBlank() ? "walk-in-customer" : customerField.getText();
+                warehouseName = warehouseName.isBlank() ? "Default" : warehouseField.getText();
+
+            }
+        }
+        return true;
+    }
+
 
     private void productChargeTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_productChargeTableMouseClicked
         // Calculate on Changes of Product Orders
@@ -2229,7 +2310,7 @@ public class CreateSale1 extends javax.swing.JPanel {
     public String getCurrency() {
         return currency;
     }
-    
+
     public void setCurrency(String currency) {
         this.currency = currency;
     }
