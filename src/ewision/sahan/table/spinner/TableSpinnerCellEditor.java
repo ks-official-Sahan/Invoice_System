@@ -64,7 +64,6 @@ public class TableSpinnerCellEditor extends DefaultCellEditor {
 //        this.isMax = true;
 //        init();
 //    }
-
     private void initSpinner() {
         this.spinner = new JSpinner();
         SpinnerNumberModel model = (SpinnerNumberModel) spinner.getModel();
@@ -98,11 +97,13 @@ public class TableSpinnerCellEditor extends DefaultCellEditor {
     private void setMax() {
         SpinnerNumberModel model = (SpinnerNumberModel) spinner.getModel();
         if (isMax) {
-            try {
-                double max = Double.parseDouble(String.valueOf(table.getValueAt(row, maxColumn)));
-                model.setMaximum((int) max); // Max Value        
-            } catch (NumberFormatException | NullPointerException e) {
-                CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " setMax: " + e.getMessage(), e.getMessage());
+            if (!String.valueOf(table.getValueAt(row, maxColumn)).equals("N/A")) {
+                try {
+                    double max = Double.parseDouble(String.valueOf(table.getValueAt(row, maxColumn)));
+                    model.setMaximum((int) max); // Max Value        
+                } catch (NumberFormatException | NullPointerException e) {
+                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " setMax: " + e.getMessage(), e.getMessage());
+                }
             }
         }
     }
