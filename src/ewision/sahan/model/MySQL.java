@@ -33,31 +33,52 @@ public class MySQL {
         } catch (ClassNotFoundException | SQLException e) {
             // System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
-            DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());
+            //DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());
+            DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getLocalizedMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());
         }
     }
 
     public static ResultSet execute(String query) throws SQLException {
-        Statement statement = connection.createStatement();
-        if (query.startsWith("SELECT")) {
-            return statement.executeQuery(query);
-        } else {
-            statement.executeUpdate(query);
+        try {
+            Statement statement = connection.createStatement();
+            if (query.startsWith("SELECT")) {
+                return statement.executeQuery(query);
+            } else {
+                statement.executeUpdate(query);
+                return null;
+            }
+        } catch (NullPointerException e) {
+            DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getLocalizedMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());
             return null;
         }
     }
 
     public static PreparedStatement getPreparedStatement(String query) throws SQLException {
-        PreparedStatement pStatement = connection.prepareStatement(query);
-        return pStatement;
+        try {
+            PreparedStatement pStatement = connection.prepareStatement(query);
+            return pStatement;
+        } catch (NullPointerException e) {
+            DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getLocalizedMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());
+            return null;
+        }
     }
 
     public static ResultSet executeSelect(PreparedStatement pStatement) throws SQLException {
-        ResultSet resultSet = pStatement.executeQuery();
-        return resultSet;
+        try {
+            ResultSet resultSet = pStatement.executeQuery();
+            return resultSet;
+        } catch (NullPointerException e) {
+            DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getLocalizedMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());
+            return null;
+        }
     }
 
     public static int executeIUD(PreparedStatement pStatement) throws SQLException {
-        return pStatement.executeUpdate();
+        try {
+            return pStatement.executeUpdate();
+        } catch (NullPointerException e) {
+            DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getLocalizedMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());
+            return 0;
+        }
     }
 }

@@ -20,6 +20,10 @@ public final class SQLDateFormatter {
         setPattern("yyyy-MM-dd");
     }
 
+    public SQLDateFormatter(String pattern) {
+        format = new SimpleDateFormat(pattern);
+    }
+
     public void setPattern(String pattern) {
         try {
             format.applyPattern(pattern);
@@ -30,6 +34,10 @@ public final class SQLDateFormatter {
 
     public String getStringDate(Date date) {
         return format.format(date);
+    }
+
+    public String getStringDate(Date date, String pattern) {
+        return new SimpleDateFormat(pattern).format(date);
     }
 
     public Date getDate(String date) {
