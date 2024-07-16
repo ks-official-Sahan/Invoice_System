@@ -2,6 +2,7 @@ package ewision.sahan.sale;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import ewision.sahan.application.Application;
 import ewision.sahan.application.main.DialogModal;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
@@ -11,6 +12,7 @@ import ewision.sahan.model.MySQL;
 import ewision.sahan.model.Product;
 import ewision.sahan.model.Service;
 import ewision.sahan.model.Stock;
+import ewision.sahan.service.impl.AppServiceIMPL;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.spinner.SpinnerChangeEvent;
@@ -139,6 +141,22 @@ public class CreateSale1 extends javax.swing.JPanel {
         actionButtonEventMap.put("delete", (ActionButtonEvent) (int row) -> {
             System.out.println("Delete: " + row);
             System.out.println("Delete: " + String.valueOf(productChargeTable.getValueAt(row, 1)));
+
+            if (productChargeTable.isEditing()) {
+                productChargeTable.getCellEditor().stopCellEditing();
+                //System.out.println(String.valueOf(table.getValueAt(row, 3))); //data access
+            }
+
+            Stock removedItem = stockMap.remove(String.valueOf(productChargeTable.getValueAt(row, 0)));
+            if (removedItem == null) {
+                serviceMap.remove(String.valueOf(productChargeTable.getValueAt(row, 0)));
+            }
+            //loadItems();
+
+            DefaultTableModel model = (DefaultTableModel) productChargeTable.getModel();
+            model.removeRow(row);
+            
+            calculate();
         });
         actionButtonEventMap.put("edit", (ActionButtonEvent) (int row) -> {
             System.out.println("Edit: " + row);
@@ -173,8 +191,21 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         HashMap<String, ActionButtonEvent> actionButtonEventMap = new HashMap<>();
         actionButtonEventMap.put("delete", (ActionButtonEvent) (int row) -> {
-            System.out.println("Delete: " + row);
-            System.out.println("Delete: " + String.valueOf(serviceChargeTable.getValueAt(row, 1)));
+            //System.out.println("Delete: " + row);
+            //System.out.println("Delete: " + String.valueOf(serviceChargeTable.getValueAt(row, 1)));
+
+            if (serviceChargeTable.isEditing()) {
+                serviceChargeTable.getCellEditor().stopCellEditing();
+                //System.out.println(String.valueOf(table.getValueAt(row, 3))); //data access
+            }
+
+            serviceMap.remove(String.valueOf(serviceChargeTable.getValueAt(row, 0)));
+            //loadItems();
+            
+            DefaultTableModel model = (DefaultTableModel) serviceChargeTable.getModel();
+            model.removeRow(row);
+            
+            calculate();
         });
         actionButtonEventMap.put("edit", (ActionButtonEvent) (int row) -> {
             System.out.println("Edit: " + row);
@@ -214,8 +245,8 @@ public class CreateSale1 extends javax.swing.JPanel {
     * &
     * Selection
      */
-    private String customer = "";
-    private String warehouse = "";
+    private String customer = "0";
+    private String warehouse = "0";
     private String product = "";
     private String currency = "Rs.";
 
@@ -2254,8 +2285,8 @@ public class CreateSale1 extends javax.swing.JPanel {
                 SQLDateFormatter dateFormatter = new SQLDateFormatter();
                 String stringDate = dateFormatter.getStringDate(date);
 
-                //customerName = customerName.isBlank() ? "walk-in-customer" : customerField.getText();
-                //warehouseName = warehouseName.isBlank() ? "Default" : warehouseField.getText();
+                customerName = customerName.isBlank() ? "walk-in-customer" : customerField.getText();
+                warehouseName = warehouseName.isBlank() ? "Default" : warehouseField.getText();
 
                 /* Calculated Data */
                 double orderTax = 0.00;
@@ -2317,7 +2348,10 @@ public class CreateSale1 extends javax.swing.JPanel {
                     } else {
 
                         boolean isComplete = true;
-                        String id = String.valueOf(System.currentTimeMillis());
+                        long mil = System.currentTimeMillis();
+                        String id = String.valueOf((int) mil).substring(3);
+                        //String id = String.valueOf(mil).substring(3);
+                        //System.out.println(id);
 
                         String query = "INSERT INTO `sales` "
                                 + "(`id`, `user_id`, `date`, `Ref`, `is_pos`, `client_id`, `warehouse_id`, `tax_rate`, `TaxNet`, `discount`, `shipping`, "
@@ -2365,6 +2399,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
                         if (isComplete) {
                             JOptionPane.showMessageDialog(this, "Successfully completed!", "Successful", JOptionPane.INFORMATION_MESSAGE);
+                            Application.appService.openCreateSale();
                         } else {
                             JOptionPane.showMessageDialog(this, "Something went wrong!", "Warning", JOptionPane.WARNING_MESSAGE);
                         }
