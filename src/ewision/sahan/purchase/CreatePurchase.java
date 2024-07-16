@@ -1,6 +1,5 @@
 package ewision.sahan.purchase;
 
-import ewision.sahan.sale.*;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import ewision.sahan.components.action_button.ActionButton;
@@ -8,18 +7,13 @@ import ewision.sahan.components.action_button.ActionButtonEvent;
 import ewision.sahan.loggers.CommonLogger;
 import ewision.sahan.loggers.DatabaseLogger;
 import ewision.sahan.model.MySQL;
-import ewision.sahan.model.Service;
-import ewision.sahan.model.Stock;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.spinner.SpinnerChangeEvent;
 import ewision.sahan.table.spinner.TableSpinnerCellEditor;
 import ewision.sahan.utils.ImageScaler;
-import java.awt.Color;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;

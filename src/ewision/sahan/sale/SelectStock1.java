@@ -10,11 +10,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
+import javax.swing.JFormattedTextField;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.DefaultFormatter;
 
 /**
  *
@@ -58,6 +62,7 @@ public class SelectStock1 extends javax.swing.JPanel {
 
     private void init() {
         styleComponents();
+        configSpinner();
         searchField.grabFocus();
         searchField.requestFocus();
         loadStocks("");
@@ -90,6 +95,16 @@ public class SelectStock1 extends javax.swing.JPanel {
         }
         quantitySpinner.putClientProperty(FlatClientProperties.STYLE, "arc:15");
         jScrollPane1.putClientProperty(FlatClientProperties.STYLE, "arc:15");
+    }
+
+    private void configSpinner() {
+        // Centering
+        JSpinner.NumberEditor editor = (JSpinner.NumberEditor) quantitySpinner.getEditor();
+
+        JFormattedTextField quantityField = editor.getTextField();
+        quantityField.setHorizontalAlignment(SwingConstants.CENTER);
+        quantityField.selectAll();
+        quantityField.getCaret().setDot(quantitySpinner.getValue().toString().length());
     }
 
     private void loadStocks(String stock) {
@@ -223,10 +238,16 @@ public class SelectStock1 extends javax.swing.JPanel {
         addPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         quantitySpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 1.0d, null, 1.0d));
+        quantitySpinner.setEditor(new javax.swing.JSpinner.NumberEditor(quantitySpinner, ""));
         quantitySpinner.setNextFocusableComponent(addButton);
         quantitySpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 quantitySpinnerStateChanged(evt);
+            }
+        });
+        quantitySpinner.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                quantitySpinnerFocusGained(evt);
             }
         });
 
@@ -245,6 +266,11 @@ public class SelectStock1 extends javax.swing.JPanel {
         discountField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         discountField.setText("0.00");
         discountField.setNextFocusableComponent(taxField);
+        discountField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                discountFieldFocusGained(evt);
+            }
+        });
         discountField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 discountFieldKeyReleased(evt);
@@ -256,6 +282,11 @@ public class SelectStock1 extends javax.swing.JPanel {
         taxField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         taxField.setText("0.00");
         taxField.setNextFocusableComponent(searchField);
+        taxField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                taxFieldFocusGained(evt);
+            }
+        });
         taxField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 taxFieldKeyReleased(evt);
@@ -468,6 +499,21 @@ public class SelectStock1 extends javax.swing.JPanel {
         // Tax Change
         calculate();
     }//GEN-LAST:event_taxFieldKeyReleased
+
+    private void discountFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_discountFieldFocusGained
+        // Select on Focus
+        discountField.selectAll();
+    }//GEN-LAST:event_discountFieldFocusGained
+
+    private void taxFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_taxFieldFocusGained
+        // Select on Focus
+        taxField.selectAll();
+    }//GEN-LAST:event_taxFieldFocusGained
+
+    private void quantitySpinnerFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_quantitySpinnerFocusGained
+        // Select on Focus
+        configSpinner();
+    }//GEN-LAST:event_quantitySpinnerFocusGained
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

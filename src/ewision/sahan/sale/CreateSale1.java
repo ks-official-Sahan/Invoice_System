@@ -49,6 +49,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         init();
     }
 
+    // <editor-fold defaultstate="collapsed" desc="Intializing">
     private void init() {
         render();
         toggleServicePanel();
@@ -102,11 +103,13 @@ public class CreateSale1 extends javax.swing.JPanel {
         setupProductChargeTable();
         setupServiceChargeTable();
     }
+    // </editor-fold>
 
     /*
     *
     * Table Operations Setup
      */
+    // <editor-fold defaultstate="collapsed" desc="Table Operations Setup">
     private void setupProductChargeTable() {
         SpinnerChangeEvent event = (int row, JSpinner spinner) -> {
             try {
@@ -155,7 +158,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
             DefaultTableModel model = (DefaultTableModel) productChargeTable.getModel();
             model.removeRow(row);
-            
+
             calculate();
         });
         actionButtonEventMap.put("edit", (ActionButtonEvent) (int row) -> {
@@ -201,10 +204,10 @@ public class CreateSale1 extends javax.swing.JPanel {
 
             serviceMap.remove(String.valueOf(serviceChargeTable.getValueAt(row, 0)));
             //loadItems();
-            
+
             DefaultTableModel model = (DefaultTableModel) serviceChargeTable.getModel();
             model.removeRow(row);
-            
+
             calculate();
         });
         actionButtonEventMap.put("edit", (ActionButtonEvent) (int row) -> {
@@ -213,11 +216,13 @@ public class CreateSale1 extends javax.swing.JPanel {
         TableActionPanelCellRenderer tableActionPanelCellRenderer = new TableActionPanelCellRenderer(ActionButton.EDIT_DELETE_BUTTON, actionButtonEventMap);
         serviceChargeTable.getColumnModel().getColumn(7).setCellRenderer(tableActionPanelCellRenderer);
     }
+    // </editor-fold>
 
     /*
     *
     * Service UI Actions
      */
+    // <editor-fold defaultstate="collapsed" desc="Service UI">
     private boolean isService = false;
 
     private void toggleServicePanel() {
@@ -233,22 +238,34 @@ public class CreateSale1 extends javax.swing.JPanel {
         }
     }
 
+    // <editor-fold defaultstate="collapsed" desc="Unused ServiceChargePanel">
     /* Service Charge Panel Visibility */
     private void toggleServiceChargePanel() {
         serviceChargePanel.setVisible(isService);
     }
-    /* Service Charge Panel Visibility */
+    // </editor-fold>
+    // </editor-fold>
 
- /*
+
+    /*
     *
     * Data Loading
     * &
     * Selection
      */
+    // <editor-fold defaultstate="collapsed" desc="Data Loading & Selection">
     private String customer = "0";
     private String warehouse = "0";
     private String product = "";
     private String currency = "Rs.";
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
 
     /* loadProducts */
     private void loadProducts(String product) {
@@ -293,9 +310,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         }
     }
 
-    /* loadProducts */
-
- /* loadServices */
+    /* loadServices */
     private void loadServices(String service) {
         serviceContainer.setVisible(true);
 
@@ -348,7 +363,6 @@ public class CreateSale1 extends javax.swing.JPanel {
         }
     }
 
-    /* loadServices */
     private void loadCustomers(String customer) {
         customerContainer.setVisible(true);
 
@@ -451,6 +465,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         paymentStatusComboBox.setModel(model);
     }
 
+    // <editor-fold defaultstate="collapsed" desc="Unused TestData">
     /* testdata */
     private void loadOrderProducts(String product) {
         DefaultTableModel model = (DefaultTableModel) productChargeTable.getModel();
@@ -489,8 +504,8 @@ public class CreateSale1 extends javax.swing.JPanel {
             DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Order Products Search: " + e.getMessage(), e.getMessage());
         }
     }
+    // </editor-fold>
 
-    /* testdata */
     private void reset() {
         this.customer = "";
         this.warehouse = "";
@@ -526,11 +541,13 @@ public class CreateSale1 extends javax.swing.JPanel {
         }
         serviceField.requestFocus();
     }
+    // </editor-fold>
 
     /*
     *
-    * Stock Selection
+    * Item (Stock/Service) Selection
      */
+    // <editor-fold defaultstate="collapsed" desc="Item (Stock/Service) Selection">
     //public void addProductToInvoice(String stock_id, String quantity, String discount, String tax) {
     //    System.out.println(stock_id + " : " + quantity + " : " + discount + " : " + tax);
     //}
@@ -623,6 +640,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         System.gc();
     }
 
+    // <editor-fold defaultstate="collapsed" desc="Unused loadProductToOrderTable">
     /* loadProducts to Order Table */
     private void loadOrderItems() {
         DefaultTableModel tModel = (DefaultTableModel) productChargeTable.getModel();
@@ -662,10 +680,34 @@ public class CreateSale1 extends javax.swing.JPanel {
         calculate();
     }
     /* loadProducts to Order Table */
+    // </editor-fold>
 
     private HashMap<String, Service> serviceMap = new HashMap<>();
 
-    public void addServiceeToInvoice(Service service) {
+    private void addService() {
+        Service service = new Service();
+
+        int selectedRow = serviceTable.getSelectedRow();
+
+        if (selectedRow != -1) {
+
+            service.setId(String.valueOf(serviceTable.getValueAt(selectedRow, 0)));
+            service.setName(String.valueOf(serviceTable.getValueAt(selectedRow, 1)));
+
+            service.setPrice(String.valueOf(serviceTable.getValueAt(selectedRow, 3)));
+
+            service.setQuantity(1);
+            service.setDiscount(String.valueOf(0));
+            service.setTax(String.valueOf(0));
+
+            addServiceToInvoice(service);
+            this.isService = true;
+            //toggleServiceChargePanel();
+            serviceContainer.setVisible(false);
+        }
+    }
+
+    public void addServiceToInvoice(Service service) {
         //System.out.println(service.getId() + " : " + service.getQuantity() + " : " + service.getDiscount() + " : " + service.getTax());
 
         if (serviceMap.get(service.getStringId()) == null) {
@@ -685,6 +727,8 @@ public class CreateSale1 extends javax.swing.JPanel {
         //reset();
     }
 
+    // <editor-fold defaultstate="collapsed" desc="Unused loadServicesToServiceTable">
+    /* loadServices to Service Table */
     private void loadServiceItems() {
         DefaultTableModel tModel = (DefaultTableModel) serviceChargeTable.getModel();
         tModel.setRowCount(0);
@@ -722,6 +766,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         totalLabel.setText(String.valueOf(total));
         calculate();
     }
+    // </editor-fold>
 
     private void calculate() {
         double subtotal = 0.00;
@@ -788,6 +833,222 @@ public class CreateSale1 extends javax.swing.JPanel {
         paymentLabel.setText(currency + payment);
         balanceLabel.setText(currency + balance);
         balanceLabel.setForeground(balance >= 0 ? paymentLabel.getForeground() : Color.RED);
+    }
+    // </editor-fold>
+
+    /*
+    *
+    * Sale Submission
+     */
+    private boolean submitSale() {
+        Date date;
+
+        String customerName = customerField.getText();
+        String customerId = this.customer;
+
+        String warehouseName = warehouseField.getText();
+        String warehouseId = this.warehouse;
+
+        customerName = customerName.isBlank() ? "walk-in-customer" : customerField.getText();
+        warehouseName = warehouseName.isBlank() ? "Default" : warehouseField.getText();
+
+        String referenceNo = referenceNoField.getText();
+
+        int itemCount = stockMap.size();
+        int serviceCount = serviceMap.size();
+
+        String payment = paymentField.getText();
+
+        if (referenceNo.isBlank()) {
+            JOptionPane.showMessageDialog(this, "Please eneter Reference No!", "Warning", JOptionPane.WARNING_MESSAGE);
+            referenceNoField.requestFocus();
+        } else if (jDateChooser1.getDate() == null) {
+            JOptionPane.showMessageDialog(this, "Please select Date!", "Warning", JOptionPane.WARNING_MESSAGE);
+            jDateChooser1.requestFocus();
+//        } else if (customerName.isBlank() && !customerId.equals("0")) {
+//            JOptionPane.showMessageDialog(this, "Please select Customer!", "Warning", JOptionPane.WARNING_MESSAGE);
+//            customerField.requestFocus();
+//            this.customer = "0";
+//        } else if (warehouseName.isBlank() && !warehouseId.equals("0")) {
+//            JOptionPane.showMessageDialog(this, "Please select Warehouse!", "Warning", JOptionPane.WARNING_MESSAGE);
+//            warehouseField.requestFocus();
+//            this.warehouse = "0";
+        } else if (itemCount == 0 && serviceCount == 0) {
+            JOptionPane.showMessageDialog(this, "Please add atlease one Product or a Service!", "Warning", JOptionPane.WARNING_MESSAGE);
+            productField.requestFocus();
+            if (itemCount == 0 && isServicesBox.isSelected()) {
+                serviceField.requestFocus();
+            }
+        } else {
+
+            String status = String.valueOf(statusComboBox.getSelectedItem());
+            String paymentStatus = String.valueOf(paymentStatusComboBox.getSelectedItem());
+
+            boolean isValidPayment = true;
+            if (payment.isBlank() || payment.equals("0.00")) {
+                if (paymentStatus.equalsIgnoreCase("paid")) {
+                    isValidPayment = false;
+                    int result = JOptionPane.showConfirmDialog(this, "Are you sure payment been low? Does it need to make partial?", "Payment Warning", JOptionPane.YES_NO_OPTION);
+                    if (result == JOptionPane.YES_OPTION) {
+                        paymentStatusComboBox.requestFocus();
+                    } else {
+                        paymentField.requestFocus();
+                    }
+                } else if (paymentStatus.equalsIgnoreCase("partial")) {
+                    int result = JOptionPane.showConfirmDialog(this, "Are you sure payment need to be partial?", "Payment Warning", JOptionPane.YES_NO_OPTION);
+                    if (result == JOptionPane.NO_OPTION) {
+                        paymentStatusComboBox.requestFocus();
+                        isValidPayment = false;
+                    }
+                }
+            }
+
+            if (isValidPayment) {
+
+                try {
+                    double paymentAmount = Double.parseDouble(payment);
+                    double total = Double.parseDouble(totalLabel.getText().replace(currency, ""));
+                    if (paymentStatus.equalsIgnoreCase("paid") && total > paymentAmount) {
+                        JOptionPane.showMessageDialog(this, "Payment is not enough", "Invalid Payment", JOptionPane.WARNING_MESSAGE);
+                        paymentField.requestFocus();
+                        return false;
+                    }
+                } catch (NumberFormatException | NullPointerException e) {
+                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " submit sale payment|total: " + e.getMessage(), e.getMessage());
+                }
+
+                /* GUI Data */
+                date = jDateChooser1.getDate();
+                SQLDateFormatter dateFormatter = new SQLDateFormatter();
+                String stringDate = dateFormatter.getStringDate(date);
+
+                customerName = customerName.isBlank() ? "walk-in-customer" : customerField.getText();
+                warehouseName = warehouseName.isBlank() ? "Default" : warehouseField.getText();
+
+                /* Calculated Data */
+                double orderTax = 0.00;
+                try {
+                    orderTax = Double.parseDouble(String.valueOf(orderTaxField.getText()));
+                } catch (NumberFormatException | NullPointerException e) {
+                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate tax: " + e.getMessage(), e.getMessage());
+                }
+                double orderDiscount = 0.00;
+                try {
+                    orderDiscount = Double.parseDouble(String.valueOf(discountField.getText()));
+                } catch (NumberFormatException | NullPointerException e) {
+                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate discount: " + e.getMessage(), e.getMessage());
+                }
+                double orderShipping = 0.00;
+                try {
+                    orderShipping = Double.parseDouble(String.valueOf(shippingField.getText()));
+                } catch (NumberFormatException | NullPointerException e) {
+                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate shipping: " + e.getMessage(), e.getMessage());
+                }
+                double subtotal = 0.00;
+                try {
+                    subtotal = Double.parseDouble(String.valueOf(totalLabel.getText().replace(currency, "")));
+                } catch (NumberFormatException | NullPointerException e) {
+                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate shipping: " + e.getMessage(), e.getMessage());
+                }
+
+                double sub = (subtotal + orderDiscount) - orderShipping;
+                int tax = (int) (sub * (orderTax / 100));
+
+                double total = 0.00;
+                //total = subtotal - orderDiscount + orderShipping + orderTax;
+                total = sub + tax;
+
+                double paymentAmount = 0.00;
+                try {
+                    paymentAmount = Double.parseDouble(String.valueOf(paymentField.getText()));
+                    //payment = Double.valueOf(String.valueOf(paymentField.getText().replace(currency, "")));
+                } catch (NumberFormatException | NullPointerException e) {
+                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate payment: " + e.getMessage(), e.getMessage());
+                }
+
+                double balance = 0.00;
+                balance = paymentAmount - total;
+
+                /* Other Data */
+                String note = noteText.getText();
+
+                try {
+                    /* Data Insertion */
+                    ResultSet refResult = MySQL.execute("SELECT * FROM `sales` WHERE `Ref`='" + referenceNo + "'");
+
+                    String currentDate = dateFormatter.getStringDate(new Date());
+                    String currentDateTime = dateFormatter.getStringDate(new Date(), "yyyy-MM-dd HH:mm:ss");
+
+                    if (refResult.next()) {
+                        JOptionPane.showMessageDialog(this, "Reference No. already used!", "Warning", JOptionPane.WARNING_MESSAGE);
+                        referenceNoField.requestFocus();
+                    } else {
+
+                        boolean isComplete = true;
+                        long mil = System.currentTimeMillis();
+                        String id = String.valueOf((int) mil).substring(3);
+                        //String id = String.valueOf(mil).substring(3);
+                        //System.out.println(id);
+
+                        String query = "INSERT INTO `sales` "
+                                + "(`id`, `user_id`, `date`, `Ref`, `is_pos`, `client_id`, `warehouse_id`, `tax_rate`, `TaxNet`, `discount`, `shipping`, "
+                                + "`GrandTotal`, `paid_amount`, `payment_statut`, `statut`, `notes`, `created_at`, `updated_at`, `deleted_at`, `shipping_status`) "
+                                + "VALUES ('" + id + "', '2', '" + stringDate + "', '" + referenceNo + "', 0, '" + customerId + "', '" + warehouseId + "', '" + orderTax + "', '" + tax + "', '" + orderDiscount + "', '" + orderShipping + "', "
+                                + "'" + total + "', '" + payment + "', '" + paymentStatus + "', '" + status + "', '" + note + "', '" + currentDateTime + "', NULL, NULL, NULL)";
+
+                        try {
+                            MySQL.execute(query);
+                        } catch (SQLException e) {
+                            isComplete = false;
+                            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale row: " + e.getMessage(), e.getMessage());
+                        }
+
+                        for (Stock stock : stockMap.values()) {
+                            double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
+                            String saleItemQuery = "INSERT INTO "
+                                    + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
+                                    + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`) "
+                                    + "VALUES ('" + currentDate + "', '" + id + "', '" + stock.getStringId() + "', NULL, NULL, '" + stock.getStock_price() + "', NULL, "
+                                    + "'" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, 2);";
+                            try {
+                                MySQL.execute(saleItemQuery);
+                            } catch (SQLException e) {
+                                isComplete = false;
+                                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale Details row: " + e.getMessage(), e.getMessage());
+                            }
+                            //stock.getStringStock_id();
+                        }
+                        for (Service service : serviceMap.values()) {
+                            double itemTotal = service.getPrice() * service.getQuantity() - service.getDiscount() + service.getTax();
+                            String saleItemQuery = "INSERT INTO "
+                                    + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
+                                    + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`) "
+                                    + "VALUES ('" + currentDate + "', '" + id + "', '" + service.getStringId() + "', NULL, NULL, '" + service.getPrice() + "', NULL, "
+                                    + "'" + service.getTax() + "', '" + service.getDiscount() + "', '1', '" + itemTotal + "', '" + service.getQuantity() + "', '" + currentDateTime + "', NULL, 2);";
+                            try {
+                                MySQL.execute(saleItemQuery);
+                            } catch (SQLException e) {
+                                isComplete = false;
+                                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale Details row: " + e.getMessage(), e.getMessage());
+                            }
+                            //service.getStringId();
+                        }
+
+                        if (isComplete) {
+                            JOptionPane.showMessageDialog(this, "Successfully completed!", "Successful", JOptionPane.INFORMATION_MESSAGE);
+                            Application.appService.openCreateSale();
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Something went wrong!", "Warning", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
+
+                } catch (SQLException ex) {
+                    DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Ref Search: " + ex.getMessage() + " -- " + ex.getLocalizedMessage(), ex.getMessage());
+                }
+
+            }
+        }
+        return true;
     }
 
     /**
@@ -1519,6 +1780,11 @@ public class CreateSale1 extends javax.swing.JPanel {
         orderTaxField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         orderTaxField.setText("0");
         orderTaxField.setNextFocusableComponent(discountField);
+        orderTaxField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                orderTaxFieldFocusGained(evt);
+            }
+        });
         orderTaxField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 orderTaxFieldKeyReleased(evt);
@@ -1564,6 +1830,11 @@ public class CreateSale1 extends javax.swing.JPanel {
         discountField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         discountField.setText("0.00");
         discountField.setNextFocusableComponent(shippingField);
+        discountField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                discountFieldFocusGained(evt);
+            }
+        });
         discountField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 discountFieldKeyReleased(evt);
@@ -1609,6 +1880,11 @@ public class CreateSale1 extends javax.swing.JPanel {
         shippingField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         shippingField.setText("0.00");
         shippingField.setNextFocusableComponent(paymentField);
+        shippingField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                shippingFieldFocusGained(evt);
+            }
+        });
         shippingField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 shippingFieldKeyReleased(evt);
@@ -1620,6 +1896,11 @@ public class CreateSale1 extends javax.swing.JPanel {
         paymentField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         paymentField.setText("0.00");
         paymentField.setNextFocusableComponent(submitButton);
+        paymentField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                paymentFieldFocusGained(evt);
+            }
+        });
         paymentField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 paymentFieldKeyReleased(evt);
@@ -2026,7 +2307,7 @@ public class CreateSale1 extends javax.swing.JPanel {
     *
     * Actions
      */
-
+    // <editor-fold defaultstate="collapsed" desc="Actions & Events">
     private void customerTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_customerTableMouseClicked
         // Select Customer
         if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
@@ -2049,7 +2330,6 @@ public class CreateSale1 extends javax.swing.JPanel {
         } else {
             loadCustomers("");
         }
-        // loadPassengerTable();
     }//GEN-LAST:event_allCustomersButtonActionPerformed
 
     private void warehouseTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_warehouseTableMouseClicked
@@ -2061,7 +2341,6 @@ public class CreateSale1 extends javax.swing.JPanel {
                 this.warehouse = String.valueOf(warehouseTable.getValueAt(selectedRow, 0));
                 warehouseField.setText(String.valueOf(warehouseTable.getValueAt(selectedRow, 1)));
                 warehouseContainer.setVisible(false);
-                //loadPassengerTable();
             }
         }
     }//GEN-LAST:event_warehouseTableMouseClicked
@@ -2075,7 +2354,6 @@ public class CreateSale1 extends javax.swing.JPanel {
             loadWarehouses(warehouse);
         }
         this.warehouse = "";
-        // loadPassengerTable        
     }//GEN-LAST:event_warehouseFieldKeyReleased
 
     private void allWarehousesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allWarehousesButtonActionPerformed
@@ -2150,29 +2428,6 @@ public class CreateSale1 extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_serviceTableMouseClicked
 
-    private void addService() {
-        Service service = new Service();
-
-        int selectedRow = serviceTable.getSelectedRow();
-
-        if (selectedRow != -1) {
-
-            service.setId(String.valueOf(serviceTable.getValueAt(selectedRow, 0)));
-            service.setName(String.valueOf(serviceTable.getValueAt(selectedRow, 1)));
-
-            service.setPrice(String.valueOf(serviceTable.getValueAt(selectedRow, 3)));
-
-            service.setQuantity(1);
-            service.setDiscount(String.valueOf(0));
-            service.setTax(String.valueOf(0));
-
-            addServiceeToInvoice(service);
-            this.isService = true;
-            //toggleServiceChargePanel();
-            serviceContainer.setVisible(false);
-        }
-    }
-
     private void allServicesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allServicesButtonActionPerformed
         // Search All Services
         toggleServiceSearch();
@@ -2202,218 +2457,6 @@ public class CreateSale1 extends javax.swing.JPanel {
         // Submit
         submitSale();
     }//GEN-LAST:event_submitButtonActionPerformed
-
-    private boolean submitSale() {
-        Date date;
-
-        String customerName = customerField.getText();
-        String customerId = this.customer;
-
-        String warehouseName = warehouseField.getText();
-        String warehouseId = this.warehouse;
-
-        customerName = customerName.isBlank() ? "walk-in-customer" : customerField.getText();
-        warehouseName = warehouseName.isBlank() ? "Default" : warehouseField.getText();
-
-        String referenceNo = referenceNoField.getText();
-
-        int itemCount = stockMap.size();
-        int serviceCount = serviceMap.size();
-
-        String payment = paymentField.getText();
-
-        if (referenceNo.isBlank()) {
-            JOptionPane.showMessageDialog(this, "Please eneter Reference No!", "Warning", JOptionPane.WARNING_MESSAGE);
-            referenceNoField.requestFocus();
-        } else if (jDateChooser1.getDate() == null) {
-            JOptionPane.showMessageDialog(this, "Please select Date!", "Warning", JOptionPane.WARNING_MESSAGE);
-            jDateChooser1.requestFocus();
-//        } else if (customerName.isBlank() && !customerId.equals("0")) {
-//            JOptionPane.showMessageDialog(this, "Please select Customer!", "Warning", JOptionPane.WARNING_MESSAGE);
-//            customerField.requestFocus();
-//            this.customer = "0";
-//        } else if (warehouseName.isBlank() && !warehouseId.equals("0")) {
-//            JOptionPane.showMessageDialog(this, "Please select Warehouse!", "Warning", JOptionPane.WARNING_MESSAGE);
-//            warehouseField.requestFocus();
-//            this.warehouse = "0";
-        } else if (itemCount == 0 && serviceCount == 0) {
-            JOptionPane.showMessageDialog(this, "Please add atlease one Product or a Service!", "Warning", JOptionPane.WARNING_MESSAGE);
-            productField.requestFocus();
-            if (itemCount == 0 && isServicesBox.isSelected()) {
-                serviceField.requestFocus();
-            }
-        } else {
-
-            String status = String.valueOf(statusComboBox.getSelectedItem());
-            String paymentStatus = String.valueOf(paymentStatusComboBox.getSelectedItem());
-
-            boolean isValidPayment = true;
-            if (payment.isBlank() || payment.equals("0.00")) {
-                if (paymentStatus.equalsIgnoreCase("paid")) {
-                    isValidPayment = false;
-                    int result = JOptionPane.showConfirmDialog(this, "Are you sure payment been low? Does it need to make partial?", "Payment Warning", JOptionPane.YES_NO_OPTION);
-                    if (result == JOptionPane.YES_OPTION) {
-                        paymentStatusComboBox.requestFocus();
-                    } else {
-                        paymentField.requestFocus();
-                    }
-                } else if (paymentStatus.equalsIgnoreCase("partial")) {
-                    int result = JOptionPane.showConfirmDialog(this, "Are you sure payment need to be partial?", "Payment Warning", JOptionPane.YES_NO_OPTION);
-                    if (result == JOptionPane.NO_OPTION) {
-                        paymentStatusComboBox.requestFocus();
-                        isValidPayment = false;
-                    }
-                }
-            }
-
-            if (isValidPayment) {
-
-                try {
-                    double paymentAmount = Double.parseDouble(payment);
-                    double total = Double.parseDouble(totalLabel.getText().replace(currency, ""));
-                    if (paymentStatus.equalsIgnoreCase("paid") && total > paymentAmount) {
-                        JOptionPane.showMessageDialog(this, "Payment is not enough", "Invalid Payment", JOptionPane.WARNING_MESSAGE);
-                        paymentField.requestFocus();
-                        return false;
-                    }
-                } catch (NumberFormatException | NullPointerException e) {
-                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " submit sale payment|total: " + e.getMessage(), e.getMessage());
-                }
-
-                /* GUI Data */
-                date = jDateChooser1.getDate();
-                SQLDateFormatter dateFormatter = new SQLDateFormatter();
-                String stringDate = dateFormatter.getStringDate(date);
-
-                customerName = customerName.isBlank() ? "walk-in-customer" : customerField.getText();
-                warehouseName = warehouseName.isBlank() ? "Default" : warehouseField.getText();
-
-                /* Calculated Data */
-                double orderTax = 0.00;
-                try {
-                    orderTax = Double.parseDouble(String.valueOf(orderTaxField.getText()));
-                } catch (NumberFormatException | NullPointerException e) {
-                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate tax: " + e.getMessage(), e.getMessage());
-                }
-                double orderDiscount = 0.00;
-                try {
-                    orderDiscount = Double.parseDouble(String.valueOf(discountField.getText()));
-                } catch (NumberFormatException | NullPointerException e) {
-                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate discount: " + e.getMessage(), e.getMessage());
-                }
-                double orderShipping = 0.00;
-                try {
-                    orderShipping = Double.parseDouble(String.valueOf(shippingField.getText()));
-                } catch (NumberFormatException | NullPointerException e) {
-                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate shipping: " + e.getMessage(), e.getMessage());
-                }
-                double subtotal = 0.00;
-                try {
-                    subtotal = Double.parseDouble(String.valueOf(totalLabel.getText().replace(currency, "")));
-                } catch (NumberFormatException | NullPointerException e) {
-                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate shipping: " + e.getMessage(), e.getMessage());
-                }
-
-                double sub = (subtotal + orderDiscount) - orderShipping;
-                int tax = (int) (sub * (orderTax / 100));
-
-                double total = 0.00;
-                //total = subtotal - orderDiscount + orderShipping + orderTax;
-                total = sub + tax;
-
-                double paymentAmount = 0.00;
-                try {
-                    paymentAmount = Double.parseDouble(String.valueOf(paymentField.getText()));
-                    //payment = Double.valueOf(String.valueOf(paymentField.getText().replace(currency, "")));
-                } catch (NumberFormatException | NullPointerException e) {
-                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate payment: " + e.getMessage(), e.getMessage());
-                }
-
-                double balance = 0.00;
-                balance = paymentAmount - total;
-
-                /* Other Data */
-                String note = noteText.getText();
-
-                try {
-                    /* Data Insertion */
-                    ResultSet refResult = MySQL.execute("SELECT * FROM `sales` WHERE `Ref`='" + referenceNo + "'");
-
-                    String currentDate = dateFormatter.getStringDate(new Date());
-                    String currentDateTime = dateFormatter.getStringDate(new Date(), "yyyy-MM-dd HH:mm:ss");
-
-                    if (refResult.next()) {
-                        JOptionPane.showMessageDialog(this, "Reference No. already used!", "Warning", JOptionPane.WARNING_MESSAGE);
-                        referenceNoField.requestFocus();
-                    } else {
-
-                        boolean isComplete = true;
-                        long mil = System.currentTimeMillis();
-                        String id = String.valueOf((int) mil).substring(3);
-                        //String id = String.valueOf(mil).substring(3);
-                        //System.out.println(id);
-
-                        String query = "INSERT INTO `sales` "
-                                + "(`id`, `user_id`, `date`, `Ref`, `is_pos`, `client_id`, `warehouse_id`, `tax_rate`, `TaxNet`, `discount`, `shipping`, "
-                                + "`GrandTotal`, `paid_amount`, `payment_statut`, `statut`, `notes`, `created_at`, `updated_at`, `deleted_at`, `shipping_status`) "
-                                + "VALUES ('" + id + "', '2', '" + stringDate + "', '" + referenceNo + "', 0, '" + customerId + "', '" + warehouseId + "', '" + orderTax + "', '" + tax + "', '" + orderDiscount + "', '" + orderShipping + "', "
-                                + "'" + total + "', '" + payment + "', '" + paymentStatus + "', '" + status + "', '" + note + "', '" + currentDateTime + "', NULL, NULL, NULL)";
-
-                        try {
-                            MySQL.execute(query);
-                        } catch (SQLException e) {
-                            isComplete = false;
-                            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale row: " + e.getMessage(), e.getMessage());
-                        }
-
-                        for (Stock stock : stockMap.values()) {
-                            double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
-                            String saleItemQuery = "INSERT INTO "
-                                    + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
-                                    + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`) "
-                                    + "VALUES ('" + currentDate + "', '" + id + "', '" + stock.getStringId() + "', NULL, NULL, '" + stock.getStock_price() + "', NULL, "
-                                    + "'" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, 2);";
-                            try {
-                                MySQL.execute(saleItemQuery);
-                            } catch (SQLException e) {
-                                isComplete = false;
-                                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale Details row: " + e.getMessage(), e.getMessage());
-                            }
-                            //stock.getStringStock_id();
-                        }
-                        for (Service service : serviceMap.values()) {
-                            double itemTotal = service.getPrice() * service.getQuantity() - service.getDiscount() + service.getTax();
-                            String saleItemQuery = "INSERT INTO "
-                                    + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
-                                    + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`) "
-                                    + "VALUES ('" + currentDate + "', '" + id + "', '" + service.getStringId() + "', NULL, NULL, '" + service.getPrice() + "', NULL, "
-                                    + "'" + service.getTax() + "', '" + service.getDiscount() + "', '1', '" + itemTotal + "', '" + service.getQuantity() + "', '" + currentDateTime + "', NULL, 2);";
-                            try {
-                                MySQL.execute(saleItemQuery);
-                            } catch (SQLException e) {
-                                isComplete = false;
-                                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale Details row: " + e.getMessage(), e.getMessage());
-                            }
-                            //service.getStringId();
-                        }
-
-                        if (isComplete) {
-                            JOptionPane.showMessageDialog(this, "Successfully completed!", "Successful", JOptionPane.INFORMATION_MESSAGE);
-                            Application.appService.openCreateSale();
-                        } else {
-                            JOptionPane.showMessageDialog(this, "Something went wrong!", "Warning", JOptionPane.WARNING_MESSAGE);
-                        }
-                    }
-
-                } catch (SQLException ex) {
-                    DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Ref Search: " + ex.getMessage() + " -- " + ex.getLocalizedMessage(), ex.getMessage());
-                }
-
-            }
-        }
-        return true;
-    }
-
 
     private void productChargeTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_productChargeTableMouseClicked
         // Calculate on Changes of Product Orders
@@ -2460,27 +2503,60 @@ public class CreateSale1 extends javax.swing.JPanel {
 
     private void orderTaxFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_orderTaxFieldKeyReleased
         // Order Tax
-        orderTaxField.setText(orderTaxField.getText().isBlank() ? "0" : orderTaxField.getText());
-        calculate();
+        String text = orderTaxField.getText();
+        orderTaxField.setText(text.isBlank() ? "0" : text);
+        if (!orderTaxField.getText().equals("0")) {
+            calculate();
+        }
     }//GEN-LAST:event_orderTaxFieldKeyReleased
 
     private void discountFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_discountFieldKeyReleased
         // Order Discount
-        discountField.setText(discountField.getText().isBlank() ? "0.00" : discountField.getText());
-        calculate();
+        String text = discountField.getText();
+        discountField.setText(text.isBlank() ? "0.00" : text);
+        if (!discountField.getText().equals("0.00")) {
+            calculate();
+        }
     }//GEN-LAST:event_discountFieldKeyReleased
 
     private void shippingFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_shippingFieldKeyReleased
         // Order Shipping
-        shippingField.setText(shippingField.getText().isBlank() ? "0.00" : shippingField.getText());
-        calculate();
+        String text = shippingField.getText();
+        shippingField.setText(text.isBlank() ? "0.00" : text);
+        if (!shippingField.getText().equals("0.00")) {
+            calculate();
+        }
     }//GEN-LAST:event_shippingFieldKeyReleased
 
     private void paymentFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_paymentFieldKeyReleased
         // Payment
-        paymentField.setText(paymentField.getText().isBlank() ? "0.00" : paymentField.getText());
-        calculate();
+        String text = paymentField.getText();
+        paymentField.setText(text.isBlank() ? "0.00" : text);
+        if (!paymentField.getText().equals("0.00")) {
+            calculate();
+        }
     }//GEN-LAST:event_paymentFieldKeyReleased
+
+    private void orderTaxFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_orderTaxFieldFocusGained
+        // Select on Focus
+        orderTaxField.selectAll();
+    }//GEN-LAST:event_orderTaxFieldFocusGained
+
+    private void discountFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_discountFieldFocusGained
+        // Select on Focus
+        discountField.selectAll();
+    }//GEN-LAST:event_discountFieldFocusGained
+
+    private void shippingFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_shippingFieldFocusGained
+        // Select on Focus
+        shippingField.selectAll();
+    }//GEN-LAST:event_shippingFieldFocusGained
+
+    private void paymentFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_paymentFieldFocusGained
+        // Select on Focus
+        paymentField.selectAll();
+    }//GEN-LAST:event_paymentFieldFocusGained
+    // </editor-fold>
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -2577,12 +2653,4 @@ public class CreateSale1 extends javax.swing.JPanel {
     private javax.swing.JScrollPane warehouseScroll;
     private javax.swing.JTable warehouseTable;
     // End of variables declaration//GEN-END:variables
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
 }

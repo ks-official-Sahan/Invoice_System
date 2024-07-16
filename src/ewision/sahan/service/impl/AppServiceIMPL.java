@@ -17,6 +17,7 @@ import ewision.sahan.product.CreateProduct1;
 import ewision.sahan.services.CreateService;
 import ewision.sahan.product.ProductList;
 import ewision.sahan.purchase.CreatePurchase;
+import ewision.sahan.purchase.CreatePurchase1;
 import ewision.sahan.sale.CreateSale;
 import ewision.sahan.sale.CreateSale1;
 import ewision.sahan.services.ServiceList;
@@ -98,7 +99,7 @@ public class AppServiceIMPL extends AppServiceAbstract {
 
     @Override
     public void openCreatePurchase() {
-        CreatePurchase createPurchase = new CreatePurchase();
+        CreatePurchase1 createPurchase = new CreatePurchase1();
         showMainPanel((JPanel) createPurchase);
     }
 }
