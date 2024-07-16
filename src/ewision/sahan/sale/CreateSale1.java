@@ -75,6 +75,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
     private void styleComponents() {
         productField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search products by keywords");
+        referenceNoField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Refference No");
 
         JPanel[] containers = {productContainer, serviceContainer, servicePanel, jPanel14, serviceChargePanel, dateContainer, customerContainer, warehouseContainer};
         for (JPanel container : containers) {
@@ -786,7 +787,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             orderTax = Double.parseDouble(String.valueOf(orderTaxField.getText()));
             //orderTax = Double.valueOf(String.valueOf(orderTaxField.getText().replace(currency, "")));
             int taxAmount = (int) (subtotal * (orderTax / 100));
-            taxLabel.setText(getCurrency() + taxAmount + "(" + orderTax + "%)");
+            taxLabel.setText(getCurrency() + taxAmount + " (" + orderTax + "%)");
         } catch (NumberFormatException | NullPointerException e) {
             CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate tax: " + e.getMessage(), e.getMessage());
         }
@@ -1160,6 +1161,8 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         jLabel1.setText("Create Sale");
+
+        referenceNoField.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 5));
 
         javax.swing.GroupLayout headerPanelLayout = new javax.swing.GroupLayout(headerPanel);
         headerPanel.setLayout(headerPanelLayout);
@@ -1565,7 +1568,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             productContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(productContainerLayout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addComponent(productScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
+                .addComponent(productScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
 
@@ -1582,7 +1585,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             }
         });
 
-        productField.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 5, 1));
+        productField.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 15, 1, 15));
         productField.setMinimumSize(new java.awt.Dimension(20, 5));
         productField.setNextFocusableComponent(allProductsButton);
         productField.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -1629,7 +1632,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
                 .addComponent(productContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(0, 12, Short.MAX_VALUE))
+                .addGap(0, 14, Short.MAX_VALUE))
         );
 
         detailPanel.setMinimumSize(new java.awt.Dimension(20, 5));
@@ -1806,7 +1809,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                     .addComponent(jLabel15)
                     .addComponent(orderTaxField)
                     .addComponent(jLabel18)
-                    .addComponent(statusComboBox, 0, 154, Short.MAX_VALUE))
+                    .addComponent(statusComboBox, 0, 120, Short.MAX_VALUE))
                 .addGap(20, 20, 20))
         );
         jPanel4Layout.setVerticalGroup(
@@ -1855,7 +1858,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(paymentStatusComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(discountField, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                    .addComponent(discountField, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
                     .addComponent(jLabel19, javax.swing.GroupLayout.Alignment.LEADING))
                 .addGap(20, 20, 20))
         );
@@ -1923,7 +1926,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel10Layout.createSequentialGroup()
                                 .addComponent(jLabel17)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(shippingField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE))
+                            .addComponent(shippingField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE))
                         .addGap(20, 20, 20))))
         );
         jPanel10Layout.setVerticalGroup(
@@ -1977,7 +1980,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 545, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(notePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -2038,12 +2041,12 @@ public class CreateSale1 extends javax.swing.JPanel {
             serviceContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(serviceContainerLayout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addComponent(serviceScroll1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(serviceScroll1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
         serviceContainerLayout.setVerticalGroup(
             serviceContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(serviceScroll1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+            .addComponent(serviceScroll1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
         );
 
         jPanel14.setMinimumSize(new java.awt.Dimension(20, 5));
@@ -2059,6 +2062,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             }
         });
 
+        serviceField.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 12, 1, 12));
         serviceField.setMinimumSize(new java.awt.Dimension(20, 5));
         serviceField.setNextFocusableComponent(allServicesButton);
         serviceField.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -2149,7 +2153,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             serviceChargePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(serviceChargePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(serviceChargeScroll)
+                .addComponent(serviceChargeScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addContainerGap())
         );
         serviceChargePanelLayout.setVerticalGroup(
@@ -2202,7 +2206,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 .addGroup(detailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(isServicesBox, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(servicePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(serviceChargePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)

@@ -81,6 +81,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
     private void styleComponents() {
         productField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search products by keywords");
+        referenceNoField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Refference No");
 
         JPanel[] containers = {productContainer, serviceContainer, servicePanel, jPanel14, serviceChargePanel, dateContainer, supplierContainer, warehouseContainer};
         for (JPanel container : containers) {
@@ -566,9 +567,9 @@ public class CreatePurchase1 extends javax.swing.JPanel {
         double total = 0;
         //double total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText());
         try {
-            total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText().replace(getCurrency(), ""));
+            total = totalLabel1.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel1.getText().replace(getCurrency(), ""));
         } catch (NumberFormatException | NullPointerException e) {
-            CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " loadServiceItems: " + e.getMessage(), e.getMessage());
+            CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " loadItems: " + e.getMessage(), e.getMessage());
         }
 
         //int count = 0;
@@ -579,13 +580,13 @@ public class CreatePurchase1 extends javax.swing.JPanel {
             rowData.add(stock.getStringStock_id());
             rowData.add(stock.getName());
             //rowData.add(stock.getCode());
-            rowData.add(String.valueOf(stock.getStock_price()));
+            rowData.add(String.valueOf(stock.getStock_cost()));
             rowData.add(String.valueOf(stock.getStock_quantity()));
             rowData.add(String.valueOf(stock.getQuantity()));
             rowData.add(String.valueOf(stock.getStock_discount()));
             rowData.add(String.valueOf(stock.getStock_tax()));
 
-            double itemTotal = (stock.getQuantity() * stock.getStock_price()) - stock.getStock_discount() + stock.getStock_tax();
+            double itemTotal = (stock.getQuantity() * stock.getStock_cost()) - stock.getStock_discount() + stock.getStock_tax();
             total += itemTotal;
 
             rowData.add(String.valueOf(itemTotal));
@@ -614,7 +615,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
             tModel.addRow(rowData);
         }
 
-        totalLabel.setText(String.valueOf(total));
+        totalLabel1.setText(String.valueOf(total));
         calculate();
     }
 
@@ -653,9 +654,9 @@ public class CreatePurchase1 extends javax.swing.JPanel {
         tModel.setRowCount(0);
 
         double total = 0;
-        //double total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText());
+        //double total = totalLabel1.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel1.getText());
         try {
-            total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText().replace(getCurrency(), ""));
+            total = totalLabel1.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel1.getText().replace(getCurrency(), ""));
         } catch (NumberFormatException | NullPointerException e) {
             CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " loadOrderItems: " + e.getMessage(), e.getMessage());
         }
@@ -682,7 +683,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
             tModel.addRow(rowData);
         }
 
-        totalLabel.setText(String.valueOf(total));
+        totalLabel1.setText(String.valueOf(total));
         calculate();
     }
     /* loadProducts to Order Table */
@@ -740,9 +741,9 @@ public class CreatePurchase1 extends javax.swing.JPanel {
         tModel.setRowCount(0);
 
         double total = 0;
-        //double total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText());
+        //double total = totalLabel1.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel1.getText());
         try {
-            total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText().replace(getCurrency(), ""));
+            total = totalLabel1.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel1.getText().replace(getCurrency(), ""));
         } catch (NumberFormatException | NullPointerException e) {
             CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " loadServiceItems: " + e.getMessage(), e.getMessage());
         }
@@ -769,7 +770,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
             tModel.addRow(rowData);
         }
 
-        totalLabel.setText(String.valueOf(total));
+        totalLabel1.setText(String.valueOf(total));
         calculate();
     }
     // </editor-fold>  
@@ -789,10 +790,10 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
         double orderTax = 0.00;
         try {
-            orderTax = Double.parseDouble(String.valueOf(orderTaxField.getText()));
+            orderTax = Integer.parseInt(String.valueOf(orderTaxField.getText()));
             //orderTax = Double.valueOf(String.valueOf(orderTaxField.getText().replace(currency, "")));
             int taxAmount = (int) (subtotal * (orderTax / 100));
-            taxLabel.setText(getCurrency() + taxAmount + "(" + orderTax + "%)");
+            taxLabel1.setText(getCurrency() + taxAmount + " (" + orderTax + "%)");
         } catch (NumberFormatException | NullPointerException e) {
             CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate tax: " + e.getMessage(), e.getMessage());
         }
@@ -822,8 +823,8 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
         shippingLabel.setText(getCurrency() + orderShipping);
         discountLabel.setText(getCurrency() + orderDiscount);
-        taxLabel.setText(getCurrency() + tax + "(" + orderTax + "%)");
-        totalLabel.setText(getCurrency() + total);
+        taxLabel1.setText(getCurrency() + tax + "(" + orderTax + "%)");
+        totalLabel1.setText(getCurrency() + total);
 
         double payment = 0.00;
         try {
@@ -836,9 +837,9 @@ public class CreatePurchase1 extends javax.swing.JPanel {
         double balance = 0.00;
         balance = payment - total;
 
-        paymentLabel.setText(currency + payment);
-        balanceLabel.setText(currency + balance);
-        balanceLabel.setForeground(balance >= 0 ? paymentLabel.getForeground() : Color.RED);
+        paymentLabel1.setText(currency + payment);
+        balanceLabel1.setText(currency + balance);
+        balanceLabel1.setForeground(balance >= 0 ? paymentLabel1.getForeground() : Color.RED);
     }
     // </editor-fold>
 
@@ -913,7 +914,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
                 try {
                     double paymentAmount = Double.parseDouble(payment);
-                    double total = Double.parseDouble(totalLabel.getText().replace(currency, ""));
+                    double total = Double.parseDouble(totalLabel1.getText().replace(currency, ""));
                     if (paymentStatus.equalsIgnoreCase("paid") && total > paymentAmount) {
                         JOptionPane.showMessageDialog(this, "Payment is not enough", "Invalid Payment", JOptionPane.WARNING_MESSAGE);
                         paymentField.requestFocus();
@@ -952,7 +953,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                 }
                 double subtotal = 0.00;
                 try {
-                    subtotal = Double.parseDouble(String.valueOf(totalLabel.getText().replace(currency, "")));
+                    subtotal = Double.parseDouble(String.valueOf(totalLabel1.getText().replace(currency, "")));
                 } catch (NumberFormatException | NullPointerException e) {
                     CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate shipping: " + e.getMessage(), e.getMessage());
                 }
@@ -1166,6 +1167,9 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         jLabel1.setText("Create Purchase");
+
+        referenceNoField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        referenceNoField.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 5));
 
         javax.swing.GroupLayout headerPanelLayout = new javax.swing.GroupLayout(headerPanel);
         headerPanel.setLayout(headerPanelLayout);
@@ -1523,7 +1527,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Name", "Code", "Price", "Brand", "Category"
+                "ID", "Name", "Code", "Cost", "Brand", "Category"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -1574,6 +1578,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
             }
         });
 
+        productField.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 15, 1, 15));
         productField.setMinimumSize(new java.awt.Dimension(20, 5));
         productField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -1661,6 +1666,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
         jLabel15.setText("Order Tax");
 
         orderTaxField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        orderTaxField.setText("0");
         orderTaxField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 orderTaxFieldFocusGained(evt);
@@ -1935,6 +1941,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
             }
         });
 
+        serviceField.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 12, 1, 12));
         serviceField.setMinimumSize(new java.awt.Dimension(20, 5));
         serviceField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -2184,7 +2191,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                 .addGroup(detailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(isServicesBox, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(servicePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(serviceChargePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2387,7 +2394,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
                 modal = new DialogModal(this);
                 ////modal.openSelectStock(this, String.valueOf(productTable.getValueAt(selectedRow, 0)), String.valueOf(productTable.getValueAt(selectedRow, 1)));
-                //modal.openSelectStock(this, product);
+                modal.openAddStock(this, product);
                 modal.setVisible(true);
             }
         }

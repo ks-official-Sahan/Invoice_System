@@ -4,6 +4,8 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import ewision.sahan.customer.CreateCustomer;
 import ewision.sahan.model.Product;
+import ewision.sahan.purchase.AddStock;
+import ewision.sahan.purchase.CreatePurchase1;
 import ewision.sahan.sale.CreateSale1;
 import ewision.sahan.sale.SelectStock1;
 import ewision.sahan.supplier.CreateSupplier;
@@ -80,6 +82,14 @@ public class DialogModal extends javax.swing.JDialog {
 
     public void openSelectStock(CreateSale1 createSale, Product product) {
         SelectStock1 selectStock = new SelectStock1(createSale, product);
+        jPanel1.add(selectStock, BorderLayout.CENTER);
+        resize(selectStock);
+        SwingUtilities.updateComponentTreeUI(jPanel1);
+        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
+    }
+
+    public void openAddStock(CreatePurchase1 createPurchase, Product product) {
+        AddStock selectStock = new AddStock(createPurchase, product);
         jPanel1.add(selectStock, BorderLayout.CENTER);
         resize(selectStock);
         SwingUtilities.updateComponentTreeUI(jPanel1);
