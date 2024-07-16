@@ -170,6 +170,13 @@ public class AddStock extends javax.swing.JPanel {
         subTotalField.setText(String.valueOf(((stock == null) ? 0 : stock.getStock_price() * quantity) - discount - tax));
     }
 
+    private boolean isExpireDate;
+    
+    private void toggleExpirePanel() {
+        expireDateContainer.setVisible(isExpire.isSelected());
+        isExpireDate = isExpire.isSelected();
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -186,28 +193,39 @@ public class AddStock extends javax.swing.JPanel {
         productName = new javax.swing.JLabel();
         addPanel = new javax.swing.JPanel();
         quantitySpinner = new javax.swing.JSpinner();
-        addButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        discountField = new javax.swing.JFormattedTextField();
-        jLabel4 = new javax.swing.JLabel();
-        taxField = new javax.swing.JFormattedTextField();
-        subTotalField = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        discountField1 = new javax.swing.JFormattedTextField();
+        costField = new javax.swing.JFormattedTextField();
+        isExpire = new javax.swing.JCheckBox();
+        expireDateContainer = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        jDateChooser2 = new com.toedter.calendar.JDateChooser();
+        discountField = new javax.swing.JFormattedTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        priceField = new javax.swing.JFormattedTextField();
+        jLabel11 = new javax.swing.JLabel();
+        taxField = new javax.swing.JFormattedTextField();
+        jLabel12 = new javax.swing.JLabel();
+        paymentField = new javax.swing.JFormattedTextField();
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         searchField = new javax.swing.JTextField();
+        addButton = new javax.swing.JButton();
+        subTotalField = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        subTotalField1 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 5, 1));
         setNextFocusableComponent(searchField);
 
         stockTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+
             },
             new String [] {
                 "ID", "Name", "Code", "Quantity", "Cost", "Price", "EXP", "MFD"
@@ -243,6 +261,7 @@ public class AddStock extends javax.swing.JPanel {
         quantitySpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 1.0d, null, 1.0d));
         quantitySpinner.setEditor(new javax.swing.JSpinner.NumberEditor(quantitySpinner, ""));
         quantitySpinner.setNextFocusableComponent(addButton);
+        quantitySpinner.setPreferredSize(new java.awt.Dimension(277, 33));
         quantitySpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 quantitySpinnerStateChanged(evt);
@@ -254,21 +273,73 @@ public class AddStock extends javax.swing.JPanel {
             }
         });
 
-        addButton.setText("Add");
-        addButton.setNextFocusableComponent(discountField);
-        addButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addButtonActionPerformed(evt);
+        jLabel2.setText("Quantity");
+
+        jLabel5.setText("Cost");
+
+        costField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        costField.setText("0.00");
+        costField.setNextFocusableComponent(taxField);
+        costField.setPreferredSize(new java.awt.Dimension(277, 33));
+        costField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                costFieldFocusGained(evt);
+            }
+        });
+        costField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                costFieldKeyReleased(evt);
             }
         });
 
-        jLabel2.setText("Quantity");
+        isExpire.setText("Expire Date");
+        isExpire.setMinimumSize(new java.awt.Dimension(20, 5));
+        isExpire.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                isExpireActionPerformed(evt);
+            }
+        });
 
-        jLabel3.setText("Discount");
+        jLabel3.setText("Expire Date");
+
+        jLabel4.setText("Manufacture Date");
+
+        jDateChooser1.setPreferredSize(new java.awt.Dimension(277, 33));
+
+        jDateChooser2.setPreferredSize(new java.awt.Dimension(277, 33));
+
+        javax.swing.GroupLayout expireDateContainerLayout = new javax.swing.GroupLayout(expireDateContainer);
+        expireDateContainer.setLayout(expireDateContainerLayout);
+        expireDateContainerLayout.setHorizontalGroup(
+            expireDateContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(expireDateContainerLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(expireDateContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
+                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                .addGroup(expireDateContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)))
+        );
+        expireDateContainerLayout.setVerticalGroup(
+            expireDateContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(expireDateContainerLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(expireDateContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(expireDateContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
 
         discountField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         discountField.setText("0.00");
         discountField.setNextFocusableComponent(taxField);
+        discountField.setPreferredSize(new java.awt.Dimension(277, 33));
         discountField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 discountFieldFocusGained(evt);
@@ -280,14 +351,44 @@ public class AddStock extends javax.swing.JPanel {
             }
         });
 
-        jLabel4.setText("Tax");
+        jLabel7.setText("Discount");
+
+        jLabel10.setText("Price");
+
+        priceField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        priceField.setText("0.00");
+        priceField.setNextFocusableComponent(taxField);
+        priceField.setPreferredSize(new java.awt.Dimension(277, 33));
+        priceField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                priceFieldFocusGained(evt);
+            }
+        });
+        priceField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                priceFieldActionPerformed(evt);
+            }
+        });
+        priceField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                priceFieldKeyReleased(evt);
+            }
+        });
+
+        jLabel11.setText("Tax");
 
         taxField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         taxField.setText("0.00");
-        taxField.setNextFocusableComponent(searchField);
+        taxField.setNextFocusableComponent(taxField);
+        taxField.setPreferredSize(new java.awt.Dimension(277, 33));
         taxField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 taxFieldFocusGained(evt);
+            }
+        });
+        taxField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                taxFieldActionPerformed(evt);
             }
         });
         taxField.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -296,22 +397,20 @@ public class AddStock extends javax.swing.JPanel {
             }
         });
 
-        subTotalField.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        subTotalField.setText("0");
+        jLabel12.setText("Cost");
 
-        jLabel5.setText("Discount");
-
-        discountField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
-        discountField1.setText("0.00");
-        discountField1.setNextFocusableComponent(taxField);
-        discountField1.addFocusListener(new java.awt.event.FocusAdapter() {
+        paymentField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        paymentField.setText("0.00");
+        paymentField.setNextFocusableComponent(taxField);
+        paymentField.setPreferredSize(new java.awt.Dimension(277, 33));
+        paymentField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                discountField1FocusGained(evt);
+                paymentFieldFocusGained(evt);
             }
         });
-        discountField1.addKeyListener(new java.awt.event.KeyAdapter() {
+        paymentField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                discountField1KeyReleased(evt);
+                paymentFieldKeyReleased(evt);
             }
         });
 
@@ -322,49 +421,63 @@ public class AddStock extends javax.swing.JPanel {
             .addGroup(addPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(expireDateContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(addPanelLayout.createSequentialGroup()
                         .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(discountField))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(isExpire, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel2)
+                            .addComponent(quantitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(discountField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(costField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(taxField)
-                            .addComponent(jLabel4))
-                        .addGap(42, 42, 42)
-                        .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(quantitySpinner)
-                            .addComponent(jLabel2))
-                        .addGap(18, 18, 18)
-                        .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(addButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(subTotalField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jLabel5)
-                    .addComponent(discountField1))
+                            .addComponent(jLabel12)
+                            .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel11)
+                                    .addComponent(taxField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel10)
+                                    .addComponent(priceField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(paymentField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
         );
         addPanelLayout.setVerticalGroup(
             addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel5)
+                .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel10))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(discountField1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE)
+                .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(costField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(priceField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel11))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(discountField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(taxField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(isExpire, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(expireDateContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 0, 0)
                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(addPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel4)
+                        .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(taxField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(quantitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(addPanelLayout.createSequentialGroup()
-                        .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel2)
-                            .addComponent(subTotalField))
+                        .addComponent(jLabel12)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(quantitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(discountField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(paymentField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -402,6 +515,24 @@ public class AddStock extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
+        addButton.setText("Add");
+        addButton.setNextFocusableComponent(discountField);
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
+
+        subTotalField.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        subTotalField.setText("0");
+
+        jLabel6.setText("Total");
+
+        subTotalField1.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        subTotalField1.setText("0");
+
+        jLabel9.setText("Balance");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -415,29 +546,59 @@ public class AddStock extends javax.swing.JPanel {
                         .addComponent(productId)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(productName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 626, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(10, 10, 10))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(subTotalField1, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(subTotalField, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(20, 20, 20))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(addPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(addPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jSeparator1)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(15, 15, 15)
+                .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(productId)
                     .addComponent(productName))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(addPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(subTotalField)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(subTotalField1)
+                    .addComponent(jLabel9))
+                .addGap(24, 24, 24)
+                .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(19, 19, 19))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -517,59 +678,98 @@ public class AddStock extends javax.swing.JPanel {
         calculate();
     }//GEN-LAST:event_quantitySpinnerStateChanged
 
-    private void discountFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_discountFieldKeyReleased
-        // Discount Change
-        calculate();
-    }//GEN-LAST:event_discountFieldKeyReleased
-
-    private void taxFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_taxFieldKeyReleased
-        // Tax Change
-        calculate();
-    }//GEN-LAST:event_taxFieldKeyReleased
-
-    private void discountFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_discountFieldFocusGained
-        // Select on Focus
-        discountField.selectAll();
-    }//GEN-LAST:event_discountFieldFocusGained
-
-    private void taxFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_taxFieldFocusGained
-        // Select on Focus
-        taxField.selectAll();
-    }//GEN-LAST:event_taxFieldFocusGained
-
     private void quantitySpinnerFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_quantitySpinnerFocusGained
         // Select on Focus
         configSpinner();
     }//GEN-LAST:event_quantitySpinnerFocusGained
 
-    private void discountField1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_discountField1FocusGained
+    private void costFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_costFieldFocusGained
         // TODO add your handling code here:
-    }//GEN-LAST:event_discountField1FocusGained
+    }//GEN-LAST:event_costFieldFocusGained
 
-    private void discountField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_discountField1KeyReleased
+    private void costFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_costFieldKeyReleased
         // TODO add your handling code here:
-    }//GEN-LAST:event_discountField1KeyReleased
+    }//GEN-LAST:event_costFieldKeyReleased
+
+    private void isExpireActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isExpireActionPerformed
+        // Toggle Service Panel
+        toggleExpirePanel();
+    }//GEN-LAST:event_isExpireActionPerformed
+
+    private void discountFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_discountFieldFocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_discountFieldFocusGained
+
+    private void discountFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_discountFieldKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_discountFieldKeyReleased
+
+    private void priceFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_priceFieldFocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_priceFieldFocusGained
+
+    private void priceFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_priceFieldKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_priceFieldKeyReleased
+
+    private void taxFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_taxFieldFocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_taxFieldFocusGained
+
+    private void taxFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_taxFieldKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_taxFieldKeyReleased
+
+    private void paymentFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_paymentFieldFocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_paymentFieldFocusGained
+
+    private void paymentFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_paymentFieldKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_paymentFieldKeyReleased
+
+    private void priceFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_priceFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_priceFieldActionPerformed
+
+    private void taxFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_taxFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_taxFieldActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JPanel addPanel;
+    private javax.swing.JFormattedTextField costField;
     private javax.swing.JFormattedTextField discountField;
-    private javax.swing.JFormattedTextField discountField1;
+    private javax.swing.JPanel expireDateContainer;
+    private javax.swing.JCheckBox isExpire;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private com.toedter.calendar.JDateChooser jDateChooser2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JFormattedTextField paymentField;
+    private javax.swing.JFormattedTextField priceField;
     private javax.swing.JLabel productId;
     private javax.swing.JLabel productName;
     private javax.swing.JSpinner quantitySpinner;
     private javax.swing.JTextField searchField;
     private javax.swing.JTable stockTable;
     private javax.swing.JLabel subTotalField;
+    private javax.swing.JLabel subTotalField1;
     private javax.swing.JFormattedTextField taxField;
     // End of variables declaration//GEN-END:variables
 }
