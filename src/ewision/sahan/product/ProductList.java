@@ -42,7 +42,7 @@ public class ProductList extends javax.swing.JPanel {
         cmdSearch.setContentAreaFilled(false);
         renderTable();
         //loadTestData();
-        loadProducts();
+        loadProducts("");
     }
 
     private void renderTable() {
@@ -86,9 +86,13 @@ public class ProductList extends javax.swing.JPanel {
         t.start();
     }
 
-    private void loadProducts() {
+    private void loadProducts(String product) {
         try {
-            String query = "SELECT * FROM `products` INNER JOIN `brands` ON `products`.`brand_id`=`brands`.`id` INNER JOIN `units` ON `products`.`unit_id`=`units`.`id` ORDER BY `code` ASC";
+            String query = "SELECT * FROM `products` "
+                    + "INNER JOIN `brands` ON `products`.`brand_id`=`brands`.`id` "
+                    + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
+                    + "INNER JOIN `units` ON `products`.`unit_id`=`units`.`id` "
+                    + "WHERE `product_type`='product' AND (`products`.`name` LIKE '%"+product+"%' OR `products`.`code` LIKE '%"+product+"%' OR `products`.`id` LIKE '%"+product+"%') ORDER BY `products`.`code` ASC";
             ResultSet resultSet = MySQL.execute(query);
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -98,19 +102,20 @@ public class ProductList extends javax.swing.JPanel {
             while (resultSet.next()) {
                 Vector row = new Vector();
                 row.add(false);
-                row.add(resultSet.getInt("id"));
+                row.add(resultSet.getInt("products.id"));
                 row.add(image);
-                row.add(resultSet.getString("name"));
-                row.add(resultSet.getString("code"));
+                row.add(resultSet.getString("products.name"));
+                row.add(resultSet.getString("products.code"));
                 row.add(resultSet.getString("brands.name"));
                 //row.add(resultSet.getString("price"));
-                row.add(resultSet.getDouble("price"));
+                row.add(resultSet.getDouble("products.price"));
                 //row.add("1" + resultSet.getString("units.ShortName"));
                 row.add(resultSet.getDouble("operator_value") + resultSet.getString("units.ShortName"));
                 //row.add(resultSet.getDouble("operator_value") + resultSet.getString("units.ShortName") + " : " + resultSet.getString("units.name"));
 
                 Double quantity = 0.0;
-                ResultSet qtyRs = MySQL.execute("SELECT * FROM `purchase_details` WHERE `product_id`='" + resultSet.getInt("id") + "'");
+                ResultSet qtyRs = MySQL.execute("SELECT * FROM `stocks` WHERE `products_id`='" + resultSet.getInt("id") + "'");
+                //ResultSet qtyRs = MySQL.execute("SELECT * FROM `purchase_details` WHERE `product_id`='" + resultSet.getInt("id") + "'");
                 while (qtyRs.next()) {
                     double qty = qtyRs.getDouble("quantity");
                     if (qty > 0) {
@@ -140,7 +145,7 @@ public class ProductList extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         cmdSearch = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        searchField = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jButton6 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
@@ -181,6 +186,12 @@ public class ProductList extends javax.swing.JPanel {
         cmdSearch.setBackground(Constants.TRANSPARENT);
         cmdSearch.setMaximumSize(new java.awt.Dimension(34, 34));
         cmdSearch.setPreferredSize(new java.awt.Dimension(34, 34));
+
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                searchFieldKeyReleased(evt);
+            }
+        });
 
         jButton6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton6.setForeground(new java.awt.Color(51, 204, 255));
@@ -277,7 +288,7 @@ public class ProductList extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(cmdSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(78, 78, 78)
                 .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -287,7 +298,7 @@ public class ProductList extends javax.swing.JPanel {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(cmdSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(18, Short.MAX_VALUE)
@@ -358,7 +369,7 @@ public class ProductList extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1)
@@ -411,6 +422,11 @@ public class ProductList extends javax.swing.JPanel {
 //        t.start();
     }//GEN-LAST:event_jTable1MouseClicked
 
+    private void searchFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchFieldKeyReleased
+        // Search
+        loadProducts(searchField.getText());
+    }//GEN-LAST:event_searchFieldKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cmdSearch;
@@ -425,6 +441,6 @@ public class ProductList extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField searchField;
     // End of variables declaration//GEN-END:variables
 }

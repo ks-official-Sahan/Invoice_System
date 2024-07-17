@@ -3,15 +3,21 @@ package ewision.sahan.services;
 import ewision.sahan.application.Application;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.loggers.DatabaseLogger;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 import ewision.sahan.table.header.TableCheckBoxHeaderRenderer;
 import ewision.sahan.model.Constants;
+import ewision.sahan.model.MySQL;
 import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableImageCellRenderer;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Vector;
+import java.util.logging.Level;
 
 /**
  *
@@ -35,7 +41,8 @@ public class ServiceList extends javax.swing.JPanel {
         cmdSearch.setIcon(new ImageScaler().getSvgIcon("/search", 28));
         cmdSearch.setContentAreaFilled(false);
         renderTable();
-        loadTestData();
+        //loadTestData();
+        loadServices("");
     }
 
     private void renderTable() {
@@ -59,6 +66,39 @@ public class ServiceList extends javax.swing.JPanel {
 
     }
 
+    private void loadServices(String service) {
+        try {
+            String query = "SELECT * FROM `products` "
+//                    + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
+                    + "WHERE `product_type`='service' AND (`products`.`name` LIKE '%" + service + "%' OR `products`.`code` LIKE '%" + service + "%' OR `products`.`id` LIKE '%" + service + "%') ORDER BY `products`.`code` ASC";
+            ResultSet resultSet = MySQL.execute(query);
+
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.setRowCount(0);
+
+            ImageIcon image = new ImageScaler().getScaledIcon(Constants.GRADIENT_ICON, jTable1.getRowHeight() + 20, jTable1.getRowHeight() + 20);
+            while (resultSet.next()) {
+
+                Vector row = new Vector();
+                row.add(false);
+                row.add(resultSet.getInt("products.id"));
+                row.add(image);
+                row.add(resultSet.getString("products.name"));
+                row.add(resultSet.getString("products.code"));
+                //row.add(resultSet.getString("price"));
+                row.add(resultSet.getDouble("products.price"));
+                //row.add("1" + resultSet.getString("units.ShortName"));
+                //row.add(resultSet.getDouble("operator_value") + resultSet.getString("units.ShortName"));
+                //row.add(resultSet.getDouble("operator_value") + resultSet.getString("units.ShortName") + " : " + resultSet.getString("units.name"));
+
+                model.addRow(row);
+            }
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Services loading error: " + ex.getMessage(), ex.getMessage());
+            loadTestData();
+        }
+    }
+
     private void loadTestData() {
         Thread t = new Thread(() -> {
 
@@ -71,9 +111,9 @@ public class ServiceList extends javax.swing.JPanel {
             ImageIcon image2 = scaler.getScaledIcon(Constants.WHITE_LOGO, jTable1.getRowHeight() + 20, jTable1.getRowHeight() + 20);
             ImageIcon image3 = scaler.getScaledIcon(Constants.WHITE_LOGO, jTable1.getRowHeight() + 20, jTable1.getRowHeight() + 20);
 
-            model.addRow(new Object[]{false, image1, "Wired Setup", "1234", "3500", "1", ""});
-            model.addRow(new Object[]{false, image2, "Wireless Setup", "1235", "2500", "1", ""});
-            model.addRow(new Object[]{false, image3, "Network Setup", "1235", "1000", "1", ""});
+            model.addRow(new Object[]{false, "2", image1, "Wired Setup", "1234", "3500", ""});
+            model.addRow(new Object[]{false, "3", image2, "Wireless Setup", "1235", "2500", ""});
+            model.addRow(new Object[]{false, "5", image3, "Network Setup", "1235", "1000", ""});
             //SwingUtilities.updateComponentTreeUI(jTable1);
         });
         t.start();
@@ -92,7 +132,7 @@ public class ServiceList extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         cmdSearch = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        searchField = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jButton6 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
@@ -134,6 +174,12 @@ public class ServiceList extends javax.swing.JPanel {
         cmdSearch.setMaximumSize(new java.awt.Dimension(34, 34));
         cmdSearch.setPreferredSize(new java.awt.Dimension(34, 34));
 
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                searchFieldKeyReleased(evt);
+            }
+        });
+
         jButton6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton6.setForeground(new java.awt.Color(51, 204, 255));
         jButton6.setText("Filter");
@@ -158,7 +204,7 @@ public class ServiceList extends javax.swing.JPanel {
 
         jButton2.setBackground(new java.awt.Color(51, 102, 255));
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setText("Import Products");
+        jButton2.setText("Import Services");
         jButton2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(51, 102, 255)));
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -193,15 +239,15 @@ public class ServiceList extends javax.swing.JPanel {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
+                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 68, Short.MAX_VALUE)
+                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
+                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -225,7 +271,7 @@ public class ServiceList extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(cmdSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(128, 128, 128)
                 .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -235,7 +281,7 @@ public class ServiceList extends javax.swing.JPanel {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(cmdSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(18, Short.MAX_VALUE)
@@ -250,7 +296,7 @@ public class ServiceList extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Select", "Image", "Name", "Code", "Charge", "Count", "Action"
+                "Select", "ID", "Image", "Name", "Code", "Charge", "Action"
             }
         ) {
             Class[] types = new Class [] {
@@ -286,12 +332,13 @@ public class ServiceList extends javax.swing.JPanel {
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
             jTable1.getColumnModel().getColumn(0).setMaxWidth(50);
-            jTable1.getColumnModel().getColumn(1).setMinWidth(75);
-            jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
-            jTable1.getColumnModel().getColumn(2).setMinWidth(150);
-            jTable1.getColumnModel().getColumn(2).setPreferredWidth(300);
-            jTable1.getColumnModel().getColumn(2).setMaxWidth(300);
-            jTable1.getColumnModel().getColumn(3).setResizable(false);
+            jTable1.getColumnModel().getColumn(1).setPreferredWidth(50);
+            jTable1.getColumnModel().getColumn(1).setMaxWidth(50);
+            jTable1.getColumnModel().getColumn(2).setMinWidth(75);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(100);
+            jTable1.getColumnModel().getColumn(3).setMinWidth(150);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(300);
+            jTable1.getColumnModel().getColumn(3).setMaxWidth(300);
             jTable1.getColumnModel().getColumn(4).setResizable(false);
             jTable1.getColumnModel().getColumn(5).setResizable(false);
             jTable1.getColumnModel().getColumn(6).setMinWidth(136);
@@ -303,7 +350,7 @@ public class ServiceList extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 827, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1)
@@ -327,7 +374,7 @@ public class ServiceList extends javax.swing.JPanel {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // Create
-        Application.appService.openCreateProduct();
+        Application.appService.openCreateService();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -355,6 +402,11 @@ public class ServiceList extends javax.swing.JPanel {
 //        t.start();
     }//GEN-LAST:event_jTable1MouseClicked
 
+    private void searchFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchFieldKeyReleased
+        // Search
+        loadServices(searchField.getText());
+    }//GEN-LAST:event_searchFieldKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cmdSearch;
@@ -369,6 +421,6 @@ public class ServiceList extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField searchField;
     // End of variables declaration//GEN-END:variables
 }

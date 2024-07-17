@@ -86,14 +86,6 @@ public class CreateService extends javax.swing.JPanel {
         }
     }
 
-    /*
-     * Date Formatting
-     */
-    private void formatDate(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        sdf.format(date);
-    }
-
     private void registerService() {
         String name = nameField.getText();
         String barcode = barcodeField.getText();
@@ -125,9 +117,13 @@ public class CreateService extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Please enter Service Description", "Invalid Description", JOptionPane.WARNING_MESSAGE);
             descriptionText.requestFocus();
         } else {
-            String query = "INSERT INTO `services` (`code`, `cost`, `price`, `name`, `barcode_type_id`, `description`) VALUES ('" + barcode + "', '" + cost + "', '" + charge + "', '" + name + "', '" + barcodeTypeMap.get(barcodeType) + "', '" + description + "')";
+//            String query = "INSERT INTO `services` (`code`, `cost`, `price`, `name`, `barcode_type_id`, `description`) VALUES ('" + barcode + "', '" + cost + "', '" + charge + "', '" + name + "', '" + barcodeTypeMap.get(barcodeType) + "', '" + description + "')";
+//            if (!category.equalsIgnoreCase("select")) {
+//                query = "INSERT INTO `services` (`code`, `cost`, `price`, `categories_id`, `name`, `barcode_type_id`, `description`) VALUES ('" + barcode + "', '" + cost + "', '" + charge + "', '" + categoryMap.get(category) + "', '" + name + "', '" + barcodeTypeMap.get(barcodeType) + "', '" + description + "')";
+//            }
+            String query = "INSERT INTO `products` (`code`, `cost`, `price`, `name`, `barcode_type_id`, `note`, `product_type`) VALUES ('" + barcode + "', '" + cost + "', '" + charge + "', '" + name + "', '" + barcodeTypeMap.get(barcodeType) + "', '" + description + "', 'service')";
             if (!category.equalsIgnoreCase("select")) {
-                query = "INSERT INTO `services` (`code`, `cost`, `price`, `categories_id`, `name`, `barcode_type_id`, `description`) VALUES ('" + barcode + "', '" + cost + "', '" + charge + "', '" + categoryMap.get(category) + "', '" + name + "', '" + barcodeTypeMap.get(barcodeType) + "', '" + description + "')";
+                query = "INSERT INTO `products` (`code`, `cost`, `price`, `categories_id`, `name`, `barcode_type_id`, `note`, `product_type`) VALUES ('" + barcode + "', '" + cost + "', '" + charge + "', '" + categoryMap.get(category) + "', '" + name + "', '" + barcodeTypeMap.get(barcodeType) + "', '" + description + "', 'service')";
             }
             try {
                 MySQL.execute(query);

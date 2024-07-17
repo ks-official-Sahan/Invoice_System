@@ -6,6 +6,7 @@ import ewision.sahan.application.Application;
 import ewision.sahan.application.main.DialogModal;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.loggers.DatabaseLogger;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 import ewision.sahan.table.header.TableCheckBoxHeaderRenderer;
@@ -15,8 +16,10 @@ import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.logging.Level;
 
 /**
  *
@@ -30,14 +33,12 @@ public class CustomerList extends javax.swing.JPanel {
     public CustomerList() {
         initComponents();
         init();
-        loadCustomers();
+        loadCustomers("");
     }
 
-    public void loadCustomers() {
-
+    public void loadCustomers(String customer) {
         try {
-
-            ResultSet resultset = MySQL.execute("SELECT * FROM `clients` ");
+            ResultSet resultset = MySQL.execute("SELECT * FROM `clients` WHERE `name` LIKE '%"+customer+"%' OR `phone` LIKE '%"+customer+"%' OR `email` LIKE '%"+customer+"%' ORDER BY `name` ASC");
 
             DefaultTableModel model = (DefaultTableModel) CustomerTable.getModel();
             model.setRowCount(0);
@@ -52,9 +53,9 @@ public class CustomerList extends javax.swing.JPanel {
                 vector.add(resultset.getString("email"));
                 model.addRow(vector);
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Products loading error: " + ex.getMessage(), ex.getMessage());
+            loadTestData();
         }
     }
 
@@ -350,7 +351,6 @@ public class CustomerList extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-
         DialogModal modal = new DialogModal(this);
         modal.openCreateCustomer();
         modal.setVisible(true);
@@ -386,28 +386,13 @@ public class CustomerList extends javax.swing.JPanel {
     }//GEN-LAST:event_SearchTextActionPerformed
 
     private void SearchTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SearchTextKeyReleased
-        try {
-            
-            ResultSet resultSet = MySQL.execute("SELECT * FROM `clients` WHERE `name` LIKE '%"+SearchText.getText()+"%'");
-            
-            DefaultTableModel  tableModel = (DefaultTableModel)CustomerTable.getModel();
-            tableModel.setRowCount(0);
-            
-            while(resultSet.next()){
-            
-                Vector v = new  Vector();
-                v.add(false);
-                v.add(resultSet.getString("id"));
-                v.add(resultSet.getString("name"));
-                v.add(resultSet.getString("phone"));
-                v.add(resultSet.getString("email"));
-                tableModel.addRow(v);
-                
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        String customer = SearchText.getText();
+//        if (!customer.isEmpty()) {
+            loadCustomers(customer);
+//        } else {
+//            loadCustomers("");
+//        }
     }//GEN-LAST:event_SearchTextKeyReleased
 
 

@@ -18,6 +18,11 @@ import javax.swing.JOptionPane;
 public class CreateSupplier extends javax.swing.JPanel {
 
     HashMap<String, String> countryMap = new HashMap<>();
+    private DialogModal modal;
+
+    public void setModal(DialogModal modal) {
+        this.modal = modal;
+    }
 
     /**
      * Creates new form SelectProduct
@@ -160,9 +165,9 @@ public class CreateSupplier extends javax.swing.JPanel {
 
         jLabel6.setText("Email *");
 
-        jLabel8.setText("Destrict");
+        jLabel8.setText("Country");
 
-        jLabel10.setText("Address");
+        jLabel10.setText("Address *");
 
         country.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         country.addActionListener(new java.awt.event.ActionListener() {
@@ -330,7 +335,7 @@ public class CreateSupplier extends javax.swing.JPanel {
                     SimpleDateFormat st = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
                     String tt = st.format(dt);
 
-                    MySQL.execute("INSERT INTO `providers` (`name`,`email`,`phone`,`city`,`address`,`created_at`,`country_id`) "
+                    MySQL.execute("INSERT INTO `providers` (`name`,`email`,`phone`,`city`,`adresse`,`created_at`,`country_id`) "
                             + "VALUES ('" + cname + "','" + cemail + "','" + cmobile + "','" + ccity + "','" + caddress + "','" + tt + "','" + countryMap.get(ccountryt) + "')");
 
                 }
@@ -341,6 +346,9 @@ public class CreateSupplier extends javax.swing.JPanel {
 
             reset();
             Application.appService.openSupplierList();
+            if (this.modal != null) {
+                modal.closeModal();
+            }
 
         }
 

@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities;
  * @author ksoff
  */
 public class DialogModal extends javax.swing.JDialog {
-
+    
     private JPanel parent;
 
     /**
@@ -27,7 +27,7 @@ public class DialogModal extends javax.swing.JDialog {
     public DialogModal(javax.swing.JPanel parent) {
         this.parent = parent;
         initComponents();
-
+        
     }
 
 //    private void init() {
@@ -36,14 +36,13 @@ public class DialogModal extends javax.swing.JDialog {
 //        openCreateCustomer();
 //        openCreateSupplier();
 //    }
-
     private void resize(JPanel panel) {
         //if (this.getHeight() < 450 || this.getHeight() == this.getMinimumSize().height) {
         this.setSize(this.getWidth(), panel.getPreferredSize().height + jImagePanel1.getHeight() + jSeparator1.getHeight() + 5);
         generateCenter();
         //}
     }
-
+    
     private void generateCenter() {
         //pack(); // set window to preffered size;
         setLocationRelativeTo(null);
@@ -55,23 +54,25 @@ public class DialogModal extends javax.swing.JDialog {
 //        resize(selectProduct);
 //        SwingUtilities.updateComponentTreeUI(jPanel1);
 //    }
+    public void openPanel(JPanel panel) {
+        jPanel1.add(panel, BorderLayout.CENTER);
+        resize(panel);
+        SwingUtilities.updateComponentTreeUI(jPanel1);
+        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
+    }
     
     public void openCreateCustomer() {
         CreateCustomer createCustomer = new CreateCustomer();
-        jPanel1.add(createCustomer, BorderLayout.CENTER);
-        resize(createCustomer);
-        SwingUtilities.updateComponentTreeUI(jPanel1);
-        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
+        createCustomer.setModal(this);
+        openPanel(createCustomer);
     }
-
+    
     public void openCreateSupplier() {
         CreateSupplier createSupplier = new CreateSupplier();
-        jPanel1.add(createSupplier, BorderLayout.CENTER);
-        resize(createSupplier);
-        SwingUtilities.updateComponentTreeUI(jPanel1);
-        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
+        createSupplier.setModal(this);
+        openPanel(createSupplier);
     }
-
+    
     public void openSelectStock(CreateSale1 createSale, String pid, String pname) {
         SelectStock1 selectStock = new SelectStock1(createSale, pid, pname);
         jPanel1.add(selectStock, BorderLayout.CENTER);
@@ -79,28 +80,22 @@ public class DialogModal extends javax.swing.JDialog {
         SwingUtilities.updateComponentTreeUI(jPanel1);
         getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
     }
-
+    
     public void openSelectStock(CreateSale1 createSale, Product product) {
         SelectStock1 selectStock = new SelectStock1(createSale, product);
-        jPanel1.add(selectStock, BorderLayout.CENTER);
-        resize(selectStock);
-        SwingUtilities.updateComponentTreeUI(jPanel1);
-        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
+        openPanel(selectStock);
     }
-
+    
     public void openAddStock(CreatePurchase1 createPurchase, Product product) {
-        AddStock selectStock = new AddStock(createPurchase, product);
-        jPanel1.add(selectStock, BorderLayout.CENTER);
-        resize(selectStock);
-        SwingUtilities.updateComponentTreeUI(jPanel1);
-        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
+        AddStock addStock = new AddStock(createPurchase, product);
+        openPanel(addStock);
     }
-
+    
     public void closeModal() {
         this.dispose();
+        System.gc();
     }
-    
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

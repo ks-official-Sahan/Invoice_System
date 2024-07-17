@@ -2,12 +2,16 @@ package ewision.sahan.customer;
 
 import ewision.sahan.application.Application;
 import ewision.sahan.application.main.DialogModal;
+import ewision.sahan.loggers.DatabaseLogger;
 import ewision.sahan.model.MySQL;
+import ewision.sahan.utils.SQLDateFormatter;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.logging.Level;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
@@ -18,6 +22,11 @@ import javax.swing.JOptionPane;
 public class CreateCustomer extends javax.swing.JPanel {
 
     HashMap<String, String> CountryMap = new HashMap<>();
+    private DialogModal modal;
+
+    public void setModal(DialogModal modal) {
+        this.modal = modal;
+    }
 
     /**
      * Creates new form SelectProduct
@@ -28,9 +37,7 @@ public class CreateCustomer extends javax.swing.JPanel {
     }
 
     public void loadCountry() {
-
         try {
-
             ResultSet resultSet = MySQL.execute("SELECT * FROM `country` ");
 
             Vector<String> vector = new Vector<>();
@@ -44,7 +51,6 @@ public class CreateCustomer extends javax.swing.JPanel {
             }
 
             country.setModel(new DefaultComboBoxModel<>(vector));
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,14 +58,12 @@ public class CreateCustomer extends javax.swing.JPanel {
     }
 
     public void reset() {
-
         name.setText("");
         email.setText("");
         mobile.setText("");
         country.setSelectedIndex(0);
         cityText.setText("");
         address.setText("");
-
     }
 
     /**
@@ -306,9 +310,8 @@ public class CreateCustomer extends javax.swing.JPanel {
         } else if (ccity.equals("Select City")) {
             JOptionPane.showMessageDialog(this, "Select City", "Warning", JOptionPane.ERROR_MESSAGE);
 
-        } else if (caddress.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Enter Customer Address", "Warning", JOptionPane.ERROR_MESSAGE);
-
+//        } else if (caddress.isEmpty()) {
+//            JOptionPane.showMessageDialog(this, "Enter Customer Address", "Warning", JOptionPane.ERROR_MESSAGE);
         } else {
 
             try {
@@ -321,22 +324,22 @@ public class CreateCustomer extends javax.swing.JPanel {
 
                 } else {
 
-                    Date dt = new Date();
-                    SimpleDateFormat st = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
-                    String tt = st.format(dt);
-                    
-                    MySQL.execute("INSERT INTO `clients` (`name`,`email`,`city`,`phone`,`address`,`created_at`,`country_id`) "
-                            + "VALUES ('" + cname + "','" + cemail + "','"+ccity+"','" + cmobile + "','" + caddress + "','"+tt+"','" + CountryMap.get(ccountry) + "')");
+                    String dateTime = new SQLDateFormatter().getStringDate(new Date(), "YYYY-MM-dd hh:mm:ss");
+
+                    MySQL.execute("INSERT INTO `clients` (`name`,`email`,`city`,`phone`,`adresse`,`created_at`,`country_id`) "
+                            + "VALUES ('" + cname + "','" + cemail + "','" + ccity + "','" + cmobile + "','" + caddress + "','" + dateTime + "','" + CountryMap.get(ccountry) + "')");
 
                 }
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Customer Registration error: " + ex.getMessage(), ex.getMessage());
             }
 
             reset();
             Application.appService.openCustomerList();
-
+            if (this.modal != null) {
+                modal.closeModal();
+            }
         }
 
     }//GEN-LAST:event_jButton1ActionPerformed
