@@ -5,11 +5,15 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.loggers.CommonLogger;
 import ewision.sahan.loggers.DatabaseLogger;
 import ewision.sahan.model.MySQL;
-import ewision.sahan.table.TableActionPanelCellRenderer;
+import ewision.sahan.model.Service;
+import ewision.sahan.model.Stock;
+import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableCenterCellRenderer;
-import ewision.sahan.table.TableSpinnerCellEditor;
+import ewision.sahan.table.spinner.SpinnerChangeEvent;
+import ewision.sahan.table.spinner.TableSpinnerCellEditor;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.Color;
 import java.sql.ResultSet;
@@ -22,6 +26,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
@@ -118,7 +123,26 @@ public class CreatePurchase extends javax.swing.JPanel {
     }
 
     private void setupProductChargeTable() {
-        TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(2, 7, 3);
+        SpinnerChangeEvent event = (int row, JSpinner spinner) -> {
+            try {
+                double qty = Double.parseDouble(String.valueOf(spinner.getValue()));
+
+                double price = Double.parseDouble(String.valueOf(productChargeTable.getValueAt(row, 2)));
+
+                double newTotal = qty * price;
+                productChargeTable.setValueAt(newTotal, row, 7);
+
+                //Stock currentStock = stockMap.get(String.valueOf(productChargeTable.getValueAt(row, 0)));
+                //currentStock.setQuantity(qty);
+
+                calculate();
+            } catch (NumberFormatException | NullPointerException e) {
+                CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " Product Spinner Event: " + e.getMessage(), e.getMessage());
+            }
+        };
+
+        TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(event, 3);
+        //TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(2, 7, 3);
         productChargeTable.getColumnModel().getColumn(4).setCellEditor(tableSpinnerCellEditor);
 
         HashMap<String, ActionButtonEvent> actionButtonEventMap = new HashMap<>();
@@ -135,7 +159,26 @@ public class CreatePurchase extends javax.swing.JPanel {
     }
 
     private void setupServiceChargeTable() {
-        TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(2, 6);
+        SpinnerChangeEvent event = (int row, JSpinner spinner) -> {
+            try {
+                double qty = Double.parseDouble(String.valueOf(spinner.getValue()));
+
+                double price = Double.parseDouble(String.valueOf(serviceChargeTable.getValueAt(row, 2)));
+
+                double newTotal = qty * price;
+                serviceChargeTable.setValueAt(newTotal, row, 6);
+
+                //Service currentService = serviceMap.get(String.valueOf(serviceChargeTable.getValueAt(row, 0)));
+                //currentService.setQuantity(qty);
+
+                calculate();
+            } catch (NumberFormatException | NullPointerException e) {
+                CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " Service Spinner Event: " + e.getMessage(), e.getMessage());
+            }
+        };
+        
+        TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(event);
+        //TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(2, 6);
         serviceChargeTable.getColumnModel().getColumn(3).setCellEditor(tableSpinnerCellEditor);
 
         HashMap<String, ActionButtonEvent> actionButtonEventMap = new HashMap<>();

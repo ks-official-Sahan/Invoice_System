@@ -216,11 +216,13 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         model.addRow(new Object[]{0, "Apple", "1025", "150.00", "-", "Fruit"});
 
-        String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` INNER JOIN `units` ON `units`.`id`=`products`.`unit_id` ";
+        //String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` INNER JOIN `units` ON `units`.`id`=`products`.`unit_id` ";
+        String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` INNER JOIN `units` ON `units`.`id`=`products`.`unit_id` WHERE `product_type`='product' ";
         if (!product.isEmpty()) {
-            query += "WHERE `products`.`name` LIKE '%" + product + "%' "
+            //query += "WHERE `products`.`name` LIKE '%" + product + "%' "
+            query += "AND (`products`.`name` LIKE '%" + product + "%' "
                     + "OR `products`.`id` LIKE '%" + product + "%' "
-                    + "OR `products`.`code` LIKE '%" + product + "%' ";
+                    + "OR `products`.`code` LIKE '%" + product + "%') ";
         }
         query += "ORDER BY `products`.`name` ASC";
 
@@ -252,13 +254,21 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         model.addRow(new Object[]{0, "Service", "0602", "1500.00", "service", "Assembly Charge"});
 
-        String query = "SELECT * FROM `services` INNER JOIN `categories` ON `categories`.`id`=`services`.`categories_id` ";
-        if (!service.isEmpty()) {
-            query += "WHERE `services`.`name` LIKE '%" + service + "%' "
-                    + "OR `services`.`id` LIKE '%" + service + "%' "
-                    + "OR `services`.`code` LIKE '%" + service + "%' ";
+        //String query = "SELECT * FROM `services` INNER JOIN `categories` ON `categories`.`id`=`services`.`categories_id` ";
+        //if (!service.isEmpty()) {
+        //    query += "WHERE `services`.`name` LIKE '%" + service + "%' "
+        //            + "OR `services`.`id` LIKE '%" + service + "%' "
+        //            + "OR `services`.`code` LIKE '%" + service + "%' ";
+        //}
+        //query += "ORDER BY `services`.`name` ASC";
+        String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` WHERE `product_type`='service' ";
+        if (!product.isEmpty()) {
+            //query += "WHERE `products`.`name` LIKE '%" + product + "%' "
+            query += "AND (`products`.`name` LIKE '%" + product + "%' "
+                    + "OR `products`.`id` LIKE '%" + product + "%' "
+                    + "OR `products`.`code` LIKE '%" + product + "%') ";
         }
-        query += "ORDER BY `services`.`name` ASC";
+        query += "ORDER BY `products`.`name` ASC";
 
         try {
             ResultSet resultSet = MySQL.execute(query);
@@ -266,12 +276,18 @@ public class CreateSale1 extends javax.swing.JPanel {
             while (resultSet.next()) {
                 Vector rowData = new Vector();
 
-                rowData.add(resultSet.getString("services.id"));
-                rowData.add(resultSet.getString("services.name"));
-                rowData.add(resultSet.getString("services.code"));
-                rowData.add(resultSet.getString("services.price"));
+                //rowData.add(resultSet.getString("services.id"));
+                //rowData.add(resultSet.getString("services.name"));
+                //rowData.add(resultSet.getString("services.code"));
+                //rowData.add(resultSet.getString("services.price"));
+                //rowData.add(resultSet.getString("categories.name"));
+                //rowData.add(resultSet.getString("services.description"));
+                rowData.add(resultSet.getString("products.id"));
+                rowData.add(resultSet.getString("products.name"));
+                rowData.add(resultSet.getString("products.code"));
+                rowData.add(resultSet.getString("products.price"));
                 rowData.add(resultSet.getString("categories.name"));
-                rowData.add(resultSet.getString("services.description"));
+                rowData.add(resultSet.getString("products.note"));
 
                 model.addRow(rowData);
             }
@@ -465,6 +481,68 @@ public class CreateSale1 extends javax.swing.JPanel {
     //}
     private DialogModal modal;
 
+    
+    private void loadItems() {
+        DefaultTableModel tModel = (DefaultTableModel) serviceChargeTable.getModel();
+        tModel.setRowCount(0);
+
+        double total = 0;
+        //double total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText());
+        try {
+            total = totalLabel.getText().isBlank() ? 0.00 : Double.parseDouble(totalLabel.getText().replace(getCurrency(), ""));
+        } catch (NumberFormatException | NullPointerException e) {
+            CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " loadServiceItems: " + e.getMessage(), e.getMessage());
+        }
+
+        //int count = 0;
+        for (Stock stock : stockMap.values()) {
+            Vector<String> rowData = new Vector<>();
+
+            //rowData.add(String.valueOf(++count));
+            rowData.add(stock.getStringStock_id());
+            rowData.add(stock.getName());
+            //rowData.add(stock.getCode());
+            rowData.add(String.valueOf(stock.getStock_price()));
+            rowData.add(String.valueOf(stock.getStock_quantity()));
+            rowData.add(String.valueOf(stock.getQuantity()));
+            rowData.add(String.valueOf(stock.getStock_discount()));
+            rowData.add(String.valueOf(stock.getStock_tax()));
+
+            double itemTotal = (stock.getQuantity() * stock.getStock_price()) - stock.getStock_discount() + stock.getStock_tax();
+            total += itemTotal;
+
+            rowData.add(String.valueOf(itemTotal));
+
+            tModel.addRow(rowData);
+        }
+
+        for (Service service : serviceMap.values()) {
+            Vector<String> rowData = new Vector<>();
+
+            //rowData.add(String.valueOf(++count));
+            rowData.add(service.getStringId());
+            rowData.add(service.getName());
+            //rowData.add(stock.getCode());
+            rowData.add(String.valueOf(service.getPrice()));
+            rowData.add("N/A");
+            rowData.add(String.valueOf(service.getQuantity()));
+            rowData.add(String.valueOf(service.getDiscount()));
+            rowData.add(String.valueOf(service.getTax()));
+
+            double itemTotal = (service.getQuantity() * service.getPrice()) - service.getDiscount() + service.getTax();
+            total += itemTotal;
+
+            rowData.add(String.valueOf(itemTotal));
+
+            tModel.addRow(rowData);
+        }
+
+        totalLabel.setText(String.valueOf(total));
+        calculate();
+    }
+
+    private HashMap<String, Stock> stockMap = new HashMap<>();
+
     public void addProductToInvoice(Stock stock) {
         //System.out.println(stock.getStock_id() + " : " + stock.getQuantity() + " : " + stock.getStock_discount() + " : " + stock.getStock_tax());
 
@@ -480,7 +558,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 currentStock.setStock_tax(currentStock.getStock_tax() + stock.getStock_tax());
             }
         }
-        loadOrderItems();
+        loadItems();
         toggleProductSearch();
         //reset();
     }
@@ -490,8 +568,6 @@ public class CreateSale1 extends javax.swing.JPanel {
         modal = null;
         System.gc();
     }
-
-    private HashMap<String, Stock> stockMap = new HashMap<>();
 
     private void loadOrderItems() {
         DefaultTableModel tModel = (DefaultTableModel) productChargeTable.getModel();
@@ -531,8 +607,10 @@ public class CreateSale1 extends javax.swing.JPanel {
         calculate();
     }
 
+    private HashMap<String, Service> serviceMap = new HashMap<>();
+
     public void addServiceeToInvoice(Service service) {
-        System.out.println(service.getId() + " : " + service.getQuantity() + " : " + service.getDiscount() + " : " + service.getTax());
+        //System.out.println(service.getId() + " : " + service.getQuantity() + " : " + service.getDiscount() + " : " + service.getTax());
 
         if (serviceMap.get(service.getStringId()) == null) {
             serviceMap.put(service.getStringId(), service);
@@ -546,12 +624,10 @@ public class CreateSale1 extends javax.swing.JPanel {
                 currentService.setTax(currentService.getTax() + service.getTax());
             }
         }
-        loadServiceItems();
+        loadItems();
         toggleServiceSearch();
         //reset();
     }
-
-    private HashMap<String, Service> serviceMap = new HashMap<>();
 
     private void loadServiceItems() {
         DefaultTableModel tModel = (DefaultTableModel) serviceChargeTable.getModel();
@@ -574,6 +650,7 @@ public class CreateSale1 extends javax.swing.JPanel {
             rowData.add(service.getName());
             //rowData.add(stock.getCode());
             rowData.add(String.valueOf(service.getPrice()));
+            rowData.add("N/A");
             rowData.add(String.valueOf(service.getQuantity()));
             rowData.add(String.valueOf(service.getDiscount()));
             rowData.add(String.valueOf(service.getTax()));
@@ -598,7 +675,6 @@ public class CreateSale1 extends javax.swing.JPanel {
         }
 
         if (isService) {
-            System.out.println("2");
             for (Service service : serviceMap.values()) {
                 subtotal += ((service.getPrice() * service.getQuantity()) - service.getDiscount()) + service.getTax();
             }
@@ -1241,7 +1317,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Product", "Unit Price", "Stock", "Qty", "Discount", "Tax", "Subtotal", "Action"
+                "ID", "Description", "Unit Price", "Stock", "Qty", "Discount", "Tax", "Subtotal", "Action"
             }
         ) {
             boolean[] canEdit = new boolean [] {
