@@ -11,7 +11,7 @@ import java.util.logging.Level;
  */
 public class Stock extends Product {
 
-    protected int stock_id;
+    protected int stock_id = 0;
     protected String stock_name;
     protected String stock_code;
     protected double stock_cost;

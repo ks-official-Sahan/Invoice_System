@@ -331,11 +331,11 @@ public class CreateProduct1 extends javax.swing.JPanel {
 
             String query = "INSERT INTO "
                     + "`products` (`code`, `name`, `cost`, `price`, `category_id`, `brand_id`, `unit_id`, `unit_sale_id`, `unit_purchase_id`, `TaxNet`, "
-                    + "`note`, `stock_alert`, `is_variant`, `is_imei`, `is_active`, `created_at`, `barcode_type_id`, `tax_method_id`) "
+                    + "`note`, `stock_alert`, `is_variant`, `is_imei`, `is_active`, `created_at`, `barcode_type_id`, `tax_method_id`, `product_type`) "
                     + "VALUES ('" + barcode + "', '" + name + "', '" + cost + "', '" + price + "', '" + categoryMap.get(category) + "', '" + brandMap.get(brand) + "', "
                     + "'" + unitMap.get(productUnit) + "', '" + unitMap.get(saleUnit) + "', '" + unitMap.get(purchaseUnit) + "', '" + tax + "', '" + description + "', "
                     + "'" + stockAlert + "', '" + (isVariant ? "1" : "0") + "', '" + (isIMEI ? "1" : "0") + "', 1, "
-                    + "'" + dateTime + "', '" + barcodeTypeMap.get(barcodeType) + "', '" + taxMethodMap.get(taxType) + "')";
+                    + "'" + dateTime + "', '" + barcodeTypeMap.get(barcodeType) + "', '" + taxMethodMap.get(taxType) + "', 'product')";
 
 //            if (!category.equalsIgnoreCase("select")) {
 //                query = "INSERT INTO `products` (`code`, `cost`, `price`, `categories_id`, `name`, `barcode_type_id`, `description`) VALUES ('" + barcode + "', '" + cost + "', '" + price + "', '" + categoryMap.get(category) + "', '" + name + "', '" + barcodeTypeMap.get(barcodeType) + "', '" + description + "')";

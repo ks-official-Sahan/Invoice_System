@@ -703,7 +703,8 @@ public class AddStock extends javax.swing.JPanel {
         if (createPurchase != null) {
             String code = codeField.getText();
             String quantity = String.valueOf(quantitySpinner.getValue());
-            String currentQuantity = quantity;
+            String currentQuantity = "0";
+            //String currentQuantity = quantity;
             String cost = costField.getText();
             String price = priceField.getText();
             String tax = taxField.getText();
@@ -722,7 +723,8 @@ public class AddStock extends javax.swing.JPanel {
                     stock = new Stock();
                     stock.setProduct(product);
                 } else {
-                    currentQuantity = String.valueOf(stock.getStock_quantity() + Double.parseDouble(quantity));
+                    currentQuantity = String.valueOf(stock.getStock_quantity());
+                    //currentQuantity = String.valueOf(stock.getStock_quantity() + Double.parseDouble(quantity));
                 }
 
                 if (isExpire.isSelected()) {

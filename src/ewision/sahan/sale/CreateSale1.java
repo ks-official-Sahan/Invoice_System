@@ -875,7 +875,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 //            warehouseField.requestFocus();
 //            this.warehouse = "0";
         } else if (itemCount == 0 && serviceCount == 0) {
-            JOptionPane.showMessageDialog(this, "Please add atlease one Product or a Service!", "Warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please add atleast one Product or a Service!", "Warning", JOptionPane.WARNING_MESSAGE);
             productField.requestFocus();
             if (itemCount == 0 && isServicesBox.isSelected()) {
                 serviceField.requestFocus();
@@ -1008,14 +1008,22 @@ public class CreateSale1 extends javax.swing.JPanel {
                             double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
                             String saleItemQuery = "INSERT INTO "
                                     + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
-                                    + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`) "
+                                    + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`, `stocks_id`) "
                                     + "VALUES ('" + currentDate + "', '" + id + "', '" + stock.getStringId() + "', NULL, NULL, '" + stock.getStock_price() + "', NULL, "
-                                    + "'" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, 2);";
+                                    + "'" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, 2, '" + stock.getStock_id() + "');";
                             try {
                                 MySQL.execute(saleItemQuery);
                             } catch (SQLException e) {
                                 isComplete = false;
                                 DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale Details row: " + e.getMessage(), e.getMessage());
+                            }
+
+                            String stockQuery = "UPDATE `stocks` SET `quantity`=`quantity`-'" + stock.getQuantity() + "' WHERE `id`='" + stock.getStock_id() + "';";
+                            try {
+                                MySQL.execute(stockQuery);
+                            } catch (SQLException e) {
+                                isComplete = false;
+                                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit stock update row: " + e.getMessage(), e.getMessage());
                             }
                             //stock.getStringStock_id();
                         }

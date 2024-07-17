@@ -19,6 +19,7 @@ import ewision.sahan.table.spinner.TableSpinnerCellEditor;
 import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.utils.SQLDateFormatter;
 import java.awt.Color;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
@@ -41,7 +42,7 @@ import javax.swing.table.DefaultTableModel;
 public class CreatePurchase1 extends javax.swing.JPanel {
 
     /**
-     * Creates new form CreateSale
+     * Creates new form CreatePurchase
      */
     public CreatePurchase1() {
         initComponents();
@@ -130,6 +131,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                 Stock currentStock = stockMap.get(String.valueOf(productChargeTable.getValueAt(row, 0)));
                 if (currentStock != null) {
                     currentStock.setQuantity(qty);
+                    //currentStock.setStock_quantity(currentStock.getStock_quantity() + (qty - currentStock.getStock_quantity()));
                 } else {
                     Service currentService = serviceMap.get(String.valueOf(productChargeTable.getValueAt(row, 0)));
                     if (currentService != null) {
@@ -845,24 +847,24 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
     /*
     *
-    * Sale Submission
+    * Purchase Submission
      */
     private boolean submitPurchase() {
         Date date;
 
-        String customerName = supplierField.getText();
-        String customerId = this.supplier;
+        String supplierName = supplierField.getText();
+        String supplierId = this.supplier;
 
         String warehouseName = warehouseField.getText();
         String warehouseId = this.warehouse;
 
-        customerName = customerName.isBlank() ? "walk-in-customer" : supplierField.getText();
+        supplierName = supplierName.isBlank() ? "walk-in-customer" : supplierField.getText();
         warehouseName = warehouseName.isBlank() ? "Default" : warehouseField.getText();
 
         String referenceNo = referenceNoField.getText();
 
         int itemCount = stockMap.size();
-        int serviceCount = serviceMap.size();
+        //int serviceCount = serviceMap.size();
 
         String payment = paymentField.getText();
 
@@ -872,16 +874,17 @@ public class CreatePurchase1 extends javax.swing.JPanel {
         } else if (jDateChooser1.getDate() == null) {
             JOptionPane.showMessageDialog(this, "Please select Date!", "Warning", JOptionPane.WARNING_MESSAGE);
             jDateChooser1.requestFocus();
-//        } else if (customerName.isBlank() && !customerId.equals("0")) {
-//            JOptionPane.showMessageDialog(this, "Please select Customer!", "Warning", JOptionPane.WARNING_MESSAGE);
-//            supplierField.requestFocus();
-//            this.customer = "0";
+        } else if (supplierName.isBlank() && !supplierId.equals("0")) {
+            JOptionPane.showMessageDialog(this, "Please select Customer!", "Warning", JOptionPane.WARNING_MESSAGE);
+            supplierField.requestFocus();
+            this.supplier = "0";
 //        } else if (warehouseName.isBlank() && !warehouseId.equals("0")) {
 //            JOptionPane.showMessageDialog(this, "Please select Warehouse!", "Warning", JOptionPane.WARNING_MESSAGE);
 //            warehouseField.requestFocus();
 //            this.warehouse = "0";
-        } else if (itemCount == 0 && serviceCount == 0) {
-            JOptionPane.showMessageDialog(this, "Please add atlease one Product or a Service!", "Warning", JOptionPane.WARNING_MESSAGE);
+            //} else if (itemCount == 0 && serviceCount == 0) {
+        } else if (itemCount == 0) {
+            JOptionPane.showMessageDialog(this, "Please add atleast one Product!", "Warning", JOptionPane.WARNING_MESSAGE);
             productField.requestFocus();
             if (itemCount == 0 && isServicesBox.isSelected()) {
                 serviceField.requestFocus();
@@ -921,7 +924,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                         return false;
                     }
                 } catch (NumberFormatException | NullPointerException e) {
-                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " submit sale payment|total: " + e.getMessage(), e.getMessage());
+                    CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " submit purchase payment|total: " + e.getMessage(), e.getMessage());
                 }
 
                 /* GUI Data */
@@ -929,7 +932,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                 SQLDateFormatter dateFormatter = new SQLDateFormatter();
                 String stringDate = dateFormatter.getStringDate(date);
 
-                customerName = customerName.isBlank() ? "walk-in-customer" : supplierField.getText();
+                supplierName = supplierName.isBlank() ? "default-supplier" : supplierField.getText();
                 warehouseName = warehouseName.isBlank() ? "Default" : warehouseField.getText();
 
                 /* Calculated Data */
@@ -981,7 +984,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
                 try {
                     /* Data Insertion */
-                    ResultSet refResult = MySQL.execute("SELECT * FROM `sales` WHERE `Ref`='" + referenceNo + "'");
+                    ResultSet refResult = MySQL.execute("SELECT * FROM `purchases` WHERE `Ref`='" + referenceNo + "'");
 
                     String currentDate = dateFormatter.getStringDate(new Date());
                     String currentDateTime = dateFormatter.getStringDate(new Date(), "yyyy-MM-dd HH:mm:ss");
@@ -997,60 +1000,121 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                         //String id = String.valueOf(mil).substring(3);
                         //System.out.println(id);
 
-                        String query = "INSERT INTO `sales` "
-                                + "(`id`, `user_id`, `date`, `Ref`, `is_pos`, `client_id`, `warehouse_id`, `tax_rate`, `TaxNet`, `discount`, `shipping`, "
-                                + "`GrandTotal`, `paid_amount`, `payment_statut`, `statut`, `notes`, `created_at`, `updated_at`, `deleted_at`, `shipping_status`) "
-                                + "VALUES ('" + id + "', '2', '" + stringDate + "', '" + referenceNo + "', 0, '" + customerId + "', '" + warehouseId + "', '" + orderTax + "', '" + tax + "', '" + orderDiscount + "', '" + orderShipping + "', "
-                                + "'" + total + "', '" + payment + "', '" + paymentStatus + "', '" + status + "', '" + note + "', '" + currentDateTime + "', NULL, NULL, NULL)";
+                        String purchaseQuery = "INSERT INTO `purchases` "
+                                + "(`id`, `user_id`, `Ref`, `date`, `provider_id`, `warehouse_id`, `tax_rate`, `TaxNet`, `discount`, `shipping`, "
+                                + "`GrandTotal`, `paid_amount`, `statut`, `payment_statut`, `notes`, `created_at`, `updated_at`, `deleted_at`) "
+                                + "VALUES ('" + id + "', '2', '" + referenceNo + "', '" + stringDate + "', '" + supplierId + "', '" + warehouseId + "', '" + orderTax + "', '" + tax + "', '" + orderDiscount + "', '" + orderShipping + "', "
+                                + "'" + total + "', '" + payment + "', '" + status + "', '" + paymentStatus + "', '" + note + "', '" + currentDateTime + "', NULL, NULL)";
 
                         try {
-                            MySQL.execute(query);
+                            MySQL.execute(purchaseQuery);
                         } catch (SQLException e) {
                             isComplete = false;
-                            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale row: " + e.getMessage(), e.getMessage());
+                            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Purchase row: " + e.getMessage(), e.getMessage());
                         }
 
                         for (Stock stock : stockMap.values()) {
-                            double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
-                            String saleItemQuery = "INSERT INTO "
-                                    + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
-                                    + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`) "
-                                    + "VALUES ('" + currentDate + "', '" + id + "', '" + stock.getStringId() + "', NULL, NULL, '" + stock.getStock_price() + "', NULL, "
-                                    + "'" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, 2);";
-                            try {
-                                MySQL.execute(saleItemQuery);
-                            } catch (SQLException e) {
-                                isComplete = false;
-                                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale Details row: " + e.getMessage(), e.getMessage());
+                            if (stock.getStock_id() == 0) {
+
+                                String[] keys = {"id"};
+                                String stockQuery = "INSERT INTO "
+                                        + "`stocks` (`name`, `code`, `cost`, `price`, `is_expire`, `exp_date`, `mfd_date`, `quantity`, `products_id`) "
+                                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                                try {
+
+                                    //PreparedStatement preparedStatement = MySQL.getPreparedStatement(stockQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+                                    PreparedStatement preparedStatement = MySQL.getPreparedStatement(stockQuery, keys);
+
+                                    preparedStatement.setString(1, stock.getStock_name());
+                                    preparedStatement.setString(2, stock.getStock_code());
+                                    preparedStatement.setDouble(3, stock.getStock_cost());
+                                    preparedStatement.setDouble(4, stock.getStock_price());
+                                    preparedStatement.setInt(5, (stock.getExp_date() == null ? 0 : 1));
+                                    preparedStatement.setDate(6, (java.sql.Date) stock.getExp_date());
+                                    preparedStatement.setDate(7, (java.sql.Date) stock.getExp_date());
+                                    preparedStatement.setDouble(8, stock.getStock_quantity() + stock.getQuantity());
+                                    preparedStatement.setInt(9, stock.getId());
+
+                                    ResultSet resultSet = MySQL.executeInsert(preparedStatement);
+                                    
+                                    if (resultSet.next()) {
+                                        double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
+                                        String purchaseItemQuery = "INSERT INTO "
+                                                + "`purchase_details` (`cost`, `purchase_unit_id`, `TaxNet`, `discount`, `discount_method`, `purchase_id`, `product_id`, "
+                                                + "`product_variant_id`, `imei_number`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`, `stocks_id`) "
+                                                + "VALUES ('" + stock.getStock_cost() + "', NULL, '" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + id + "', '" + stock.getStringId() + "', "
+                                                + "NULL, NULL, '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, NULL, '" + resultSet.getString("id") + "')";
+                                        System.out.println(purchaseItemQuery);
+                                        try {
+                                            MySQL.execute(purchaseItemQuery);
+                                        } catch (SQLException e) {
+                                            isComplete = false;
+                                            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Purchase Details row: " + e.getMessage(), e.getMessage());
+                                        }
+                                    } else {
+                                        JOptionPane.showMessageDialog(this, "Stock Id Retrieve Failed", "Warning", JOptionPane.WARNING_MESSAGE);
+                                    }
+                                } catch (SQLException e) {
+                                    isComplete = false;
+                                    DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Stock Detail row: " + e.getMessage(), e.getMessage());
+                                }
+                            } else {
+
+                                double qty = stock.getStock_quantity() + stock.getQuantity();
+                                String stockQuery = "UPDATE `stocks` SET `quantity`='" + qty + "' WHERE `id`='" + stock.getStock_id() + "';";
+                                //String stockQuery = "UPDATE `stocks` SET `quantity`=`quantity`+'"+stock.getQuantity()+"' WHERE `id`='" + stock.getStock_id() + "';";
+                                try {
+                                    MySQL.execute(stockQuery);
+                                } catch (SQLException e) {
+                                    isComplete = false;
+                                    DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Stock Update row: " + e.getMessage(), e.getMessage());
+                                }
                             }
+
                             //stock.getStringStock_id();
                         }
-                        for (Service service : serviceMap.values()) {
-                            double itemTotal = service.getPrice() * service.getQuantity() - service.getDiscount() + service.getTax();
-                            String saleItemQuery = "INSERT INTO "
-                                    + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
-                                    + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`) "
-                                    + "VALUES ('" + currentDate + "', '" + id + "', '" + service.getStringId() + "', NULL, NULL, '" + service.getPrice() + "', NULL, "
-                                    + "'" + service.getTax() + "', '" + service.getDiscount() + "', '1', '" + itemTotal + "', '" + service.getQuantity() + "', '" + currentDateTime + "', NULL, 2);";
-                            try {
-                                MySQL.execute(saleItemQuery);
-                            } catch (SQLException e) {
-                                isComplete = false;
-                                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale Details row: " + e.getMessage(), e.getMessage());
-                            }
-                            //service.getStringId();
-                        }
+//                        for (Stock stock : stockMap.values()) {
+//                            double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
+//                            String purchaseItemQuery = "INSERT INTO "
+//                                    + "`purchase_details` (`date`, `purchase_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `purchase_unit_id`, "
+//                                    + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`) "
+//                                    + "VALUES ('" + currentDate + "', '" + id + "', '" + stock.getStringId() + "', NULL, NULL, '" + stock.getStock_price() + "', NULL, "
+//                                    + "'" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, 2);";
+//                            try {
+//                                MySQL.execute(purchaseItemQuery);
+//                            } catch (SQLException e) {
+//                                isComplete = false;
+//                                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Purchase Details row: " + e.getMessage(), e.getMessage());
+//                            }
+//                            //stock.getStringStock_id();
+//                        }
+//                        for (Service service : serviceMap.values()) {
+//                            double itemTotal = service.getPrice() * service.getQuantity() - service.getDiscount() + service.getTax();
+//                            String purchaseItemQuery = "INSERT INTO "
+//                                    + "`purchase_details` (`date`, `purchase_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `purchase_unit_id`, "
+//                                    + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`) "
+//                                    + "VALUES ('" + currentDate + "', '" + id + "', '" + service.getStringId() + "', NULL, NULL, '" + service.getPrice() + "', NULL, "
+//                                    + "'" + service.getTax() + "', '" + service.getDiscount() + "', '1', '" + itemTotal + "', '" + service.getQuantity() + "', '" + currentDateTime + "', NULL, 2);";
+//                            try {
+//                                MySQL.execute(purchaseItemQuery);
+//                            } catch (SQLException e) {
+//                                isComplete = false;
+//                                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Purchase Details row: " + e.getMessage(), e.getMessage());
+//                            }
+//                            //service.getStringId();
+//                        }
 
                         if (isComplete) {
                             JOptionPane.showMessageDialog(this, "Successfully completed!", "Successful", JOptionPane.INFORMATION_MESSAGE);
-                            Application.appService.openCreateSale();
+                            Application.appService.openCreatePurchase();
                         } else {
                             JOptionPane.showMessageDialog(this, "Something went wrong!", "Warning", JOptionPane.WARNING_MESSAGE);
                         }
                     }
 
                 } catch (SQLException ex) {
-                    DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Ref Search: " + ex.getMessage() + " -- " + ex.getLocalizedMessage(), ex.getMessage());
+                    DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Ref Search: " + ex.getMessage() + " -- " + ex.getLocalizedMessage(), ex.getMessage());
                 }
 
             }

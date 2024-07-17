@@ -63,10 +63,33 @@ public class MySQL {
         }
     }
 
+    public static PreparedStatement getPreparedStatement(String query, String[] generatedKeys) throws SQLException {
+        try {
+            PreparedStatement pStatement = connection.prepareStatement(query, generatedKeys);
+            return pStatement;
+        } catch (NullPointerException e) {
+            DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getLocalizedMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());
+            return null;
+        }
+    }
+
     public static ResultSet executeSelect(PreparedStatement pStatement) throws SQLException {
         try {
             ResultSet resultSet = pStatement.executeQuery();
             return resultSet;
+        } catch (NullPointerException e) {
+            DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getLocalizedMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());
+            return null;
+        }
+    }
+
+    public static ResultSet executeInsert(PreparedStatement pStatement) throws SQLException {
+        try {
+            if (pStatement.executeUpdate() > 0) {
+                ResultSet resultSet = pStatement.getGeneratedKeys();
+                return resultSet;
+            }
+            throw new SQLException("No results found");
         } catch (NullPointerException e) {
             DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getLocalizedMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());
             return null;
