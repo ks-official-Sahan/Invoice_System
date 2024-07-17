@@ -85,7 +85,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Times New Roman" size="24" style="1"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Create Sale"/>
+            <Property name="text" type="java.lang.String" value="Create Purchase"/>
           </Properties>
         </Component>
       </SubComponents>

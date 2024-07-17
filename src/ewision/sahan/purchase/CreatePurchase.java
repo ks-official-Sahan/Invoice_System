@@ -532,7 +532,7 @@ public class CreatePurchase extends javax.swing.JPanel {
         headerPanel.setMinimumSize(new java.awt.Dimension(20, 5));
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
-        jLabel1.setText("Create Sale");
+        jLabel1.setText("Create Purchase");
 
         javax.swing.GroupLayout headerPanelLayout = new javax.swing.GroupLayout(headerPanel);
         headerPanel.setLayout(headerPanelLayout);

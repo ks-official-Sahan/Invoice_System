@@ -89,7 +89,7 @@ public class Application extends javax.swing.JFrame {
                     appService.openCreateSale();
                 case 6 ->
                     // Sale
-                    appService.openCreatePurchase();
+                    appService.openPurchaseList();
             }
         });
 

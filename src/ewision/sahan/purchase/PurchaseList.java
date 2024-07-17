@@ -1,5 +1,4 @@
-package ewision.sahan.sale;
-
+package ewision.sahan.purchase;
 import ewision.sahan.application.Application;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
@@ -24,12 +23,12 @@ import java.util.logging.Logger;
  *
  * @author ksoff
  */
-public class SalesList extends javax.swing.JPanel {
+public class PurchaseList extends javax.swing.JPanel {
 
     /**
      * Creates new form NewJPanel
      */
-    public SalesList() {
+    public PurchaseList() {
         initComponents();
         init();
     }
@@ -41,7 +40,7 @@ public class SalesList extends javax.swing.JPanel {
     private void init() {
         cmdSearch.setIcon(new ImageScaler().getSvgIcon("/search", 28));
         cmdSearch.setContentAreaFilled(false);
-        renderTable();
+//        renderTable();
         //loadTestData();
         loadSales(txt);
     }
@@ -88,31 +87,30 @@ public class SalesList extends javax.swing.JPanel {
     }
 
     private void loadSales(String txt) {
-
-        
-          try {
-            String query = "SELECT * FROM `sales` INNER JOIN `users` ON `users`.`id`=`sales`.`user_id` INNER JOIN `clients` ON `clients`.`id`=`sales`.`client_id` "
-                    + "WHERE `user`.`username` LIKE '%"+txt+"%' OR `client`.`name` LIKE '%"+txt+"%' ";
+              try {
+            String query = "SELECT * FROM `purchases` INNER JOIN `providers` ON `providers`.`id`=`purchases`.`provider_id` "
+                    + "WHERE `providers`.`name` LIKE '%"+txt+"%' OR `purchases`.`date` LIKE '%"+txt+"%' ";
             ResultSet resultSet = MySQL.execute(query);
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.setRowCount(0);
 
-            double Due = resultSet.getDouble("sales.GrandTotal") - resultSet.getDouble("sales.GrandTotal");
+            double Due = resultSet.getDouble("purchases.GrandTotal") - resultSet.getDouble("purchases.paid_amount");
 
             while (resultSet.next()) {
                 Vector row = new Vector();
                 row.add(false);
-                row.add(resultSet.getInt("date"));
-                row.add(resultSet.getString("users.username"));
-                row.add(resultSet.getString("clients.phone"));
+                row.add(resultSet.getDate("purchases.date"));
+                row.add(resultSet.getString("providers.name"));
                 row.add(resultSet.getString(""));
-                row.add(resultSet.getString("sales.status"));
-                row.add(resultSet.getDouble("sales.GrandTotal"));
-                row.add(resultSet.getDouble("sales.paid_amount"));
+                row.add(resultSet.getString("purchases.status"));
+                row.add(resultSet.getDouble("purchases.GrandTotal"));
+                row.add(resultSet.getDouble("purchases.paid_amount"));
                 row.add(Due);
-                row.add(resultSet.getDouble("sales.payment_status"));
-                row.add(resultSet.getDouble("sales.shipping_status"));
+                row.add(resultSet.getString("sales.payment_status"));
+                
+                model.addRow(row);
+                
             }
         } catch (SQLException ex) {
             DatabaseLogger.logger.log(Level.SEVERE, "Products loading error: " + ex.getMessage(), ex.getMessage());
@@ -150,7 +148,7 @@ public class SalesList extends javax.swing.JPanel {
         jPanel1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
-        jLabel1.setText("Sales List");
+        jLabel1.setText("Purchase List");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -299,14 +297,14 @@ public class SalesList extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Date", "Supplier", "Warehouse", "Status", "Grand Total", "Paid", "Due", "Payment Status", "Action"
+                "Date", "Added By", "Customer", "Warehouse", "Status", "Grand Total", "Paid", "Due", "Payment Status", "Shipping status", "Action"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -342,8 +340,10 @@ public class SalesList extends javax.swing.JPanel {
             jTable1.getColumnModel().getColumn(5).setResizable(false);
             jTable1.getColumnModel().getColumn(6).setResizable(false);
             jTable1.getColumnModel().getColumn(7).setResizable(false);
-            jTable1.getColumnModel().getColumn(8).setMinWidth(136);
-            jTable1.getColumnModel().getColumn(8).setMaxWidth(150);
+            jTable1.getColumnModel().getColumn(8).setResizable(false);
+            jTable1.getColumnModel().getColumn(9).setResizable(false);
+            jTable1.getColumnModel().getColumn(10).setMinWidth(136);
+            jTable1.getColumnModel().getColumn(10).setMaxWidth(150);
         }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -376,7 +376,7 @@ public class SalesList extends javax.swing.JPanel {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // Create
-        Application.appService.openCreatePurchase();
+        Application.appService.openCreateSale();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed

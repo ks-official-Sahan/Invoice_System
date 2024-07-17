@@ -17,6 +17,7 @@ import ewision.sahan.product.CreateProduct1;
 import ewision.sahan.services.CreateService;
 import ewision.sahan.product.ProductList;
 import ewision.sahan.purchase.CreatePurchase;
+import ewision.sahan.purchase.PurchaseList;
 import ewision.sahan.sale.CreateSale;
 import ewision.sahan.sale.CreateSale1;
 import ewision.sahan.services.ServiceList;
@@ -94,6 +95,10 @@ public class AppServiceIMPL extends AppServiceAbstract {
     public void openSupplierList() {
         SupplierList supplierList = new SupplierList();
         showMainPanel((JPanel) supplierList);
+    }
+    public void openPurchaseList() {
+        PurchaseList purchaseList  = new PurchaseList();
+        showMainPanel((JPanel) purchaseList);
     }
 
     @Override
