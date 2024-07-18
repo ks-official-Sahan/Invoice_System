@@ -18,8 +18,10 @@ import ewision.sahan.services.CreateService;
 import ewision.sahan.product.ProductList;
 import ewision.sahan.purchase.CreatePurchase;
 import ewision.sahan.purchase.CreatePurchase1;
+import ewision.sahan.purchase.PurchaseList;
 import ewision.sahan.sale.CreateSale;
 import ewision.sahan.sale.CreateSale1;
+import ewision.sahan.sale.SalesList;
 import ewision.sahan.services.ServiceList;
 import ewision.sahan.service.AppService;
 import java.awt.BorderLayout;
@@ -77,29 +79,45 @@ public class AppServiceIMPL extends AppServiceAbstract {
     }
 
     //////////// Chathura
+    @Override
     public void openCustomerList() {
         CustomerList customerList = new CustomerList();
         showMainPanel((JPanel) customerList);
     }
 
+    @Override
     public void openCreateCustomer() {
         CreateCustomer createCustomer = new CreateCustomer();
         showMainPanel((JPanel) createCustomer);
     }
 
+    @Override
     public void openCreateSupplier() {
         CreateSupplier createSupplier = new CreateSupplier();
         showMainPanel((JPanel) createSupplier);
     }
 
+    @Override
     public void openSupplierList() {
         SupplierList supplierList = new SupplierList();
         showMainPanel((JPanel) supplierList);
     }
 
     @Override
+    public void openSaleList() {
+        SalesList saleList = new SalesList();
+        showMainPanel((JPanel) saleList);
+    }
+
+    @Override
     public void openCreatePurchase() {
         CreatePurchase1 createPurchase = new CreatePurchase1();
         showMainPanel((JPanel) createPurchase);
+    }
+
+    @Override
+    public void openPurchaseList() {
+        PurchaseList purchaseList = new PurchaseList();
+        showMainPanel((JPanel) purchaseList);
     }
 }

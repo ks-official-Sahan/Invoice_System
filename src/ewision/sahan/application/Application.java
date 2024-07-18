@@ -86,10 +86,12 @@ public class Application extends javax.swing.JFrame {
                     appService.openSupplierList();
                 case 5 ->
                     // Sale
-                    appService.openCreateSale();
+                    //appService.openCreateSale();
+                    appService.openSaleList();
                 case 6 ->
-                    // Sale
-                    appService.openCreatePurchase();
+                    // Purchase
+                    //appService.openCreatePurchase();
+                    appService.openPurchaseList();
             }
         });
 

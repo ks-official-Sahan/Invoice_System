@@ -166,7 +166,7 @@ public class SelectStock1 extends javax.swing.JPanel {
         double quantity = Double.valueOf(String.valueOf(quantitySpinner.getValue()));
         double discount = Double.parseDouble(discountField.getText());
         double tax = Double.parseDouble(taxField.getText());
-        subTotalField.setText(String.valueOf(((stock == null) ? 0 : stock.getStock_price() * quantity) - discount - tax));
+        subTotalField.setText(String.valueOf(((stock == null) ? 0 : stock.getStock_price() * quantity) - discount + tax));
     }
 
     /**

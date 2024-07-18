@@ -25,5 +25,17 @@ public interface AppService {
 
     public void openProductList();
 
+    public void openSaleList();
+
     public void openServiceList();
+
+    public void openPurchaseList();
+
+    public void openCustomerList();
+
+    public void openCreateCustomer();
+
+    public void openCreateSupplier();
+
+    public void openSupplierList();
 }

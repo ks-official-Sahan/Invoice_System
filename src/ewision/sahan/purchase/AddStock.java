@@ -376,9 +376,9 @@ public class AddStock extends javax.swing.JPanel {
             expireDateContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(expireDateContainerLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(expireDateContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4))
+                .addGroup(expireDateContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(expireDateContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -713,8 +713,9 @@ public class AddStock extends javax.swing.JPanel {
             Date exp = jDateChooser1.getDate();
             Date mfd = jDateChooser2.getDate();
 
-            if (code.isBlank()) {
-            } else if (cost.isBlank()) {
+            //if (code.isBlank()) {
+            //} else if (cost.isBlank()) {
+            if (cost.isBlank()) {
             } else if (price.isBlank() || price.equals("0.00")) {
             } else if (discount.isBlank()) {
             } else if (tax.isBlank()) {

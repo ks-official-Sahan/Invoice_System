@@ -12,6 +12,7 @@ import ewision.sahan.model.MySQL;
 import ewision.sahan.model.Product;
 import ewision.sahan.model.Service;
 import ewision.sahan.model.Stock;
+import ewision.sahan.report.PrintReport;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.spinner.SpinnerChangeEvent;
@@ -34,6 +35,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 
 /**
  *
@@ -63,6 +65,8 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
     private void initData() {
         jDateChooser1.setDate(new Date());
+        int ref = (int) System.currentTimeMillis();
+        referenceNoField.setText(String.valueOf((int) (ref > 0 ? ref : -(ref))));
         //loadOrderProducts("");
         loadStatus();
         loadPaymentStatus();
@@ -380,9 +384,9 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
         model.addRow(new Object[]{0, "default-supplier", "default", "default"});
 
-        String query = "SELECT * FROM `providers` ";
+        String query = "SELECT * FROM `providers` WHERE `id` <> '0' ";
         if (!supplier.isEmpty()) {
-            query += "  WHERE `name` LIKE '%" + supplier + "%' "
+            query += " AND `name` LIKE '%" + supplier + "%' "
                     + "OR `email` LIKE '%" + supplier + "%' "
                     + "OR `phone` LIKE '%" + supplier + "%' "
                     + "OR `id` LIKE '%" + supplier + "%' "
@@ -781,7 +785,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
         double subtotal = 0.00;
 
         for (Stock stock : stockMap.values()) {
-            subtotal += ((stock.getStock_price() * stock.getQuantity()) - stock.getStock_discount()) + stock.getStock_tax();
+            subtotal += ((stock.getStock_cost() * stock.getQuantity()) - stock.getStock_discount()) + stock.getStock_tax();
         }
 
         if (isService) {
@@ -875,7 +879,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Please select Date!", "Warning", JOptionPane.WARNING_MESSAGE);
             jDateChooser1.requestFocus();
         } else if (supplierName.isBlank() && !supplierId.equals("0")) {
-            JOptionPane.showMessageDialog(this, "Please select Customer!", "Warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select Provider!", "Warning", JOptionPane.WARNING_MESSAGE);
             supplierField.requestFocus();
             this.supplier = "0";
 //        } else if (warehouseName.isBlank() && !warehouseId.equals("0")) {
@@ -894,8 +898,11 @@ public class CreatePurchase1 extends javax.swing.JPanel {
             String status = String.valueOf(statusComboBox.getSelectedItem());
             String paymentStatus = String.valueOf(paymentStatusComboBox.getSelectedItem());
 
+            double paymentAmount = Double.parseDouble(payment);
+            double total = Double.parseDouble(totalLabel1.getText().replace(currency, ""));
+
             boolean isValidPayment = true;
-            if (payment.isBlank() || payment.equals("0.00")) {
+            if (payment.isBlank() || payment.equals("0.00") || total > paymentAmount) {
                 if (paymentStatus.equalsIgnoreCase("paid")) {
                     isValidPayment = false;
                     int result = JOptionPane.showConfirmDialog(this, "Are you sure payment been low? Does it need to make partial?", "Payment Warning", JOptionPane.YES_NO_OPTION);
@@ -916,8 +923,6 @@ public class CreatePurchase1 extends javax.swing.JPanel {
             if (isValidPayment) {
 
                 try {
-                    double paymentAmount = Double.parseDouble(payment);
-                    double total = Double.parseDouble(totalLabel1.getText().replace(currency, ""));
                     if (paymentStatus.equalsIgnoreCase("paid") && total > paymentAmount) {
                         JOptionPane.showMessageDialog(this, "Payment is not enough", "Invalid Payment", JOptionPane.WARNING_MESSAGE);
                         paymentField.requestFocus();
@@ -961,14 +966,14 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                     CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate shipping: " + e.getMessage(), e.getMessage());
                 }
 
-                double sub = (subtotal + orderDiscount) - orderShipping;
+                double sub = (subtotal - orderDiscount) + orderShipping;
                 int tax = (int) (sub * (orderTax / 100));
 
-                double total = 0.00;
+                total = 0.00;
                 //total = subtotal - orderDiscount + orderShipping + orderTax;
                 total = sub + tax;
 
-                double paymentAmount = 0.00;
+                paymentAmount = 0.00;
                 try {
                     paymentAmount = Double.parseDouble(String.valueOf(paymentField.getText()));
                     //payment = Double.valueOf(String.valueOf(paymentField.getText().replace(currency, "")));
@@ -1003,6 +1008,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                         String purchaseQuery = "INSERT INTO `purchases` "
                                 + "(`id`, `user_id`, `Ref`, `date`, `provider_id`, `warehouse_id`, `tax_rate`, `TaxNet`, `discount`, `shipping`, "
                                 + "`GrandTotal`, `paid_amount`, `statut`, `payment_statut`, `notes`, `created_at`, `updated_at`, `deleted_at`) "
+                                //+ "VALUES ('" + id + "', '2', '" + referenceNo + "', '" + stringDate + "', " + (supplierId != "0" ? supplierId : "NULL") + ", '" + warehouseId + "', '" + orderTax + "', '" + tax + "', '" + orderDiscount + "', '" + orderShipping + "', "
                                 + "VALUES ('" + id + "', '2', '" + referenceNo + "', '" + stringDate + "', '" + supplierId + "', '" + warehouseId + "', '" + orderTax + "', '" + tax + "', '" + orderDiscount + "', '" + orderShipping + "', "
                                 + "'" + total + "', '" + payment + "', '" + status + "', '" + paymentStatus + "', '" + note + "', '" + currentDateTime + "', NULL, NULL)";
 
@@ -1013,66 +1019,67 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                             DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Purchase row: " + e.getMessage(), e.getMessage());
                         }
 
-                        for (Stock stock : stockMap.values()) {
-                            if (stock.getStock_id() == 0) {
+                        if (isComplete) {
+                            for (Stock stock : stockMap.values()) {
+                                if (stock.getStock_id() == 0) {
 
-                                String[] keys = {"id"};
-                                String stockQuery = "INSERT INTO "
-                                        + "`stocks` (`name`, `code`, `cost`, `price`, `is_expire`, `exp_date`, `mfd_date`, `quantity`, `products_id`) "
-                                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                    String[] keys = {"id"};
+                                    String stockQuery = "INSERT INTO "
+                                            + "`stocks` (`name`, `code`, `cost`, `price`, `is_expire`, `exp_date`, `mfd_date`, `quantity`, `products_id`) "
+                                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                                try {
+                                    try {
+                                        //PreparedStatement preparedStatement = MySQL.getPreparedStatement(stockQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+                                        PreparedStatement preparedStatement = MySQL.getPreparedStatement(stockQuery, keys);
 
-                                    //PreparedStatement preparedStatement = MySQL.getPreparedStatement(stockQuery, PreparedStatement.RETURN_GENERATED_KEYS);
-                                    PreparedStatement preparedStatement = MySQL.getPreparedStatement(stockQuery, keys);
+                                        preparedStatement.setString(1, stock.getStock_name());
+                                        preparedStatement.setString(2, stock.getStock_code());
+                                        preparedStatement.setDouble(3, stock.getStock_cost());
+                                        preparedStatement.setDouble(4, stock.getStock_price());
+                                        preparedStatement.setInt(5, (stock.getExp_date() == null ? 0 : 1));
+                                        preparedStatement.setDate(6, (java.sql.Date) stock.getExp_date());
+                                        preparedStatement.setDate(7, (java.sql.Date) stock.getExp_date());
+                                        preparedStatement.setDouble(8, stock.getStock_quantity() + stock.getQuantity());
+                                        preparedStatement.setInt(9, stock.getId());
 
-                                    preparedStatement.setString(1, stock.getStock_name());
-                                    preparedStatement.setString(2, stock.getStock_code());
-                                    preparedStatement.setDouble(3, stock.getStock_cost());
-                                    preparedStatement.setDouble(4, stock.getStock_price());
-                                    preparedStatement.setInt(5, (stock.getExp_date() == null ? 0 : 1));
-                                    preparedStatement.setDate(6, (java.sql.Date) stock.getExp_date());
-                                    preparedStatement.setDate(7, (java.sql.Date) stock.getExp_date());
-                                    preparedStatement.setDouble(8, stock.getStock_quantity() + stock.getQuantity());
-                                    preparedStatement.setInt(9, stock.getId());
+                                        ResultSet resultSet = MySQL.executeInsert(preparedStatement);
 
-                                    ResultSet resultSet = MySQL.executeInsert(preparedStatement);
-                                    
-                                    if (resultSet.next()) {
-                                        double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
-                                        String purchaseItemQuery = "INSERT INTO "
-                                                + "`purchase_details` (`cost`, `purchase_unit_id`, `TaxNet`, `discount`, `discount_method`, `purchase_id`, `product_id`, "
-                                                + "`product_variant_id`, `imei_number`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`, `stocks_id`) "
-                                                + "VALUES ('" + stock.getStock_cost() + "', NULL, '" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + id + "', '" + stock.getStringId() + "', "
-                                                + "NULL, NULL, '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, NULL, '" + resultSet.getString("id") + "')";
-                                        System.out.println(purchaseItemQuery);
-                                        try {
-                                            MySQL.execute(purchaseItemQuery);
-                                        } catch (SQLException e) {
-                                            isComplete = false;
-                                            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Purchase Details row: " + e.getMessage(), e.getMessage());
+                                        if (resultSet.next()) {
+                                            double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
+                                            String purchaseItemQuery = "INSERT INTO "
+                                                    + "`purchase_details` (`cost`, `purchase_unit_id`, `TaxNet`, `discount`, `discount_method`, `purchase_id`, `product_id`, "
+                                                    + "`product_variant_id`, `imei_number`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`, `stocks_id`) "
+                                                    + "VALUES ('" + stock.getStock_cost() + "', NULL, '" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + id + "', '" + stock.getStringId() + "', "
+                                                    + "NULL, NULL, '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, NULL, '" + resultSet.getString("id") + "')";
+
+                                            try {
+                                                MySQL.execute(purchaseItemQuery);
+                                            } catch (SQLException e) {
+                                                isComplete = false;
+                                                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Purchase Details row: " + e.getMessage(), e.getMessage());
+                                            }
+                                        } else {
+                                            JOptionPane.showMessageDialog(this, "Stock Id Retrieve Failed", "Warning", JOptionPane.WARNING_MESSAGE);
                                         }
-                                    } else {
-                                        JOptionPane.showMessageDialog(this, "Stock Id Retrieve Failed", "Warning", JOptionPane.WARNING_MESSAGE);
+                                    } catch (SQLException e) {
+                                        isComplete = false;
+                                        DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Stock Detail row: " + e.getMessage(), e.getMessage());
                                     }
-                                } catch (SQLException e) {
-                                    isComplete = false;
-                                    DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Stock Detail row: " + e.getMessage(), e.getMessage());
-                                }
-                            } else {
+                                } else {
 
-                                double qty = stock.getStock_quantity() + stock.getQuantity();
-                                String stockQuery = "UPDATE `stocks` SET `quantity`='" + qty + "' WHERE `id`='" + stock.getStock_id() + "';";
-                                //String stockQuery = "UPDATE `stocks` SET `quantity`=`quantity`+'"+stock.getQuantity()+"' WHERE `id`='" + stock.getStock_id() + "';";
-                                try {
-                                    MySQL.execute(stockQuery);
-                                } catch (SQLException e) {
-                                    isComplete = false;
-                                    DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Stock Update row: " + e.getMessage(), e.getMessage());
+                                    double qty = stock.getStock_quantity() + stock.getQuantity();
+                                    String stockQuery = "UPDATE `stocks` SET `quantity`='" + qty + "' WHERE `id`='" + stock.getStock_id() + "';";
+                                    //String stockQuery = "UPDATE `stocks` SET `quantity`=`quantity`+'"+stock.getQuantity()+"' WHERE `id`='" + stock.getStock_id() + "';";
+                                    try {
+                                        MySQL.execute(stockQuery);
+                                    } catch (SQLException e) {
+                                        isComplete = false;
+                                        DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Stock Update row: " + e.getMessage(), e.getMessage());
+                                    }
                                 }
+
+                                //stock.getStringStock_id();
                             }
-
-                            //stock.getStringStock_id();
                         }
 //                        for (Stock stock : stockMap.values()) {
 //                            double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
@@ -1106,8 +1113,23 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 //                        }
 
                         if (isComplete) {
+                            HashMap<String, Object> parameters = new HashMap<>();
+                            parameters.put("InvoiceNo", referenceNo);
+                            parameters.put("Customer", supplierName);
+                            parameters.put("Time", currentDateTime.replace(currentDate, ""));
+                            parameters.put("Date", currentDate);
+                            parameters.put("Tax", String.valueOf(tax));
+                            parameters.put("Discount", String.valueOf(orderDiscount));
+                            parameters.put("Method", "Cash");
+                            parameters.put("Total", String.valueOf(total));
+                            parameters.put("NetAmount", String.valueOf(total));
+                            parameters.put("Payment", String.valueOf(payment));
+                            parameters.put("Balance", String.valueOf(balance));
+                            new PrintReport().PrintReport("/ewision/sahan/report/jasper/posInvoice2.jasper", parameters, new JRTableModelDataSource(productChargeTable.getModel()));
+
                             JOptionPane.showMessageDialog(this, "Successfully completed!", "Successful", JOptionPane.INFORMATION_MESSAGE);
-                            Application.appService.openCreatePurchase();
+                            //Application.appService.openCreatePurchase();
+                            Application.appService.openPurchaseList();
                         } else {
                             JOptionPane.showMessageDialog(this, "Something went wrong!", "Warning", JOptionPane.WARNING_MESSAGE);
                         }
