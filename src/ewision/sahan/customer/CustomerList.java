@@ -54,7 +54,7 @@ public class CustomerList extends javax.swing.JPanel {
                 model.addRow(vector);
             }
         } catch (SQLException ex) {
-            DatabaseLogger.logger.log(Level.SEVERE, "Products loading error: " + ex.getMessage(), ex.getMessage());
+            DatabaseLogger.logger.log(Level.SEVERE, "Customers loading error: " + ex.getMessage(), ex.getMessage());
             loadTestData();
         }
     }

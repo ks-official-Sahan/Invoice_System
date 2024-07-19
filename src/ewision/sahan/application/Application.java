@@ -92,6 +92,9 @@ public class Application extends javax.swing.JFrame {
                     // Purchase
                     //appService.openCreatePurchase();
                     appService.openPurchaseList();
+                case 7 ->
+                    // User
+                    appService.openUserList();
             }
         });
 
@@ -103,6 +106,7 @@ public class Application extends javax.swing.JFrame {
         menu.addMenu(new ModelMenu("Suppliers", scaler.getSvgIcon("supplier.svg", 30)));
         menu.addMenu(new ModelMenu("Invoice", scaler.getSvgIcon("bill.svg", 30)));
         menu.addMenu(new ModelMenu("Purchase", scaler.getSvgIcon("bill.svg", 30)));
+        menu.addMenu(new ModelMenu("Users", scaler.getSvgIcon("customer.svg", 30)));
 
         appService.openDashboard();
     }

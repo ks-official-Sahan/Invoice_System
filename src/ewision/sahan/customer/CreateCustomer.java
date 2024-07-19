@@ -320,7 +320,7 @@ public class CreateCustomer extends javax.swing.JPanel {
 
                 if (resultSet.next()) {
 
-                    JOptionPane.showMessageDialog(this, "Supplier email or mobile already registered", "Warning", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Customer email or mobile already registered", "Warning", JOptionPane.ERROR_MESSAGE);
 
                 } else {
 

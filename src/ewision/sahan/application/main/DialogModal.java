@@ -9,6 +9,7 @@ import ewision.sahan.purchase.CreatePurchase1;
 import ewision.sahan.sale.CreateSale1;
 import ewision.sahan.sale.SelectStock1;
 import ewision.sahan.supplier.CreateSupplier;
+import ewision.sahan.users.CreateUser;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -89,6 +90,12 @@ public class DialogModal extends javax.swing.JDialog {
     public void openAddStock(CreatePurchase1 createPurchase, Product product) {
         AddStock addStock = new AddStock(createPurchase, product);
         openPanel(addStock);
+    }
+    
+    public void openCreateUser() {
+        CreateUser createUser = new CreateUser();
+        createUser.setModal(this);
+        openPanel(createUser);
     }
     
     public void closeModal() {

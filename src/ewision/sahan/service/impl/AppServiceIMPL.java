@@ -24,6 +24,7 @@ import ewision.sahan.sale.CreateSale1;
 import ewision.sahan.sale.SalesList;
 import ewision.sahan.services.ServiceList;
 import ewision.sahan.service.AppService;
+import ewision.sahan.users.UserList;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 
@@ -119,5 +120,11 @@ public class AppServiceIMPL extends AppServiceAbstract {
     public void openPurchaseList() {
         PurchaseList purchaseList = new PurchaseList();
         showMainPanel((JPanel) purchaseList);
+    }
+
+    @Override
+    public void openUserList() {
+        UserList userList = new UserList();
+        showMainPanel((JPanel) userList);
     }
 }
