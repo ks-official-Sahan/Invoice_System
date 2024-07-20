@@ -1025,7 +1025,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
                                     String[] keys = {"id"};
                                     String stockQuery = "INSERT INTO "
-                                            + "`stocks` (`name`, `code`, `cost`, `price`, `is_expire`, `exp_date`, `mfd_date`, `quantity`, `products_id`) "
+                                            + "`stocks` (`name`, `code`, `cost`, `price`, `sale_price`, `is_expire`, `exp_date`, `mfd_date`, `quantity`, `products_id`) "
                                             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                                     try {
@@ -1036,11 +1036,12 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                                         preparedStatement.setString(2, stock.getStock_code());
                                         preparedStatement.setDouble(3, stock.getStock_cost());
                                         preparedStatement.setDouble(4, stock.getStock_price());
-                                        preparedStatement.setInt(5, (stock.getExp_date() == null ? 0 : 1));
-                                        preparedStatement.setDate(6, (java.sql.Date) stock.getExp_date());
+                                        preparedStatement.setDouble(5, stock.getPrice());
+                                        preparedStatement.setInt(6, (stock.getExp_date() == null ? 0 : 1));
                                         preparedStatement.setDate(7, (java.sql.Date) stock.getExp_date());
-                                        preparedStatement.setDouble(8, stock.getStock_quantity() + stock.getQuantity());
-                                        preparedStatement.setInt(9, stock.getId());
+                                        preparedStatement.setDate(8, (java.sql.Date) stock.getExp_date());
+                                        preparedStatement.setDouble(9, stock.getStock_quantity() + stock.getQuantity());
+                                        preparedStatement.setInt(10, stock.getId());
 
                                         ResultSet resultSet = MySQL.executeInsert(preparedStatement);
 

@@ -1,0 +1,4 @@
+Jul 19, 2024 9:22:34 PM ewision.sahan.utils.SQLDateFormatter getDate
+SEVERE: ParseException in ewision.sahan.utils.SQLDateFormatter getDate: Unparseable date: "140.0"
+Jul 19, 2024 9:22:38 PM ewision.sahan.utils.SQLDateFormatter getDate
+SEVERE: ParseException in ewision.sahan.utils.SQLDateFormatter getDate: Unparseable date: "120.0"

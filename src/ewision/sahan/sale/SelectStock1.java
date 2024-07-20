@@ -145,6 +145,7 @@ public class SelectStock1 extends javax.swing.JPanel {
                 rowData.add(resultSet.getString("stocks.code"));
                 rowData.add(resultSet.getString("stocks.quantity"));
                 rowData.add(resultSet.getString("stocks.cost"));
+                rowData.add(resultSet.getString("stocks.sale_price"));
                 rowData.add(resultSet.getString("stocks.price"));
 
                 if (resultSet.getString("stocks.is_expire").equals("1")) {
@@ -195,23 +196,24 @@ public class SelectStock1 extends javax.swing.JPanel {
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         searchField = new javax.swing.JTextField();
+        isSalePrice = new javax.swing.JCheckBox();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 5, 1));
         setNextFocusableComponent(searchField);
 
         stockTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Name", "Code", "Quantity", "Cost", "Price", "EXP", "MFD"
+                "ID", "Name", "Code", "Quantity", "Cost", "Sale Price", "Price", "EXP", "MFD"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -352,6 +354,13 @@ public class SelectStock1 extends javax.swing.JPanel {
             }
         });
 
+        isSalePrice.setText("Sale Price");
+        isSalePrice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                isSalePriceActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -361,15 +370,20 @@ public class SelectStock1 extends javax.swing.JPanel {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel8)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(isSalePrice))
                     .addComponent(searchField))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(8, 8, 8)
-                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(isSalePrice, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(5, 5, 5)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -445,12 +459,13 @@ public class SelectStock1 extends javax.swing.JPanel {
 
                 stock.setStock_quantity(String.valueOf(stockTable.getValueAt(selectedRow, 3)));
                 stock.setStock_cost(String.valueOf(stockTable.getValueAt(selectedRow, 4)));
-                stock.setStock_price(String.valueOf(stockTable.getValueAt(selectedRow, 5)));
-                if (!(String.valueOf(stockTable.getValueAt(selectedRow, 6)).isBlank())) {
-                    stock.setExp_date(String.valueOf(stockTable.getValueAt(selectedRow, 6)));
-                }
+                stock.setPrice(String.valueOf(stockTable.getValueAt(selectedRow, 5)));
+                stock.setStock_price(String.valueOf(stockTable.getValueAt(selectedRow, 6)));
                 if (!(String.valueOf(stockTable.getValueAt(selectedRow, 7)).isBlank())) {
-                    stock.setMfd_date(String.valueOf(stockTable.getValueAt(selectedRow, 7)));
+                    stock.setExp_date(String.valueOf(stockTable.getValueAt(selectedRow, 7)));
+                }
+                if (!(String.valueOf(stockTable.getValueAt(selectedRow, 8)).isBlank())) {
+                    stock.setMfd_date(String.valueOf(stockTable.getValueAt(selectedRow, 8)));
                 }
 
                 subTotalField.setText(String.valueOf(stock.getStock_price()));
@@ -515,11 +530,26 @@ public class SelectStock1 extends javax.swing.JPanel {
         configSpinner();
     }//GEN-LAST:event_quantitySpinnerFocusGained
 
+    private void isSalePriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isSalePriceActionPerformed
+        // Sale Price Trigger
+        double price = stock.getPrice();
+        double stock_price = stock.getStock_price();
+        if (isSalePrice.isSelected()) {
+            stock.setStock_price(price);
+            stock.setPrice(stock_price);
+        } else {
+            stock.setStock_price(price);
+            stock.setPrice(stock_price);
+        }
+        calculate();
+    }//GEN-LAST:event_isSalePriceActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JPanel addPanel;
     private javax.swing.JFormattedTextField discountField;
+    private javax.swing.JCheckBox isSalePrice;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
