@@ -1,9 +1,11 @@
 package ewision.sahan.supplier;
 
-
+import com.opencsv.exceptions.CsvException;
 import ewision.sahan.application.main.DialogModal;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.loggers.CSVLogger;
+import ewision.sahan.loggers.DatabaseLogger;
 import javax.swing.table.DefaultTableModel;
 import ewision.sahan.table.header.TableCheckBoxHeaderRenderer;
 import ewision.sahan.model.Constants;
@@ -11,9 +13,18 @@ import ewision.sahan.model.MySQL;
 import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
+import ewision.sahan.utils.CSVFileReader;
+import ewision.sahan.utils.SQLDateFormatter;
+import java.io.File;
+import java.io.IOException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 
 /**
  *
@@ -27,10 +38,10 @@ public class SupplierList extends javax.swing.JPanel {
     public SupplierList() {
         initComponents();
         init();
-        loadCustomers();
+        loadSuppliers();
     }
 
-    public void loadCustomers() {
+    private void loadSuppliers() {
 
         try {
 
@@ -63,7 +74,7 @@ public class SupplierList extends javax.swing.JPanel {
         cmdSearch.setIcon(new ImageScaler().getSvgIcon("/search", 28));
         cmdSearch.setContentAreaFilled(false);
         renderTable();
-        
+
     }
 
     private void renderTable() {
@@ -99,6 +110,24 @@ public class SupplierList extends javax.swing.JPanel {
 //        });
 //        t.start();
 //    }
+    private void loadData() {
+        loadCountry();
+    }
+
+    private HashMap<String, String> countryMap;
+
+    private void loadCountry() {
+        countryMap = new HashMap<>();
+        try {
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `country` ");
+
+            while (resultSet.next()) {
+                countryMap.put(resultSet.getString("country"), resultSet.getString("id"));
+            }
+        } catch (SQLException e) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Country loading: " + e.getMessage(), e.getMessage());
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -124,7 +153,7 @@ public class SupplierList extends javax.swing.JPanel {
         SupplierTable = new javax.swing.JTable();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        setPreferredSize(new java.awt.Dimension(550, 590));
+        setPreferredSize(new java.awt.Dimension(640, 590));
 
         jPanel1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
 
@@ -222,15 +251,15 @@ public class SupplierList extends javax.swing.JPanel {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
+                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -325,7 +354,7 @@ public class SupplierList extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 672, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1))
@@ -344,14 +373,45 @@ public class SupplierList extends javax.swing.JPanel {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // Import
+        loadData();
+        importCSV();
+        countryMap = null;
+        System.gc();
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void importCSV() {
+        CSVFileReader csvFileReader = new CSVFileReader();
+        File csvFile = csvFileReader.selectCSV(this);
+        if (csvFile != null) {
+            try {
+                List dataList = csvFileReader.getAll(csvFile);
+                importSuppliers(dataList);
+            } catch (IOException | CsvException ex) {
+                CSVLogger.logger.log(Level.SEVERE, "Suppliers importing error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
 
+    private void importSuppliers(List<String[]> dataList) {
+        String dateTime = new SQLDateFormatter().getStringDateTime(new Date());
+        for (String[] dataRow : dataList) {
+            String query = "INSERT IGNORE INTO `providers` (`name`, `code`, `email`,`phone`,`city`,`adresse`,`created_at`,`country_id`) "
+                    + "VALUES ('" + dataRow[0] + "', '" + dataRow[1] + "', '" + dataRow[2] + "','" + dataRow[3] + "','" + dataRow[4] + "','" + dataRow[5] + "','" + dateTime + "','"+countryMap.get(dataRow[6])+"')";
+            try {
+                MySQL.execute(query);
+                DatabaseLogger.logger.log(Level.FINE, "Suppliers Imported: " + Arrays.toString(dataRow));
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Suppliers Importing DB error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
+
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // Create
         DialogModal modal1 = new DialogModal(this);
         modal1.openCreateSupplier();
         modal1.setVisible(true);
-         
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -376,24 +436,24 @@ public class SupplierList extends javax.swing.JPanel {
 
     private void SearchTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SearchTextKeyReleased
         try {
-            
-            ResultSet resultSet = MySQL.execute("SELECT * FROM `providers` WHERE `name` LIKE '%"+SearchText.getText()+"%'");
-            
-            DefaultTableModel  tableModel = (DefaultTableModel)SupplierTable.getModel();
+
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `providers` WHERE `name` LIKE '%" + SearchText.getText() + "%'");
+
+            DefaultTableModel tableModel = (DefaultTableModel) SupplierTable.getModel();
             tableModel.setRowCount(0);
-            
-            while(resultSet.next()){
-            
-                Vector v = new  Vector();
+
+            while (resultSet.next()) {
+
+                Vector v = new Vector();
                 v.add(false);
                 v.add(resultSet.getString("id"));
                 v.add(resultSet.getString("name"));
                 v.add(resultSet.getString("phone"));
                 v.add(resultSet.getString("email"));
                 tableModel.addRow(v);
-                
+
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }

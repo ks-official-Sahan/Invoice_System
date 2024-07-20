@@ -1,8 +1,10 @@
 package ewision.sahan.services;
 
+import com.opencsv.exceptions.CsvException;
 import ewision.sahan.application.Application;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.loggers.CSVLogger;
 import ewision.sahan.loggers.DatabaseLogger;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
@@ -13,9 +15,16 @@ import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableImageCellRenderer;
+import ewision.sahan.utils.CSVFileReader;
+import ewision.sahan.utils.SQLDateFormatter;
+import java.io.File;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 
@@ -69,7 +78,7 @@ public class ServiceList extends javax.swing.JPanel {
     private void loadServices(String service) {
         try {
             String query = "SELECT * FROM `products` "
-//                    + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
+                    //                    + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
                     + "WHERE `product_type`='service' AND (`products`.`name` LIKE '%" + service + "%' OR `products`.`code` LIKE '%" + service + "%' OR `products`.`id` LIKE '%" + service + "%') ORDER BY `products`.`code` ASC";
             ResultSet resultSet = MySQL.execute(query);
 
@@ -117,6 +126,72 @@ public class ServiceList extends javax.swing.JPanel {
             //SwingUtilities.updateComponentTreeUI(jTable1);
         });
         t.start();
+    }
+
+    private void importCSV() {
+        CSVFileReader csvFileReader = new CSVFileReader();
+        File csvFile = csvFileReader.selectCSV(this);
+        if (csvFile != null) {
+            try {
+                List dataList = csvFileReader.getAll(csvFile);
+                importServices(dataList);
+            } catch (IOException | CsvException ex) {
+                CSVLogger.logger.log(Level.SEVERE, "Customers importing error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
+
+    private void importServices(List<String[]> dataList) {
+        String dateTime = new SQLDateFormatter().getStringDateTime(new Date());
+        for (String[] dataRow : dataList) {
+            String category = categoryMap.get(dataRow[4]) == null ? "NULL" : String.valueOf(categoryMap.get(dataRow[4]));
+            String barcodeType = barcodeTypeMap.get(dataRow[5]) == null ? "NULL" : String.valueOf(barcodeTypeMap.get(dataRow[5]));
+            String query = "INSERT IGNORE INTO `products` (`code`, `name`, `cost`, `price`, `categories_id`, `barcode_type_id`, `note`, `product_type`) "
+                    + "VALUES ('" + dataRow[0] + "', '" + dataRow[1] + "', '" + dataRow[2] + "', '" + dataRow[3] + "', '" + category + "', '" + barcodeType + "', '" + dataRow[6] + "', 'service')";
+            try {
+                MySQL.execute(query);
+                DatabaseLogger.logger.log(Level.FINE, "Customers Imported: {0}", Arrays.toString(dataRow));
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Customers Importing DB error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
+
+    private void loadData() {
+        loadCategories();
+        loadBarcodeTypes();
+    }
+
+    private HashMap<String, Integer> categoryMap;
+    private HashMap<String, Integer> barcodeTypeMap;
+
+    private void loadCategories() {
+        categoryMap = new HashMap<>();
+        try {
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `categories` ORDER BY `name`");
+
+            categoryMap.clear();
+            while (resultSet.next()) {
+                categoryMap.put(resultSet.getString("name"), resultSet.getInt("id"));
+            }
+
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Category loading error: " + ex.getMessage(), ex.getMessage());
+        }
+    }
+
+    private void loadBarcodeTypes() {
+        barcodeTypeMap = new HashMap<>();
+        try {
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `barcode_type` ORDER BY `barcode_type`");
+
+            barcodeTypeMap.clear();
+            while (resultSet.next()) {
+                barcodeTypeMap.put(resultSet.getString("barcode_type"), resultSet.getInt("id"));
+            }
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Barcode Type loading error: " + ex.getMessage(), ex.getMessage());
+        }
     }
 
     /**
@@ -239,15 +314,15 @@ public class ServiceList extends javax.swing.JPanel {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
+                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE)
+                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -350,7 +425,7 @@ public class ServiceList extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 682, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 729, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1)
@@ -370,6 +445,11 @@ public class ServiceList extends javax.swing.JPanel {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // Import
+        loadData();
+        importCSV();
+        barcodeTypeMap = null;
+        categoryMap = null;
+        System.gc();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed

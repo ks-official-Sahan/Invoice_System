@@ -2,12 +2,17 @@ package ewision.sahan.supplier;
 
 import ewision.sahan.application.Application;
 import ewision.sahan.application.main.DialogModal;
+import ewision.sahan.loggers.DatabaseLogger;
 import ewision.sahan.model.MySQL;
+import ewision.sahan.utils.SQLDateFormatter;
+import java.awt.HeadlessException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.logging.Level;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
@@ -17,7 +22,7 @@ import javax.swing.JOptionPane;
  */
 public class CreateSupplier extends javax.swing.JPanel {
 
-    HashMap<String, String> countryMap = new HashMap<>();
+    private HashMap<String, String> countryMap = new HashMap<>();
     private DialogModal modal;
 
     public void setModal(DialogModal modal) {
@@ -32,28 +37,22 @@ public class CreateSupplier extends javax.swing.JPanel {
         loadCountry();
     }
 
-    public void loadCountry() {
-
+    private void loadCountry() {
         try {
-
             ResultSet resultSet = MySQL.execute("SELECT * FROM `country` ");
 
             Vector<String> vector = new Vector<>();
             vector.add("Select Country");
 
             while (resultSet.next()) {
-
                 vector.add(resultSet.getString("country"));
                 countryMap.put(resultSet.getString("country"), resultSet.getString("id"));
-
             }
 
             country.setModel(new DefaultComboBoxModel<>(vector));
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Country loading: " + e.getMessage(), e.getMessage());
         }
-
     }
 
     public void reset() {
@@ -330,18 +329,13 @@ public class CreateSupplier extends javax.swing.JPanel {
                     JOptionPane.showMessageDialog(this, "Supplier email or mobile already registered", "Warning", JOptionPane.ERROR_MESSAGE);
 
                 } else {
-
-                    Date dt = new Date();
-                    SimpleDateFormat st = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
-                    String tt = st.format(dt);
+                    String tt = new SQLDateFormatter().getStringDateTime(new Date());
 
                     MySQL.execute("INSERT INTO `providers` (`name`,`email`,`phone`,`city`,`adresse`,`created_at`,`country_id`) "
                             + "VALUES ('" + cname + "','" + cemail + "','" + cmobile + "','" + ccity + "','" + caddress + "','" + tt + "','" + countryMap.get(ccountryt) + "')");
-
                 }
-
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (HeadlessException | SQLException e) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Supplier Register: " + e.getMessage(), e.getMessage());
             }
 
             reset();

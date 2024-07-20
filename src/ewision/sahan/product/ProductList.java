@@ -1,8 +1,10 @@
 package ewision.sahan.product;
 
+import com.opencsv.exceptions.CsvException;
 import ewision.sahan.application.Application;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.loggers.CSVLogger;
 import ewision.sahan.loggers.DatabaseLogger;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
@@ -13,12 +15,18 @@ import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableImageCellRenderer;
+import ewision.sahan.utils.CSVFileReader;
+import ewision.sahan.utils.SQLDateFormatter;
+import java.io.File;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -92,7 +100,7 @@ public class ProductList extends javax.swing.JPanel {
                     + "INNER JOIN `brands` ON `products`.`brand_id`=`brands`.`id` "
                     + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
                     + "INNER JOIN `units` ON `products`.`unit_id`=`units`.`id` "
-                    + "WHERE `product_type`='product' AND (`products`.`name` LIKE '%"+product+"%' OR `products`.`code` LIKE '%"+product+"%' OR `products`.`id` LIKE '%"+product+"%') ORDER BY `products`.`code` ASC";
+                    + "WHERE `product_type`='product' AND (`products`.`name` LIKE '%" + product + "%' OR `products`.`code` LIKE '%" + product + "%' OR `products`.`id` LIKE '%" + product + "%') ORDER BY `products`.`code` ASC";
             ResultSet resultSet = MySQL.execute(query);
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -129,6 +137,123 @@ public class ProductList extends javax.swing.JPanel {
         } catch (SQLException ex) {
             DatabaseLogger.logger.log(Level.SEVERE, "Products loading error: " + ex.getMessage(), ex.getMessage());
             loadTestData();
+        }
+    }
+
+    private void importCSV() {
+        CSVFileReader csvFileReader = new CSVFileReader();
+        File csvFile = csvFileReader.selectCSV(this);
+        if (csvFile != null) {
+            try {
+                List dataList = csvFileReader.getAll(csvFile);
+                importProducts(dataList);
+            } catch (IOException | CsvException ex) {
+                CSVLogger.logger.log(Level.SEVERE, "Products importing error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
+
+    private void importProducts(List<String[]> dataList) {
+        String dateTime = new SQLDateFormatter().getStringDateTime(new Date());
+        for (String[] dataRow : dataList) {
+            String query = "INSERT IGNORE INTO "
+                    + "`products` (`code`, `name`, `cost`, `price`, `category_id`, `brand_id`, `unit_id`, `unit_sale_id`, `unit_purchase_id`, `TaxNet`, "
+                    + "`note`, `stock_alert`, `is_variant`, `is_imei`, `is_active`, `created_at`, `barcode_type_id`, `tax_method_id`, `product_type`) "
+                    + "VALUES ('" + dataRow[0] + "', '" + dataRow[1] + "', '" + dataRow[2] + "', '" + dataRow[3] + "', '" + categoryMap.get(dataRow[4]) + "', '" + brandMap.get(dataRow[5]) + "', "
+                    + "'" + unitMap.get(dataRow[6]) + "', '" + unitMap.get(dataRow[6]) + "', '" + unitMap.get(dataRow[6]) + "', '" + dataRow[7] + "', '" + dataRow[8] + "', "
+                    + "'" + dataRow[9] + "', '0', '" + dataRow[10] + "', 1, "
+                    + "'" + dateTime + "', '" + barcodeTypeMap.get(dataRow[11]) + "', '" + taxMethodMap.get(dataRow[12]) + "', 'product')";
+            try {
+                MySQL.execute(query);
+                DatabaseLogger.logger.log(Level.FINE, "Product Imported: " + Arrays.toString(dataRow));
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Products Importing DB error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
+
+    private void loadData() {
+        loadTaxMethods();
+        loadBrands();
+        loadCategories();
+        loadUnits();
+        loadBarcodeTypes();
+    }
+
+    private HashMap<String, Integer> taxMethodMap;
+    private HashMap<String, Integer> brandMap;
+    private HashMap<String, Integer> categoryMap;
+    private HashMap<String, Integer> barcodeTypeMap;
+    private HashMap<String, Integer> unitMap;
+
+    private void loadTaxMethods() {
+        taxMethodMap = new HashMap<>();
+        try {
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `tax_method` ORDER BY `method`");
+
+            taxMethodMap.clear();
+            while (resultSet.next()) {
+                taxMethodMap.put(resultSet.getString("method"), resultSet.getInt("id"));
+            }
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Tax Method loading error: " + ex.getMessage(), ex.getMessage());
+        }
+    }
+
+    private void loadBrands() {
+        brandMap = new HashMap<>();
+        try {
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `brands` ORDER BY `name`");
+
+            brandMap.clear();
+            while (resultSet.next()) {
+                brandMap.put(resultSet.getString("name"), resultSet.getInt("id"));
+            }
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Brand loading error: " + ex.getMessage(), ex.getMessage());
+        }
+    }
+
+    private void loadCategories() {
+        categoryMap = new HashMap<>();
+        try {
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `categories` ORDER BY `name`");
+
+            categoryMap.clear();
+            while (resultSet.next()) {
+                categoryMap.put(resultSet.getString("name"), resultSet.getInt("id"));
+            }
+
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Category loading error: " + ex.getMessage(), ex.getMessage());
+        }
+    }
+
+    private void loadBarcodeTypes() {
+        barcodeTypeMap = new HashMap<>();
+        try {
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `barcode_type` ORDER BY `barcode_type`");
+
+            barcodeTypeMap.clear();
+            while (resultSet.next()) {
+                barcodeTypeMap.put(resultSet.getString("barcode_type"), resultSet.getInt("id"));
+            }
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Barcode Type loading error: " + ex.getMessage(), ex.getMessage());
+        }
+    }
+
+    private void loadUnits() {
+        unitMap = new HashMap<>();
+        try {
+            ResultSet resultSet = MySQL.execute("SELECT * FROM `units` ORDER BY `ShortName`");
+
+            unitMap.clear();
+            while (resultSet.next()) {
+                unitMap.put(resultSet.getString("ShortName"), resultSet.getInt("id"));
+            }
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Units loading error: " + ex.getMessage(), ex.getMessage());
         }
     }
 
@@ -221,7 +346,6 @@ public class ProductList extends javax.swing.JPanel {
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton2.setText("Import Products");
         jButton2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(51, 102, 255)));
-        jButton2.setEnabled(false);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -389,7 +513,14 @@ public class ProductList extends javax.swing.JPanel {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // Import
-        
+        loadData();
+        importCSV();
+        unitMap = null;
+        barcodeTypeMap = null;
+        categoryMap = null;
+        taxMethodMap = null;
+        brandMap = null;
+        System.gc();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed

@@ -7,7 +7,6 @@ import ewision.sahan.model.MySQL;
 import ewision.sahan.utils.SQLDateFormatter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
@@ -21,7 +20,7 @@ import javax.swing.JOptionPane;
  */
 public class CreateCustomer extends javax.swing.JPanel {
 
-    HashMap<String, String> CountryMap = new HashMap<>();
+    private HashMap<String, String> CountryMap = new HashMap<>();
     private DialogModal modal;
 
     public void setModal(DialogModal modal) {
@@ -36,7 +35,7 @@ public class CreateCustomer extends javax.swing.JPanel {
         loadCountry();
     }
 
-    public void loadCountry() {
+    private void loadCountry() {
         try {
             ResultSet resultSet = MySQL.execute("SELECT * FROM `country` ");
 
@@ -51,8 +50,8 @@ public class CreateCustomer extends javax.swing.JPanel {
             }
 
             country.setModel(new DefaultComboBoxModel<>(vector));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Country loading: " + e.getMessage(), e.getMessage());
         }
 
     }
@@ -280,7 +279,6 @@ public class CreateCustomer extends javax.swing.JPanel {
     }//GEN-LAST:event_mobileActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
         String cname = name.getText();
         String cemail = email.getText();
         String cmobile = mobile.getText();
@@ -290,47 +288,33 @@ public class CreateCustomer extends javax.swing.JPanel {
 
         if (cname.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Enter Customer Name", "Warning", JOptionPane.ERROR_MESSAGE);
-
         } else if (cemail.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Entrer your Email", "Warning", JOptionPane.ERROR_MESSAGE);
-
         } else if (!cemail.matches("^(?=.{1,64}@)[A-Za-z0-9\\+_-]+(\\.[A-Za-z0-9\\+_-]+)*@"
                 + "[^-][A-Za-z0-9\\+-]+(\\.[A-Za-z0-9\\+-]+)*(\\.[A-Za-z]{2,})$")) {
             JOptionPane.showMessageDialog(this, "Invalid Email", "Warning", JOptionPane.ERROR_MESSAGE);
-
         } else if (cmobile.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Enter your Mobile", "Warning", JOptionPane.ERROR_MESSAGE);
-
         } else if (!cmobile.matches("^07[01245678]{1}[0-9]{7}$")) {
             JOptionPane.showMessageDialog(this, "Invalid Mobile Number", "Warning", JOptionPane.ERROR_MESSAGE);
-
         } else if (ccountry.equals("Select Destrict")) {
             JOptionPane.showMessageDialog(this, "Select Destrict", "Warning", JOptionPane.ERROR_MESSAGE);
-
         } else if (ccity.equals("Select City")) {
             JOptionPane.showMessageDialog(this, "Select City", "Warning", JOptionPane.ERROR_MESSAGE);
-
 //        } else if (caddress.isEmpty()) {
 //            JOptionPane.showMessageDialog(this, "Enter Customer Address", "Warning", JOptionPane.ERROR_MESSAGE);
         } else {
-
             try {
-
                 ResultSet resultSet = MySQL.execute("SELECT * FROM `clients` WHERE `phone`='" + cmobile + "' OR `email`='" + cemail + "'");
 
                 if (resultSet.next()) {
-
                     JOptionPane.showMessageDialog(this, "Customer email or mobile already registered", "Warning", JOptionPane.ERROR_MESSAGE);
-
                 } else {
-
-                    String dateTime = new SQLDateFormatter().getStringDate(new Date(), "YYYY-MM-dd hh:mm:ss");
+                    String dateTime = new SQLDateFormatter().getStringDateTime(new Date());
 
                     MySQL.execute("INSERT INTO `clients` (`name`,`email`,`city`,`phone`,`adresse`,`created_at`,`country_id`) "
                             + "VALUES ('" + cname + "','" + cemail + "','" + ccity + "','" + cmobile + "','" + caddress + "','" + dateTime + "','" + CountryMap.get(ccountry) + "')");
-
                 }
-
             } catch (SQLException ex) {
                 DatabaseLogger.logger.log(Level.SEVERE, "Customer Registration error: " + ex.getMessage(), ex.getMessage());
             }
@@ -341,7 +325,6 @@ public class CreateCustomer extends javax.swing.JPanel {
                 modal.closeModal();
             }
         }
-
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void countryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_countryActionPerformed

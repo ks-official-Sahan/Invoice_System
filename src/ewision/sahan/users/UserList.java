@@ -2,11 +2,13 @@ package ewision.sahan.users;
 
 import ewision.sahan.customer.*;
 import com.mysql.cj.protocol.Resultset;
+import com.opencsv.exceptions.CsvException;
 import ewision.sahan.services.*;
 import ewision.sahan.application.Application;
 import ewision.sahan.application.main.DialogModal;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.loggers.CSVLogger;
 import ewision.sahan.loggers.DatabaseLogger;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
@@ -16,9 +18,16 @@ import ewision.sahan.model.MySQL;
 import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
+import ewision.sahan.utils.CSVFileReader;
+import ewision.sahan.utils.SQLDateFormatter;
+import java.io.File;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 
@@ -129,7 +138,7 @@ public class UserList extends javax.swing.JPanel {
         CustomerTable = new javax.swing.JTable();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        setPreferredSize(new java.awt.Dimension(550, 590));
+        setPreferredSize(new java.awt.Dimension(695, 590));
 
         jPanel1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
 
@@ -350,7 +359,37 @@ public class UserList extends javax.swing.JPanel {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // Import
+        importCSV();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void importCSV() {
+        CSVFileReader csvFileReader = new CSVFileReader();
+        File csvFile = csvFileReader.selectCSV(this);
+        if (csvFile != null) {
+            try {
+                List dataList = csvFileReader.getAll(csvFile);
+                importCustomers(dataList);
+            } catch (IOException | CsvException ex) {
+                CSVLogger.logger.log(Level.SEVERE, "Users importing error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
+
+    private void importCustomers(List<String[]> dataList) {
+        String dateTime = new SQLDateFormatter().getStringDateTime(new Date());
+        for (String[] dataRow : dataList) {
+            String query = "INSERT IGNORE INTO `users` (`firstname`, `lastname`, `username`, `email`, `password`, `avatar`, `phone`,"
+                            + " `role_id`, `status`, `is_all_warehouses`, `created_at`,) "
+                            + "VALUES ('" + dataRow[0] + "', '" + dataRow[1] + "', '" + dataRow[2] + "', '" + dataRow[3] + "', '" + dataRow[4] + "', NULL, '" + dataRow[5] + "',"
+                            + " '" + (dataRow[6].equalsIgnoreCase("owner") ? "1" : "2") + "', '" + (dataRow[7].equalsIgnoreCase("active") ? "1" : "2") + "', 0, '" + dateTime + "')";
+            try {
+                MySQL.execute(query);
+                DatabaseLogger.logger.log(Level.FINE, "User Imported: " + Arrays.toString(dataRow));
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Users Importing DB error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         DialogModal modal = new DialogModal(this);
