@@ -40,6 +40,10 @@ public final class SQLDateFormatter {
         return new SimpleDateFormat(pattern).format(date);
     }
 
+    public String getStringDateTime(Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
+    }
+
     public Date getDate(String date) {
         try {
             return format.parse(date);

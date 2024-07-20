@@ -1,11 +1,16 @@
 package ewision.sahan.customer;
 
 import com.mysql.cj.protocol.Resultset;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvException;
 import ewision.sahan.services.*;
 import ewision.sahan.application.Application;
 import ewision.sahan.application.main.DialogModal;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
+import ewision.sahan.loggers.CSVLogger;
+import ewision.sahan.loggers.CommonLogger;
 import ewision.sahan.loggers.DatabaseLogger;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
@@ -15,11 +20,26 @@ import ewision.sahan.model.MySQL;
 import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
+import ewision.sahan.utils.CSVFileReader;
+import ewision.sahan.utils.ExcelFileFilter;
+import ewision.sahan.utils.ImageFileFilter;
+import ewision.sahan.utils.SQLDateFormatter;
+import java.awt.HeadlessException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -38,7 +58,7 @@ public class CustomerList extends javax.swing.JPanel {
 
     public void loadCustomers(String customer) {
         try {
-            ResultSet resultset = MySQL.execute("SELECT * FROM `clients` WHERE `name` LIKE '%"+customer+"%' OR `phone` LIKE '%"+customer+"%' OR `email` LIKE '%"+customer+"%' ORDER BY `name` ASC");
+            ResultSet resultset = MySQL.execute("SELECT * FROM `clients` WHERE `name` LIKE '%" + customer + "%' OR `phone` LIKE '%" + customer + "%' OR `email` LIKE '%" + customer + "%' ORDER BY `name` ASC");
 
             DefaultTableModel model = (DefaultTableModel) CustomerTable.getModel();
             model.setRowCount(0);
@@ -66,7 +86,7 @@ public class CustomerList extends javax.swing.JPanel {
         cmdSearch.setIcon(new ImageScaler().getSvgIcon("/search", 28));
         cmdSearch.setContentAreaFilled(false);
         renderTable();
-        
+
     }
 
     private void renderTable() {
@@ -225,15 +245,15 @@ public class CustomerList extends javax.swing.JPanel {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -328,7 +348,7 @@ public class CustomerList extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 668, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 697, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1)
@@ -348,7 +368,93 @@ public class CustomerList extends javax.swing.JPanel {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // Import
+        //selectCSV();
+        importCSV();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void importCSV() {
+        CSVFileReader csvFileReader = new CSVFileReader();
+        File csvFile = csvFileReader.selectCSV(this);
+        if (csvFile != null) {
+            try {
+                List dataList = csvFileReader.getAll(csvFile);
+                importCustomers(dataList);
+            } catch (IOException | CsvException ex) {
+                CSVLogger.logger.log(Level.SEVERE, "Customers importing error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
+
+    private void importCustomers(List<String[]> dataList) {
+        String dateTime = new SQLDateFormatter().getStringDateTime(new Date());
+        for (String[] dataRow : dataList) {
+            String query = "INSERT IGNORE INTO `clients` (`name`, `code`, `email`, `city`, `phone`, `adresse`, `created_at`, `country_id`) VALUES ('" + dataRow[0] + "', '" + dataRow[1] + "', '" + dataRow[2] + "', '" + dataRow[3] + "', '" + dataRow[4] + "', '" + dataRow[5] + "', '" + dateTime + "', 1)";
+            try {
+                MySQL.execute(query);
+                DatabaseLogger.logger.log(Level.FINE, "Customers Imported: " + Arrays.toString(dataRow));
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Customers Importing DB error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
+
+    private void selectCSV() {
+        JFileChooser fc = new JFileChooser();
+
+        fc.setFileFilter(new ExcelFileFilter());
+
+        try {
+            int option = fc.showOpenDialog(this);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                Thread thread;
+                thread = new Thread(() -> {
+                    try {
+                        File file = fc.getSelectedFile();
+                        //readCSV(file);
+                        read(file);
+                        //} catch (FileNotFoundException ex) {
+                        //    Logger.getLogger(CustomerList.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException | CsvException ex) {
+                        Logger.getLogger(CustomerList.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+                thread.start();
+            }
+        } catch (HeadlessException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void read(File file) throws FileNotFoundException, IOException, CsvException {
+        FileReader fileReader = new FileReader(file);
+
+        // // create csvReader object and skip first Line
+        //CSVReader csvReder = new CSVReaderBuilder(fileReader).withSkipLines(1).build();
+        // // create csvReader object passing 
+        /* file reader as a parameter */
+        CSVReader csvReader = new CSVReader(fileReader);
+
+        String[] nextRecord;
+
+        // we are going to read data line by line 
+        while ((nextRecord = csvReader.readNext()) != null) {
+            for (String cell : nextRecord) {
+                System.out.print(cell + "\t");
+            }
+            System.out.println();
+        }
+
+//        List<String[]> dataList = csvReader.readAll();
+//
+//        // print Data 
+//        for (String[] dataRow : dataList) {
+//            for (String cell : dataRow) {
+//                System.out.print(cell + "\t");
+//            }
+//            System.out.println();
+//        }
+    }
+
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         DialogModal modal = new DialogModal(this);
@@ -389,7 +495,7 @@ public class CustomerList extends javax.swing.JPanel {
 
         String customer = SearchText.getText();
 //        if (!customer.isEmpty()) {
-            loadCustomers(customer);
+        loadCustomers(customer);
 //        } else {
 //            loadCustomers("");
 //        }
