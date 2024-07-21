@@ -38,5 +38,8 @@ public interface AppService {
     public void openCreateSupplier();
 
     public void openSupplierList();
+
     public void openUserList();
+
+    public void openPOS();
 }

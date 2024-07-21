@@ -104,8 +104,11 @@ public class Application extends javax.swing.JFrame {
                     //appService.openCreatePurchase();
                     appService.openPurchaseList();
                 case 7 ->
-                    // User
+                    // POS
                     appService.openUserList();
+                case 8 ->
+                    // User
+                    appService.openPOS();
             }
         });
 
@@ -116,9 +119,10 @@ public class Application extends javax.swing.JFrame {
         menu.addMenu(new ModelMenu("Customers", scaler.getSvgIcon("customer.svg", 30)));
         menu.addMenu(new ModelMenu("Suppliers", scaler.getSvgIcon("supplier.svg", 30)));
         menu.addMenu(new ModelMenu("Invoice", scaler.getSvgIcon("bill.svg", 30)));
-        menu.addMenu(new ModelMenu("Purchase", scaler.getSvgIcon("bill.svg", 30)));
+        menu.addMenu(new ModelMenu("Purchase", scaler.getSvgIcon("service.svg", 30)));
+        menu.addMenu(new ModelMenu("POS", scaler.getSvgIcon("dashboard1.svg", 30)));
         if (user.getRoleId() == 1) {
-            menu.addMenu(new ModelMenu("Users", scaler.getSvgIcon("customer.svg", 30)));
+            menu.addMenu(new ModelMenu("Users", scaler.getSvgIcon("avatar.svg", 30)));
         }
         appService.openDashboard();
     }

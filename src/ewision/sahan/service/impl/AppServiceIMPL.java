@@ -9,6 +9,7 @@ import ewision.sahan.services.ServiceList;
 import ewision.sahan.service.AppService;
 import ewision.sahan.customer.CreateCustomer;
 import ewision.sahan.customer.CustomerList;
+import ewision.sahan.pos.POS;
 import ewision.sahan.supplier.CreateSupplier;
 import ewision.sahan.supplier.SupplierList;
 import java.awt.BorderLayout;
@@ -126,5 +127,11 @@ public class AppServiceIMPL extends AppServiceAbstract {
     public void openUserList() {
         UserList userList = new UserList();
         showMainPanel((JPanel) userList);
+    }
+
+    @Override
+    public void openPOS() {
+        POS pos = new POS();
+        showMainPanel((JPanel) pos);
     }
 }
