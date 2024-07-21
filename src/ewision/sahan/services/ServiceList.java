@@ -15,18 +15,20 @@ import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableImageCellRenderer;
-import ewision.sahan.utils.CSVFileReader;
+import ewision.sahan.utils.CSVFileOperator;
 import ewision.sahan.utils.SQLDateFormatter;
 import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -129,7 +131,7 @@ public class ServiceList extends javax.swing.JPanel {
     }
 
     private void importCSV() {
-        CSVFileReader csvFileReader = new CSVFileReader();
+        CSVFileOperator csvFileReader = new CSVFileOperator();
         File csvFile = csvFileReader.selectCSV(this);
         if (csvFile != null) {
             try {
@@ -144,10 +146,10 @@ public class ServiceList extends javax.swing.JPanel {
     private void importServices(List<String[]> dataList) {
         String dateTime = new SQLDateFormatter().getStringDateTime(new Date());
         for (String[] dataRow : dataList) {
-            String category = categoryMap.get(dataRow[4]) == null ? "NULL" : String.valueOf(categoryMap.get(dataRow[4]));
-            String barcodeType = barcodeTypeMap.get(dataRow[5]) == null ? "NULL" : String.valueOf(barcodeTypeMap.get(dataRow[5]));
+            String category = categoryMap.get(dataRow[4]) == null ? "NULL" : String.valueOf(categoryMap.get(dataRow[6]));
+            String barcodeType = barcodeTypeMap.get(dataRow[5]) == null ? "NULL" : String.valueOf(barcodeTypeMap.get(dataRow[9]));
             String query = "INSERT IGNORE INTO `products` (`code`, `name`, `cost`, `price`, `categories_id`, `barcode_type_id`, `note`, `product_type`) "
-                    + "VALUES ('" + dataRow[0] + "', '" + dataRow[1] + "', '" + dataRow[2] + "', '" + dataRow[3] + "', '" + category + "', '" + barcodeType + "', '" + dataRow[6] + "', 'service')";
+                    + "VALUES ('" + dataRow[2] + "', '" + dataRow[1] + "', '" + dataRow[3] + "', '" + dataRow[4] + "', '" + category + "', '" + barcodeType + "', '" + dataRow[8] + "', '" + dataRow[10] + "')";
             try {
                 MySQL.execute(query);
                 DatabaseLogger.logger.log(Level.FINE, "Customers Imported: {0}", Arrays.toString(dataRow));
@@ -314,15 +316,15 @@ public class ServiceList extends javax.swing.JPanel {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
+                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
+                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
+                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
+                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -425,7 +427,7 @@ public class ServiceList extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 729, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 660, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1)
@@ -463,7 +465,57 @@ public class ServiceList extends javax.swing.JPanel {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // Excel
+        exportCSV();
+        System.gc();
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void exportCSV() {
+        CSVFileOperator csvFileWriter = new CSVFileOperator();
+        File fileDirectory = csvFileWriter.selectCSVPath(this);
+
+        File file = new File(fileDirectory + "/services_" + System.currentTimeMillis() + ".csv");
+
+        try {
+            csvFileWriter.writeCSV(file, exportUsers());
+            JOptionPane.showMessageDialog(this, "Data Exported to: " + file, "Saved", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            CSVLogger.logger.log(Level.SEVERE, "Services exporting error:" + e.getMessage(), e.getMessage());
+        }
+    }
+
+    private List exportUsers() {
+        List<String[]> data = new ArrayList<>();
+        data.add(new String[]{"ID", "Name", "Code", "Cost", "Price", "Type", "Category Id", "TaxNet", "Note", "Barcode Type Id", "Tax Method Id"});
+
+        try {
+//            ResultSet countryRS = MySQL.execute("SELECT * FROM `categories`");
+//            HashMap<Integer, String> countryMap = new HashMap<>();
+//            while (countryRS.next()) {
+//                countryMap.put(countryRS.getInt("id"), countryRS.getString("name"));
+//            }
+
+            String query = "SELECT * FROM `products` WHERE `product_type`='service' ORDER BY `products`.`code` ASC";
+            ResultSet resultset = MySQL.execute(query);
+            while (resultset.next()) {
+                String id = resultset.getString("id");
+                String code = resultset.getString("code");
+                String name = resultset.getString("name");
+                String cost = resultset.getString("cost");
+                String price = resultset.getString("price");
+                String catId = resultset.getString("category_id");
+                String taxNet = resultset.getString("TaxNet");
+                String note = resultset.getString("note");
+                String btId = resultset.getString("barcode_type_id");
+                String tmId = resultset.getString("tax_method_id");
+                String type = resultset.getString("product_type");
+
+                data.add(new String[]{id, name, code, cost, price, type, catId, taxNet, note, btId, tmId});
+            }
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Services exporting DB error: " + ex.getMessage(), ex.getMessage());
+        }
+        return data;
+    }
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // Filter

@@ -13,18 +13,20 @@ import ewision.sahan.model.MySQL;
 import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
-import ewision.sahan.utils.CSVFileReader;
+import ewision.sahan.utils.CSVFileOperator;
 import ewision.sahan.utils.SQLDateFormatter;
 import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -44,8 +46,7 @@ public class SupplierList extends javax.swing.JPanel {
     private void loadSuppliers() {
 
         try {
-
-            ResultSet resultset = MySQL.execute("SELECT * FROM `providers`  ");
+            ResultSet resultset = MySQL.execute("SELECT * FROM `providers`");
 
             DefaultTableModel model = (DefaultTableModel) SupplierTable.getModel();
             model.setRowCount(0);
@@ -380,7 +381,7 @@ public class SupplierList extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void importCSV() {
-        CSVFileReader csvFileReader = new CSVFileReader();
+        CSVFileOperator csvFileReader = new CSVFileOperator();
         File csvFile = csvFileReader.selectCSV(this);
         if (csvFile != null) {
             try {
@@ -396,7 +397,7 @@ public class SupplierList extends javax.swing.JPanel {
         String dateTime = new SQLDateFormatter().getStringDateTime(new Date());
         for (String[] dataRow : dataList) {
             String query = "INSERT IGNORE INTO `providers` (`name`, `code`, `email`,`phone`,`city`,`adresse`,`created_at`,`country_id`) "
-                    + "VALUES ('" + dataRow[0] + "', '" + dataRow[1] + "', '" + dataRow[2] + "','" + dataRow[3] + "','" + dataRow[4] + "','" + dataRow[5] + "','" + dateTime + "','"+countryMap.get(dataRow[6])+"')";
+                    + "VALUES ('" + dataRow[1] + "', '" + dataRow[2] + "','" + dataRow[4] + "','" + dataRow[3] + "','" + dataRow[5] + "','" + dataRow[6] + "', '" + dateTime + "','" + countryMap.get(dataRow[7]) + "')";
             try {
                 MySQL.execute(query);
                 DatabaseLogger.logger.log(Level.FINE, "Suppliers Imported: " + Arrays.toString(dataRow));
@@ -420,7 +421,53 @@ public class SupplierList extends javax.swing.JPanel {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // Excel
+        exportCSV();
+        System.gc();
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void exportCSV() {
+        CSVFileOperator csvFileWriter = new CSVFileOperator();
+        File fileDirectory = csvFileWriter.selectCSVPath(this);
+
+        File file = new File(fileDirectory + "/suppliers_" + System.currentTimeMillis() + ".csv");
+
+        try {
+            csvFileWriter.writeCSV(file, exportUsers());
+            JOptionPane.showMessageDialog(this, "Data Exported to: " + file, "Saved", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            CSVLogger.logger.log(Level.SEVERE, "Suppliers exporting error:" + e.getMessage(), e.getMessage());
+        }
+    }
+
+    private List exportUsers() {
+        List<String[]> data = new ArrayList<>();
+        data.add(new String[]{"ID", "Name", "Code", "Mobile", "Email", "City", "Address", "Country"});
+
+        try {
+            ResultSet countryRS = MySQL.execute("SELECT * FROM `country`");
+            HashMap<Integer, String> countryMap = new HashMap<>();
+            while (countryRS.next()) {
+                countryMap.put(countryRS.getInt("id"), countryRS.getString("country"));
+            }
+
+            ResultSet resultset = MySQL.execute("SELECT * FROM `providers`");
+            while (resultset.next()) {
+                String id = resultset.getString("id");
+                String name = resultset.getString("name");
+                String code = resultset.getString("code");
+                String mobile = resultset.getString("phone");
+                String email = resultset.getString("email");
+                String city = resultset.getString("city");
+                String address = resultset.getString("adresse");
+                String country = resultset.getString("country.country");
+
+                data.add(new String[]{id, name, code, mobile, email, city, address, countryMap.get(country)});
+            }
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Suppliers exporting DB error: " + ex.getMessage(), ex.getMessage());
+        }
+        return data;
+    }
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // Filter

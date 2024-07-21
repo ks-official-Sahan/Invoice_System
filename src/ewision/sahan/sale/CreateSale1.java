@@ -1000,7 +1000,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                         String query = "INSERT INTO `sales` "
                                 + "(`id`, `user_id`, `date`, `Ref`, `is_pos`, `client_id`, `warehouse_id`, `tax_rate`, `TaxNet`, `discount`, `shipping`, "
                                 + "`GrandTotal`, `paid_amount`, `payment_statut`, `statut`, `notes`, `created_at`, `updated_at`, `deleted_at`, `shipping_status`) "
-                                + "VALUES ('" + id + "', '2', '" + stringDate + "', '" + referenceNo + "', 0, '" + customerId + "', '" + warehouseId + "', '" + orderTax + "', '" + tax + "', '" + orderDiscount + "', '" + orderShipping + "', "
+                                + "VALUES ('" + id + "', '" + Application.getUser().getStringId() + "', '" + stringDate + "', '" + referenceNo + "', 0, '" + customerId + "', '" + warehouseId + "', '" + orderTax + "', '" + tax + "', '" + orderDiscount + "', '" + orderShipping + "', "
                                 + "'" + total + "', '" + payment + "', '" + paymentStatus + "', '" + status + "', '" + note + "', '" + currentDateTime + "', NULL, NULL, NULL)";
 
                         try {

@@ -1009,7 +1009,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                                 + "(`id`, `user_id`, `Ref`, `date`, `provider_id`, `warehouse_id`, `tax_rate`, `TaxNet`, `discount`, `shipping`, "
                                 + "`GrandTotal`, `paid_amount`, `statut`, `payment_statut`, `notes`, `created_at`, `updated_at`, `deleted_at`) "
                                 //+ "VALUES ('" + id + "', '2', '" + referenceNo + "', '" + stringDate + "', " + (supplierId != "0" ? supplierId : "NULL") + ", '" + warehouseId + "', '" + orderTax + "', '" + tax + "', '" + orderDiscount + "', '" + orderShipping + "', "
-                                + "VALUES ('" + id + "', '2', '" + referenceNo + "', '" + stringDate + "', '" + supplierId + "', '" + warehouseId + "', '" + orderTax + "', '" + tax + "', '" + orderDiscount + "', '" + orderShipping + "', "
+                                + "VALUES ('" + id + "', '" + Application.getUser().getStringId() + "', '" + referenceNo + "', '" + stringDate + "', '" + supplierId + "', '" + warehouseId + "', '" + orderTax + "', '" + tax + "', '" + orderDiscount + "', '" + orderShipping + "', "
                                 + "'" + total + "', '" + payment + "', '" + status + "', '" + paymentStatus + "', '" + note + "', '" + currentDateTime + "', NULL, NULL)";
 
                         try {

@@ -2,6 +2,7 @@ package ewision.sahan.users;
 
 import ewision.sahan.customer.*;
 import com.mysql.cj.protocol.Resultset;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 import ewision.sahan.services.*;
 import ewision.sahan.application.Application;
@@ -18,18 +19,23 @@ import ewision.sahan.model.MySQL;
 import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
-import ewision.sahan.utils.CSVFileReader;
+import ewision.sahan.utils.CSVFileOperator;
 import ewision.sahan.utils.SQLDateFormatter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  *
@@ -363,7 +369,7 @@ public class UserList extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void importCSV() {
-        CSVFileReader csvFileReader = new CSVFileReader();
+        CSVFileOperator csvFileReader = new CSVFileOperator();
         File csvFile = csvFileReader.selectCSV(this);
         if (csvFile != null) {
             try {
@@ -378,10 +384,10 @@ public class UserList extends javax.swing.JPanel {
     private void importCustomers(List<String[]> dataList) {
         String dateTime = new SQLDateFormatter().getStringDateTime(new Date());
         for (String[] dataRow : dataList) {
-            String query = "INSERT IGNORE INTO `users` (`firstname`, `lastname`, `username`, `email`, `password`, `avatar`, `phone`,"
-                            + " `role_id`, `status`, `is_all_warehouses`, `created_at`,) "
-                            + "VALUES ('" + dataRow[0] + "', '" + dataRow[1] + "', '" + dataRow[2] + "', '" + dataRow[3] + "', '" + dataRow[4] + "', NULL, '" + dataRow[5] + "',"
-                            + " '" + (dataRow[6].equalsIgnoreCase("owner") ? "1" : "2") + "', '" + (dataRow[7].equalsIgnoreCase("active") ? "1" : "2") + "', 0, '" + dateTime + "')";
+            String query = "INSERT IGNORE INTO `users` (`username`, `firstname`, `lastname`, `email`, `password`, `avatar`, `phone`,"
+                    + " `role_id`, `status`, `is_all_warehouses`, `created_at`,) "
+                    + "VALUES ('" + dataRow[1] + "', '" + dataRow[2] + "', '" + dataRow[3] + "', '" + dataRow[4] + "', '" + dataRow[5] + "', NULL, '" + dataRow[6] + "',"
+                    + " '" + (dataRow[7].equalsIgnoreCase("owner") ? "1" : "2") + "', '" + (!dataRow[7].equalsIgnoreCase("active") ? "1" : "2") + "', 0, '" + dateTime + "')";
             try {
                 MySQL.execute(query);
                 DatabaseLogger.logger.log(Level.FINE, "User Imported: " + Arrays.toString(dataRow));
@@ -402,8 +408,49 @@ public class UserList extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // Excel
+        // Export Excel
+        exportCSV();
+        System.gc();
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void exportCSV() {
+        CSVFileOperator csvFileWriter = new CSVFileOperator();
+        File fileDirectory = csvFileWriter.selectCSVPath(this);
+
+        File file = new File(fileDirectory + "/users_" + System.currentTimeMillis() + ".csv");
+
+        try {
+            csvFileWriter.writeCSV(file, exportUsers());
+            JOptionPane.showMessageDialog(this, "Data Exported to: " + file, "Saved", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            CSVLogger.logger.log(Level.SEVERE, "User exporting error:" + e.getMessage(), e.getMessage());
+        }
+    }
+
+    private List exportUsers() {
+        List<String[]> data = new ArrayList<>();
+        data.add(new String[]{"ID", "Username", "FirstName", "LastName", "Email", "Password", "Mobile", "Role"});
+
+        try {
+            ResultSet resultset = MySQL.execute("SELECT * FROM `users` INNER JOIN `roles` ON `users`.`role_id`=`roles`.`id` ORDER BY `username` ASC");
+
+            while (resultset.next()) {
+                String id = resultset.getString("id");
+                String username = resultset.getString("username");
+                String fname = resultset.getString("firstname");
+                String lname = resultset.getString("lastname");
+                String mobile = resultset.getString("phone");
+                String email = resultset.getString("email");
+                String password = resultset.getString("password");
+                String role = resultset.getString("roles.name");
+
+                data.add(new String[]{id, username, fname, lname, email, password, mobile, role});
+            }
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Users exporting DB error: " + ex.getMessage(), ex.getMessage());
+        }
+        return data;
+    }
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // Filter

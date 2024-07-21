@@ -15,18 +15,20 @@ import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableImageCellRenderer;
-import ewision.sahan.utils.CSVFileReader;
+import ewision.sahan.utils.CSVFileOperator;
 import ewision.sahan.utils.SQLDateFormatter;
 import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -140,8 +142,8 @@ public class ProductList extends javax.swing.JPanel {
         }
     }
 
-    private void importCSV() {
-        CSVFileReader csvFileReader = new CSVFileReader();
+    private void importProductCSV() {
+        CSVFileOperator csvFileReader = new CSVFileOperator();
         File csvFile = csvFileReader.selectCSV(this);
         if (csvFile != null) {
             try {
@@ -153,21 +155,49 @@ public class ProductList extends javax.swing.JPanel {
         }
     }
 
+    private void importStockCSV() {
+        CSVFileOperator csvFileReader = new CSVFileOperator();
+        File csvFile = csvFileReader.selectCSV(this);
+        if (csvFile != null) {
+            try {
+                List dataList = csvFileReader.getAll(csvFile);
+                importStocks(dataList);
+            } catch (IOException | CsvException ex) {
+                CSVLogger.logger.log(Level.SEVERE, "Stocks importing error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
+
     private void importProducts(List<String[]> dataList) {
         String dateTime = new SQLDateFormatter().getStringDateTime(new Date());
         for (String[] dataRow : dataList) {
             String query = "INSERT IGNORE INTO "
                     + "`products` (`code`, `name`, `cost`, `price`, `category_id`, `brand_id`, `unit_id`, `unit_sale_id`, `unit_purchase_id`, `TaxNet`, "
                     + "`note`, `stock_alert`, `is_variant`, `is_imei`, `is_active`, `created_at`, `barcode_type_id`, `tax_method_id`, `product_type`) "
-                    + "VALUES ('" + dataRow[0] + "', '" + dataRow[1] + "', '" + dataRow[2] + "', '" + dataRow[3] + "', '" + categoryMap.get(dataRow[4]) + "', '" + brandMap.get(dataRow[5]) + "', "
-                    + "'" + unitMap.get(dataRow[6]) + "', '" + unitMap.get(dataRow[6]) + "', '" + unitMap.get(dataRow[6]) + "', '" + dataRow[7] + "', '" + dataRow[8] + "', "
-                    + "'" + dataRow[9] + "', '0', '" + dataRow[10] + "', 1, "
-                    + "'" + dateTime + "', '" + barcodeTypeMap.get(dataRow[11]) + "', '" + taxMethodMap.get(dataRow[12]) + "', 'product')";
+                    + "VALUES ('" + dataRow[2] + "', '" + dataRow[1] + "', '" + dataRow[3] + "', '" + dataRow[4] + "', '" + categoryMap.get(dataRow[7]) + "', '" + brandMap.get(dataRow[8]) + "', "
+                    + "'" + unitMap.get(dataRow[6]) + "', '" + unitMap.get(dataRow[6]) + "', '" + unitMap.get(dataRow[6]) + "', '" + dataRow[9] + "', '" + dataRow[10] + "', "
+                    + "'" + dataRow[11] + "', '0', '" + dataRow[12] + "', 1, "
+                    + "'" + dateTime + "', '" + barcodeTypeMap.get(dataRow[14]) + "', '" + taxMethodMap.get(dataRow[15]) + "', '" + dataRow[5] + "')";
             try {
                 MySQL.execute(query);
                 DatabaseLogger.logger.log(Level.FINE, "Product Imported: " + Arrays.toString(dataRow));
             } catch (SQLException ex) {
                 DatabaseLogger.logger.log(Level.SEVERE, "Products Importing DB error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
+
+    private void importStocks(List<String[]> dataList) {
+        for (String[] dataRow : dataList) {
+            String query = "INSERT IGNORE INTO "
+                    + "`stocks` (`name`, `code`, `cost`, `price`, `is_expire`, `exp_date`, `mfd_date`, `quantity`, `products_id`, `sale_price`) "
+                    + "VALUES ('" + dataRow[1] + "', '" + dataRow[2] + "', " + dataRow[3] + ", " + dataRow[4] + ", "
+                    + "'" + dataRow[8] + "', '" + dataRow[9] + "', '" + dataRow[10] + "', '" + dataRow[6] + "', '" + dataRow[7] + "', '" + dataRow[5] + "') ";
+            try {
+                MySQL.execute(query);
+                DatabaseLogger.logger.log(Level.FINE, "Stocks Imported: " + Arrays.toString(dataRow));
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Stocks Importing DB error: " + ex.getMessage(), ex.getMessage());
             }
         }
     }
@@ -320,7 +350,7 @@ public class ProductList extends javax.swing.JPanel {
 
         jButton6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton6.setForeground(new java.awt.Color(51, 204, 255));
-        jButton6.setText("Filter");
+        jButton6.setText("Stock");
         jButton6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 153, 204)));
         jButton6.setEnabled(false);
         jButton6.setOpaque(true);
@@ -364,7 +394,7 @@ public class ProductList extends javax.swing.JPanel {
 
         jButton4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton4.setForeground(new java.awt.Color(255, 0, 51));
-        jButton4.setText("PDF");
+        jButton4.setText("Import Stocks");
         jButton4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 0, 0)));
         jButton4.setEnabled(false);
         jButton4.setOpaque(true);
@@ -380,15 +410,15 @@ public class ProductList extends javax.swing.JPanel {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
+                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
+                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -413,7 +443,7 @@ public class ProductList extends javax.swing.JPanel {
                 .addComponent(cmdSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(78, 78, 78)
+                .addGap(40, 40, 40)
                 .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -493,7 +523,7 @@ public class ProductList extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 722, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1)
@@ -514,7 +544,7 @@ public class ProductList extends javax.swing.JPanel {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // Import
         loadData();
-        importCSV();
+        importProductCSV();
         unitMap = null;
         barcodeTypeMap = null;
         categoryMap = null;
@@ -529,15 +559,184 @@ public class ProductList extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // PDF
+        // Import Stocks
+        importStockCSV();
+        System.gc();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // Excel
+        exportProductCSV();
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void exportProductCSV() {
+        CSVFileOperator csvFileWriter = new CSVFileOperator();
+        File fileDirectory = csvFileWriter.selectCSVPath(this);
+
+        File file = new File(fileDirectory + "/products_" + System.currentTimeMillis() + ".csv");
+
+        try {
+            csvFileWriter.writeCSV(file, exportProducts());
+            JOptionPane.showMessageDialog(this, "Data Exported to: " + file, "Saved", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            CSVLogger.logger.log(Level.SEVERE, "Products exporting error:" + e.getMessage(), e.getMessage());
+        }
+    }
+
+    private List exportProducts() {
+        List<String[]> data = new ArrayList<>();
+        data.add(new String[]{"ID", "Name", "Code", "Cost", "Price", "Type", "Unit", "Category Id", "Brand Id", "TaxNet", "Note", "Stock Alert", "Is IMEI", "Sale Price", "Barcode Type Id", "Tax Method Id"});
+
+        try {
+            HashMap<Integer, String> taxMethodIdMap = new HashMap<>();
+            try {
+                ResultSet resultSet = MySQL.execute("SELECT * FROM `tax_method` ORDER BY `method`");
+
+                taxMethodIdMap.clear();
+                while (resultSet.next()) {
+                    taxMethodIdMap.put(resultSet.getInt("id"), resultSet.getString("method"));
+                }
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Tax Method loading error: " + ex.getMessage(), ex.getMessage());
+            }
+            HashMap<Integer, String> barcodeTypeIdMap = new HashMap<>();
+            try {
+                ResultSet resultSet = MySQL.execute("SELECT * FROM `barcode_type` ORDER BY `barcode_type`");
+
+                barcodeTypeIdMap.clear();
+                while (resultSet.next()) {
+                    barcodeTypeIdMap.put(resultSet.getInt("id"), resultSet.getString("barcode_type"));
+                }
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Barcode Type loading error: " + ex.getMessage(), ex.getMessage());
+            }
+            HashMap<Integer, String> categoryIdMap = new HashMap<>();
+            try {
+                ResultSet resultSet = MySQL.execute("SELECT * FROM `categories` ORDER BY `name`");
+
+                categoryIdMap.clear();
+                while (resultSet.next()) {
+                    categoryIdMap.put(resultSet.getInt("id"), resultSet.getString("name"));
+                }
+
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Category loading error: " + ex.getMessage(), ex.getMessage());
+            }
+            HashMap<Integer, String> unitIdMap = new HashMap<>();
+            try {
+                ResultSet resultSet = MySQL.execute("SELECT * FROM `units` ORDER BY `ShortName`");
+
+                unitIdMap.clear();
+                while (resultSet.next()) {
+                    unitIdMap.put(resultSet.getInt("id"), resultSet.getString("ShortName"));
+                }
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Units loading error: " + ex.getMessage(), ex.getMessage());
+            }
+            HashMap<Integer, String> brandIdMap = new HashMap<>();
+            try {
+                ResultSet resultSet = MySQL.execute("SELECT * FROM `brands` ORDER BY `name`");
+
+                brandIdMap.clear();
+                while (resultSet.next()) {
+                    brandIdMap.put(resultSet.getInt("id"), resultSet.getString("name"));
+                }
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Brand loading error: " + ex.getMessage(), ex.getMessage());
+            }
+
+            String query = "SELECT * FROM `products` "
+                    + "INNER JOIN `brands` ON `products`.`brand_id`=`brands`.`id` "
+                    + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
+                    + "INNER JOIN `units` ON `products`.`unit_id`=`units`.`id` "
+                    + "WHERE `product_type`='product' ORDER BY `products`.`code` ASC";
+            ResultSet resultset = MySQL.execute(query);
+            while (resultset.next()) {
+                String id = resultset.getString("id");
+                String code = resultset.getString("code");
+                String name = resultset.getString("name");
+                String cost = resultset.getString("cost");
+                String price = resultset.getString("price");
+                String sale_price = resultset.getString("sale_price");
+                String catId = resultset.getString("category_id");
+                //String catId = resultset.getString("categories.name");
+                String bId = resultset.getString("brand_id");
+                //String bId = resultset.getString("brands.name");
+                String unitId = resultset.getString("unit_id");
+                //String unitId = resultset.getString("units.ShortName");
+                String taxNet = resultset.getString("TaxNet");
+                String note = resultset.getString("note");
+                String stock_alert = resultset.getString("stock_alert");
+                String is_imei = resultset.getString("is_imei");
+                String btId = resultset.getString("barcode_type_id");
+                String tmId = resultset.getString("tax_method_id");
+                String type = resultset.getString("product_type");
+
+                data.add(new String[]{id, name, code, cost, price, type, unitIdMap.get(unitId), categoryIdMap.get(catId), brandIdMap.get(bId), taxNet, note, stock_alert, is_imei, sale_price, barcodeTypeIdMap.get(btId), taxMethodIdMap.get(tmId)});
+            }
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Products exporting DB error: " + ex.getMessage(), ex.getMessage());
+        }
+        return data;
+    }
+
+    private void exportStockCSV() {
+        CSVFileOperator csvFileWriter = new CSVFileOperator();
+        File fileDirectory = csvFileWriter.selectCSVPath(this);
+
+        File file = new File(fileDirectory + "/stocks_" + System.currentTimeMillis() + ".csv");
+
+        try {
+            csvFileWriter.writeCSV(file, exportStocks());
+            JOptionPane.showMessageDialog(this, "Data Exported to: " + file, "Saved", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            CSVLogger.logger.log(Level.SEVERE, "Stocks exporting error:" + e.getMessage(), e.getMessage());
+        }
+    }
+
+    private List exportStocks() {
+        List<String[]> data = new ArrayList<>();
+        data.add(new String[]{"ID", "Name", "Code", "Cost", "Price", "Sale Price", "Quantity", "Product ID", "`Is Expire Date", "Expire Date", "MFD Date"});
+
+        try {
+            HashMap<Integer, String> brandIdMap = new HashMap<>();
+            try {
+                ResultSet resultSet = MySQL.execute("SELECT * FROM `products` ORDER BY `code`");
+
+                brandIdMap.clear();
+                while (resultSet.next()) {
+                    brandIdMap.put(resultSet.getInt("id"), resultSet.getString("code"));
+                }
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Product loading error: " + ex.getMessage(), ex.getMessage());
+            }
+
+            String query = "SELECT * FROM `stocks` ORDER BY `stocks`.`code` ASC";
+            ResultSet resultset = MySQL.execute(query);
+            while (resultset.next()) {
+                String id = resultset.getString("id");
+                String code = resultset.getString("code");
+                String name = resultset.getString("name");
+                String cost = resultset.getString("cost");
+                String price = resultset.getString("price");
+                String sale_price = resultset.getString("sale_price");
+                String quantity = resultset.getString("quantity");
+                String pid = resultset.getString("product_id");
+                String is_expire = resultset.getString("is_expire");
+                String exp = resultset.getString("exp_date");
+                String mfd = resultset.getString("mfd_date");
+
+                data.add(new String[]{id, name, code, cost, price, sale_price, quantity, pid, is_expire, exp, mfd});
+            }
+        } catch (SQLException ex) {
+            DatabaseLogger.logger.log(Level.SEVERE, "Services exporting DB error: " + ex.getMessage(), ex.getMessage());
+        }
+        return data;
+    }
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // Filter
+        exportStockCSV();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked

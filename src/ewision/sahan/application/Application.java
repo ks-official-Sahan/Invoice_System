@@ -7,6 +7,7 @@ import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import ewision.sahan.menu.Menu;
 import ewision.sahan.model.ModelMenu;
+import ewision.sahan.model.User;
 import ewision.sahan.service.impl.AppServiceIMPL;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.BorderLayout;
@@ -31,10 +32,20 @@ public class Application extends javax.swing.JFrame {
     private Animator animator;
     private boolean menuShow;
 
+    private static User user;
+
     /**
      * Creates new form Main
      */
     public Application() {
+        initComponents();
+        appService = new AppServiceIMPL();
+        appService.setApp(this);
+        init();
+    }
+
+    public Application(User user) {
+        setUser(user);
         initComponents();
         appService = new AppServiceIMPL();
         appService.setApp(this);
@@ -106,8 +117,9 @@ public class Application extends javax.swing.JFrame {
         menu.addMenu(new ModelMenu("Suppliers", scaler.getSvgIcon("supplier.svg", 30)));
         menu.addMenu(new ModelMenu("Invoice", scaler.getSvgIcon("bill.svg", 30)));
         menu.addMenu(new ModelMenu("Purchase", scaler.getSvgIcon("bill.svg", 30)));
-        menu.addMenu(new ModelMenu("Users", scaler.getSvgIcon("customer.svg", 30)));
-
+        if (user.getRoleId() == 1) {
+            menu.addMenu(new ModelMenu("Users", scaler.getSvgIcon("customer.svg", 30)));
+        }
         appService.openDashboard();
     }
 
@@ -202,5 +214,13 @@ public class Application extends javax.swing.JFrame {
 
     public JPanel getMain() {
         return main;
+    }
+
+    public static User getUser() {
+        return user;
+    }
+
+    public void setUser(User aUser) {
+        user = aUser;
     }
 }
