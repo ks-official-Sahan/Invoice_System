@@ -5,7 +5,7 @@ import java.awt.Color;
 public interface Constants {
 
     public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
-    public static final String GRADIENT_ICON = "/ewision/sahan/icon/gradientIcon.png";
+    public static final String GRADIENT_ICON = "/ewision/sahan/icon/gradientIcon_1.png";
     public static final String WHITE_LOGO = "/ewision/sahan/icon/whiteLogo.png";
     public static final String WHITE_ICON = "/ewision/sahan/icon/whiteIcon.png";
     //public static final String defaultIconPath = "/assets/icon/";

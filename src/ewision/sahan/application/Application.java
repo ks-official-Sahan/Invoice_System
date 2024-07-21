@@ -6,12 +6,15 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import ewision.sahan.menu.Menu;
+import ewision.sahan.model.Constants;
 import ewision.sahan.model.ModelMenu;
 import ewision.sahan.model.User;
 import ewision.sahan.service.impl.AppServiceIMPL;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.BorderLayout;
+import java.awt.Taskbar;
 import java.awt.event.ActionEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 import org.jdesktop.animation.timing.Animator;
@@ -54,6 +57,12 @@ public class Application extends javax.swing.JFrame {
 
     private void init() {
         getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
+
+        ImageIcon imageIcon = new ImageIcon(getClass().getResource(Constants.GRADIENT_ICON));
+        this.setIconImage(imageIcon.getImage()); //Windows
+        Taskbar taskbar = Taskbar.getTaskbar();
+        taskbar.setIconImage(imageIcon.getImage()); //MacOS New
+        // //Application.getApplication().setDockIconImage(imageIcon.getImage()); //MacOS Old
 
         setSize(1366, 768);
         setLocationRelativeTo(null);
