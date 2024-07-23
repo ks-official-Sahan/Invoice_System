@@ -4,6 +4,9 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import ewision.sahan.customer.CreateCustomer;
 import ewision.sahan.model.Product;
+import ewision.sahan.product.BrandRegistration;
+import ewision.sahan.product.CategoryRegistration;
+import ewision.sahan.product.UnitRegistration;
 import ewision.sahan.purchase.AddStock;
 import ewision.sahan.purchase.CreatePurchase1;
 import ewision.sahan.sale.CreateSale1;
@@ -28,7 +31,6 @@ public class DialogModal extends javax.swing.JDialog {
     public DialogModal(javax.swing.JPanel parent) {
         this.parent = parent;
         initComponents();
-        
     }
 
 //    private void init() {
@@ -90,6 +92,24 @@ public class DialogModal extends javax.swing.JDialog {
     public void openAddStock(CreatePurchase1 createPurchase, Product product) {
         AddStock addStock = new AddStock(createPurchase, product);
         openPanel(addStock);
+    }
+    
+    public void openBrandReg() {
+        BrandRegistration brandReg = new BrandRegistration();
+        brandReg.setModal(this);
+        openPanel(brandReg);
+    }
+    
+    public void openUnitReg() {
+        UnitRegistration unitReg = new UnitRegistration();
+        unitReg.setModal(this);
+        openPanel(unitReg);
+    }
+    
+    public void openCategoryReg() {
+        CategoryRegistration categoryReg = new CategoryRegistration();
+        categoryReg.setModal(this);
+        openPanel(categoryReg);
     }
     
     public void openCreateUser() {

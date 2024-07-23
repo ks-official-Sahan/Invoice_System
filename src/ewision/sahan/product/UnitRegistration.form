@@ -167,7 +167,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Enter Category Name"/>
+                <Property name="text" type="java.lang.String" value="Enter Unit Name"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="categoryName">
@@ -179,7 +179,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Enter Category Code"/>
+                <Property name="text" type="java.lang.String" value="Enter Unit Short Name"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -199,7 +199,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="290" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="303" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">

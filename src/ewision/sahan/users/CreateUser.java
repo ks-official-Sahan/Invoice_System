@@ -359,9 +359,9 @@ public class CreateUser extends javax.swing.JPanel {
 
                     String query = "INSERT INTO "
                             + "`users` (`firstname`, `lastname`, `username`, `email`, `password`, `avatar`, `phone`,"
-                            + " `role_id`, `status`, `is_all_warehouses`, `created_at`, `updated_at`, `deleted_at`) "
+                            + " `role_id`, `status`, `is_all_warehouses`, `created_at`, `updated_at`, `deleted_at`, `shop_id`) "
                             + "VALUES ('" + fname + "', '" + lname + "', '" + username + "', '" + email + "', '" + password + "', NULL, '" + mobile + "',"
-                            + " '" + (role.equalsIgnoreCase("owner") ? "1" : "2") + "', '" + (status.equalsIgnoreCase("active") ? "1" : "2") + "', 0, '" + dateTime + "', NULL, NULL)";
+                            + " '" + (role.equalsIgnoreCase("owner") ? "1" : "2") + "', '" + (status.equalsIgnoreCase("active") ? "1" : "2") + "', 0, '" + dateTime + "', NULL, NULL, '"+Application.getShop().getStringId()+"')";
 
                     MySQL.execute(query);
 

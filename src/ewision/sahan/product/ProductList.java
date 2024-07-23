@@ -66,6 +66,9 @@ public class ProductList extends javax.swing.JPanel {
         eventMap.put("delete", (ActionButtonEvent) (int row) -> {
             System.out.println("Delete: " + row);
             System.out.println("Delete: " + String.valueOf(jTable1.getValueAt(row, 8)));
+            String id = String.valueOf(jTable1.getValueAt(row, 1));
+            System.out.println("Delete: " + id);
+            deleteProduct(id);
         });
         eventMap.put("view", (ActionButtonEvent) (int row) -> {
             System.out.println("View: " + row);
@@ -74,6 +77,19 @@ public class ProductList extends javax.swing.JPanel {
             System.out.println("Edit: " + row);
         });
         jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
+    }
+
+    private void deleteProduct(String id) {
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure about deleting this product?", "Delete Warning", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            try {
+                String query = "UPDATE `products` SET `is_active`='0' WHERE `id`='" + id + "'";
+                MySQL.execute(query);
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Products delete error: " + ex.getMessage(), ex.getMessage());
+                loadTestData();
+            }
+        }
     }
 
     private void loadTestData() {
@@ -102,7 +118,7 @@ public class ProductList extends javax.swing.JPanel {
                     + "INNER JOIN `brands` ON `products`.`brand_id`=`brands`.`id` "
                     + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
                     + "INNER JOIN `units` ON `products`.`unit_id`=`units`.`id` "
-                    + "WHERE `product_type`='product' AND (`products`.`name` LIKE '%" + product + "%' OR `products`.`code` LIKE '%" + product + "%' OR `products`.`id` LIKE '%" + product + "%') ORDER BY `products`.`code` ASC";
+                    + "WHERE `product_type`='product' AND `is_active`='1' AND (`products`.`name` LIKE '%" + product + "%' OR `products`.`code` LIKE '%" + product + "%' OR `products`.`id` LIKE '%" + product + "%') ORDER BY `products`.`code` ASC";
             ResultSet resultSet = MySQL.execute(query);
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -181,6 +197,7 @@ public class ProductList extends javax.swing.JPanel {
             try {
                 MySQL.execute(query);
                 DatabaseLogger.logger.log(Level.FINE, "Product Imported: " + Arrays.toString(dataRow));
+                loadProducts("");
             } catch (SQLException ex) {
                 DatabaseLogger.logger.log(Level.SEVERE, "Products Importing DB error: " + ex.getMessage(), ex.getMessage());
             }

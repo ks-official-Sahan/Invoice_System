@@ -1,6 +1,7 @@
 package ewision.sahan.product;
 
 import ewision.sahan.application.Application;
+import ewision.sahan.application.main.DialogModal;
 import ewision.sahan.model.MySQL;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
@@ -21,7 +22,12 @@ public class CategoryRegistration extends javax.swing.JPanel {
      */
     public CategoryRegistration() {
         initComponents();
+    }
 
+    private DialogModal modal;
+
+    public void setModal(DialogModal modal) {
+        this.modal = modal;
     }
 
     /**
@@ -197,9 +203,11 @@ public class CategoryRegistration extends javax.swing.JPanel {
 
                 MySQL.execute("INSERT INTO `categories` (`code`,`name`,`created_at`)"
                         + "VALUES ('" + catCode + "','" + category + "','" + tt + "')");
-                
-               categoryName.setText("");
-               this.categoryCode.setText("");
+
+                categoryName.setText("");
+                this.categoryCode.setText("");
+                Application.appService.openCreateProduct();
+                modal.closeModal();
 
             } catch (Exception e) {
                 e.printStackTrace();

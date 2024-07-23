@@ -1,0 +1,6 @@
+Jul 23, 2024 12:04:06 PM ewision.sahan.model.MySQL creteConnection
+SEVERE: 1721716446219 :: Access denied for user 'alpha'@'%' to database 'alpha_sub' -- java.sql.SQLSyntaxErrorException
+Jul 23, 2024 12:04:06 PM ewision.sahan.model.MySQL execute
+SEVERE: 1721716446239 :: Cannot invoke "java.sql.Connection.createStatement()" because "ewision.sahan.model.MySQL.connection" is null -- java.lang.NullPointerException
+Jul 23, 2024 12:12:42 PM ewision.sahan.model.MySQL execute
+SEVERE: 1721716962113 :: Cannot invoke "java.sql.Connection.createStatement()" because "ewision.sahan.model.MySQL.connection" is null -- java.lang.NullPointerException

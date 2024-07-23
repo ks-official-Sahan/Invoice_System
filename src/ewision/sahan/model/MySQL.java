@@ -17,8 +17,10 @@ public class MySQL {
 
     private static final String URL = "localhost";
     private static final String DATABASE = "alpha_sub";
-    private static final String USERNAME = "sahan";
-    private static final String PASSWORD = "Sahan@123";
+    //private static final String USERNAME = "sahan";
+    //private static final String PASSWORD = "Sahan@123";
+    private static final String USERNAME = "alpha";
+    private static final String PASSWORD = "Alpha@123";
     private static final String PORT = "3306";
 
     static {
@@ -30,11 +32,13 @@ public class MySQL {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://" + URL + ":" + PORT + "/" + DATABASE, USERNAME, PASSWORD);
             DatabaseLogger.logger.log(Level.INFO, System.currentTimeMillis() + " :: DB CONNECTED ");
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (ClassNotFoundException | SQLException | NullPointerException e) {
             // System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
             //DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());
             DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getLocalizedMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());
+            // CREATE USER IF NOT EXISTS 'alpha'@'%' IDENTIFIED BY 'Alpha@123';
+            // GRANT ALL PRIVILEGEs ON alpha_sub.* TO 'alpha'@'%';
         }
     }
 

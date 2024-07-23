@@ -1,6 +1,7 @@
 package ewision.sahan.product;
 
 import ewision.sahan.application.Application;
+import ewision.sahan.application.main.DialogModal;
 import ewision.sahan.model.MySQL;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
@@ -21,7 +22,12 @@ public class UnitRegistration extends javax.swing.JPanel {
      */
     public UnitRegistration() {
         initComponents();
+    }
 
+    private DialogModal modal;
+
+    public void setModal(DialogModal modal) {
+        this.modal = modal;
     }
 
     /**
@@ -78,10 +84,10 @@ public class UnitRegistration extends javax.swing.JPanel {
         );
 
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        jLabel2.setText("Enter Category Name");
+        jLabel2.setText("Enter Unit Name");
 
         jLabel3.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        jLabel3.setText("Enter Category Code");
+        jLabel3.setText("Enter Unit Short Name");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -124,7 +130,7 @@ public class UnitRegistration extends javax.swing.JPanel {
         jImagePanel1.setLayout(jImagePanel1Layout);
         jImagePanel1Layout.setHorizontalGroup(
             jImagePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 290, Short.MAX_VALUE)
+            .addGap(0, 303, Short.MAX_VALUE)
         );
         jImagePanel1Layout.setVerticalGroup(
             jImagePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -180,27 +186,22 @@ public class UnitRegistration extends javax.swing.JPanel {
         String catCode = this.categoryCode.getText();
 
         if (category.equals("")) {
-
-            JOptionPane.showMessageDialog(this, "Enter Brand Name", "Warning", JOptionPane.ERROR_MESSAGE);
-
+            JOptionPane.showMessageDialog(this, "Enter Unit Name", "Warning", JOptionPane.ERROR_MESSAGE);
         } else if (catCode.equals("")) {
-
-            JOptionPane.showMessageDialog(this, "Enter Description", "Warning", JOptionPane.ERROR_MESSAGE);
-
+            JOptionPane.showMessageDialog(this, "Enter Short Name", "Warning", JOptionPane.ERROR_MESSAGE);
         } else {
-
             try {
-
                 Date dt = new Date();
                 SimpleDateFormat st = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
                 String tt = st.format(dt);
 
-                MySQL.execute("INSERT INTO `categories` (`code`,`name`,`created_at`)"
+                MySQL.execute("INSERT INTO `units` (`ShortName`,`name`,`created_at`)"
                         + "VALUES ('" + catCode + "','" + category + "','" + tt + "')");
-                
-               categoryName.setText("");
-               this.categoryCode.setText("");
 
+                categoryName.setText("");
+                this.categoryCode.setText("");
+                Application.appService.openCreateProduct();
+                modal.closeModal();
             } catch (Exception e) {
                 e.printStackTrace();
             }

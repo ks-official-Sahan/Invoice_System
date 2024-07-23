@@ -1,0 +1,6 @@
+Jul 23, 2024 11:33:29 AM ewision.sahan.model.MySQL creteConnection
+INFO: 1721714609053 :: DB CONNECTED 
+Jul 23, 2024 11:34:05 AM ewision.sahan.sale.CreateSale1 submitSale
+SEVERE: SQLException in ewision.sahan.sale.CreateSale1 Sale Submit Sale row: Cannot add or update a child row: a foreign key constraint fails (`alpha_sub`.`sales`, CONSTRAINT `sale_client_id` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT)
+Jul 23, 2024 11:36:48 AM ewision.sahan.sale.CreateSale1 submitSale
+SEVERE: SQLException in ewision.sahan.sale.CreateSale1 Sale Submit Sale row: Incorrect integer value: '' for column 'client_id' at row 1

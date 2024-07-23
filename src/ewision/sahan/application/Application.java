@@ -1,18 +1,17 @@
 package ewision.sahan.application;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import ewision.sahan.menu.Menu;
 import ewision.sahan.model.Constants;
 import ewision.sahan.model.ModelMenu;
+import ewision.sahan.model.Shop;
 import ewision.sahan.model.User;
 import ewision.sahan.service.impl.AppServiceIMPL;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.BorderLayout;
-import java.awt.Taskbar;
 import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -36,6 +35,7 @@ public class Application extends javax.swing.JFrame {
     private boolean menuShow;
 
     private static User user;
+    private static Shop shop;
 
     /**
      * Creates new form Main
@@ -60,8 +60,8 @@ public class Application extends javax.swing.JFrame {
 
         ImageIcon imageIcon = new ImageIcon(getClass().getResource(Constants.GRADIENT_ICON));
         this.setIconImage(imageIcon.getImage()); //Windows
-        Taskbar taskbar = Taskbar.getTaskbar();
-        taskbar.setIconImage(imageIcon.getImage()); //MacOS New
+        //Taskbar taskbar = Taskbar.getTaskbar();
+        //taskbar.setIconImage(imageIcon.getImage()); //MacOS New
         // //Application.getApplication().setDockIconImage(imageIcon.getImage()); //MacOS Old
 
         setSize(1366, 768);
@@ -114,10 +114,10 @@ public class Application extends javax.swing.JFrame {
                     appService.openPurchaseList();
                 case 7 ->
                     // POS
-                    appService.openUserList();
+                    appService.openPOS();
                 case 8 ->
                     // User
-                    appService.openPOS();
+                    appService.openUserList();
             }
         });
 
@@ -235,5 +235,13 @@ public class Application extends javax.swing.JFrame {
 
     public void setUser(User aUser) {
         user = aUser;
+    }
+
+    public static Shop getShop() {
+        return shop;
+    }
+
+    public static void setShop(Shop aShop) {
+        shop = aShop;
     }
 }

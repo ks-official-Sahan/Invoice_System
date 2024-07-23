@@ -11,6 +11,7 @@ import ewision.sahan.loggers.DatabaseLogger;
 import ewision.sahan.model.MySQL;
 import ewision.sahan.model.Product;
 import ewision.sahan.model.Service;
+import ewision.sahan.model.Shop;
 import ewision.sahan.model.Stock;
 import ewision.sahan.report.PrintReport;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
@@ -294,7 +295,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                 + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
                 + "INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` "
                 + "INNER JOIN `units` ON `units`.`id`=`products`.`unit_id` "
-                + "WHERE `product_type`='product' ";
+                + "WHERE `product_type`='product' AND `is_active`='1' ";
         if (!product.isEmpty()) {
             //query += "WHERE `products`.`name` LIKE '%" + product + "%' "
             query += "AND (`products`.`name` LIKE '%" + product + "%' "
@@ -882,10 +883,10 @@ public class CreatePurchase1 extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Please select Provider!", "Warning", JOptionPane.WARNING_MESSAGE);
             supplierField.requestFocus();
             this.supplier = "0";
-//        } else if (warehouseName.isBlank() && !warehouseId.equals("0")) {
-//            JOptionPane.showMessageDialog(this, "Please select Warehouse!", "Warning", JOptionPane.WARNING_MESSAGE);
-//            warehouseField.requestFocus();
-//            this.warehouse = "0";
+        } else if (warehouseName.isBlank() && !warehouseId.equals("0")) {
+            JOptionPane.showMessageDialog(this, "Please select Warehouse!", "Warning", JOptionPane.WARNING_MESSAGE);
+            warehouseField.requestFocus();
+            this.warehouse = "0";
             //} else if (itemCount == 0 && serviceCount == 0) {
         } else if (itemCount == 0) {
             JOptionPane.showMessageDialog(this, "Please add atleast one Product!", "Warning", JOptionPane.WARNING_MESSAGE);
@@ -1114,7 +1115,14 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 //                        }
 
                         if (isComplete) {
+                            Shop shop = Application.getShop();
+                            
                             HashMap<String, Object> parameters = new HashMap<>();
+                            parameters.put("ShopName", shop.getName());
+                            parameters.put("Email", shop.getEmail());
+                            parameters.put("Mobile", shop.getMobile());
+                            parameters.put("Address", shop.getAddress());
+                            parameters.put("Logo", shop.getLogo2Path());
                             parameters.put("InvoiceNo", referenceNo);
                             parameters.put("Customer", supplierName);
                             parameters.put("Time", currentDateTime.replace(currentDate, ""));
@@ -1126,7 +1134,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                             parameters.put("NetAmount", String.valueOf(total));
                             parameters.put("Payment", String.valueOf(payment));
                             parameters.put("Balance", String.valueOf(balance));
-                            new PrintReport().PrintReport("/ewision/sahan/report/jasper/posInvoice2.jasper", parameters, new JRTableModelDataSource(productChargeTable.getModel()));
+                            new PrintReport().PrintReport("/ewision/sahan/report/jasper/posInvoice3A4.jasper", parameters, new JRTableModelDataSource(productChargeTable.getModel()));
 
                             JOptionPane.showMessageDialog(this, "Successfully completed!", "Successful", JOptionPane.INFORMATION_MESSAGE);
                             //Application.appService.openCreatePurchase();

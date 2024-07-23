@@ -1,6 +1,7 @@
 package ewision.sahan.product;
 
 import ewision.sahan.application.Application;
+import ewision.sahan.application.main.DialogModal;
 import ewision.sahan.model.MySQL;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,12 @@ public class BrandRegistration extends javax.swing.JPanel {
     public BrandRegistration() {
         initComponents();
 
+    }
+
+    private DialogModal modal;
+
+    public void setModal(DialogModal modal) {
+        this.modal = modal;
     }
 
     /**
@@ -197,9 +204,11 @@ public class BrandRegistration extends javax.swing.JPanel {
 
                 MySQL.execute("INSERT INTO `brands` (`name`,`description`,`created_at`)"
                         + "VALUES ('" + brand + "','" + description + "','" + tt + "')");
-                
-               brandName.setText("");
-               this.description.setText("");
+
+                brandName.setText("");
+                this.description.setText("");
+                Application.appService.openCreateProduct();
+                modal.closeModal();
 
             } catch (Exception e) {
                 e.printStackTrace();

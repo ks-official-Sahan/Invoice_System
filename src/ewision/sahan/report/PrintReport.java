@@ -51,7 +51,7 @@ public class PrintReport {
             //JasperPrint jasperReport = JasperFillManager.fillReport(report, parameters, connection); // DatabaseSource is Database Connection
             //JasperPrint jasperReport = JasperFillManager.fillReport(report, parameters, new JRTableModelDataSource(new DefaultTableModel()));
             //JasperPrint jasperReport = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
-            //JasperViewer.viewReport(jasperReport, false);
+            JasperViewer.viewReport(jasperReport, false);
             JasperPrintManager.printReport(jasperReport, false);
         } catch (NullPointerException e) {
             CommonLogger.logger.log(Level.SEVERE, "NullpointerException in Jasper Report Compiling: " + e.getMessage(), e.getMessage());

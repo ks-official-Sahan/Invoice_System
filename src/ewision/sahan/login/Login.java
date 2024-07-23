@@ -6,12 +6,12 @@ import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import ewision.sahan.application.Application;
 import ewision.sahan.model.Constants;
-import java.awt.Color;
 import java.awt.HeadlessException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import ewision.sahan.model.MySQL;
+import ewision.sahan.model.Shop;
 import ewision.sahan.model.User;
 import java.awt.Taskbar;
 import javax.swing.ImageIcon;
@@ -35,8 +35,8 @@ public class Login extends javax.swing.JFrame {
         getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
         ImageIcon imageIcon = new ImageIcon(getClass().getResource(Constants.GRADIENT_ICON));
         this.setIconImage(imageIcon.getImage()); //Windows
-        Taskbar taskbar = Taskbar.getTaskbar();
-        taskbar.setIconImage(imageIcon.getImage()); //MacOS New
+        //Taskbar taskbar = Taskbar.getTaskbar();
+        //taskbar.setIconImage(imageIcon.getImage()); //MacOS New
         // //Application.getApplication().setDockIconImage(imageIcon.getImage()); //MacOS Old
     }
 
@@ -154,8 +154,22 @@ public class Login extends javax.swing.JFrame {
                         User user = new User(resultSet.getString("id"), resultSet.getString("role_id"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("phone"));
 
                         Application application = new Application(user);
+                        
+                        ResultSet shopRs = MySQL.execute("SELECT * FROM `shop` WHERE `id`='"+resultSet.getString("shop_id")+"'");
+                        Shop shop = new Shop();
+                        if (shopRs.next()) {
+                            shop.setId(shopRs.getInt("id"));
+                            shop.setName(shopRs.getString("name"));
+                            shop.setAddress(shopRs.getString("address"));
+                            shop.setEmail(shopRs.getString("email"));
+                            shop.setMobile(shopRs.getString("mobile"));
+                            shop.setLogoPath(shopRs.getString("logoPath"));
+                            shop.setLogo2Path(shopRs.getString("logo2Path"));
+                        }
+                        
                         //application.setUser(user);
                         application.setVisible(true);
+                        application.setShop(shop);
                         this.dispose();
                     } else {
                         JOptionPane.showMessageDialog(this, "User is blocked", "Warning", JOptionPane.ERROR_MESSAGE);
