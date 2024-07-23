@@ -124,7 +124,7 @@ public class ProductList extends javax.swing.JPanel {
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.setRowCount(0);
 
-            ImageIcon image = new ImageScaler().getScaledIcon(Constants.GRADIENT_ICON, jTable1.getRowHeight() + 20, jTable1.getRowHeight() + 20);
+            ImageIcon image = new ImageScaler().getScaledIcon(Constants.GRADIENT_ICON, jTable1.getRowHeight(), jTable1.getRowHeight());
             while (resultSet.next()) {
                 Vector row = new Vector();
                 row.add(false);

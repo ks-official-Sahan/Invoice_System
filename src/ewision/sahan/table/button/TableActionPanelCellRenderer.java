@@ -6,6 +6,9 @@ import ewision.sahan.components.action_panels.ActionButtonPanel1;
 import ewision.sahan.components.action_panels.ActionButtonPanel2;
 import ewision.sahan.components.action_panels.ActionButtonPanel3;
 import ewision.sahan.components.action_panels.ActionButtonPanel4;
+import ewision.sahan.components.action_panels.ActionButtonPanel5;
+import ewision.sahan.components.action_panels.ActionButtonPanel6;
+import ewision.sahan.components.action_panels.ActionButtonPanel7;
 import java.awt.Component;
 import java.util.HashMap;
 import javax.swing.JPanel;
@@ -43,6 +46,18 @@ public class TableActionPanelCellRenderer extends DefaultTableCellRenderer {
             //ActionButtonPanel3 panel = new ActionButtonPanel3(table);
             panel = new ActionButtonPanel3(table);
             //panel.initEvent(row);
+            //return panel;
+        } else if (buttonPanelType == ActionButton.DELETE_BUTTON) {
+            panel = new ActionButtonPanel4(table);
+            //return panel;
+        } else if (buttonPanelType == ActionButton.VIEW_BUTTON) {
+            panel = new ActionButtonPanel5(table);
+            //return panel;
+        } else if (buttonPanelType == ActionButton.EDIT_BUTTON) {
+            panel = new ActionButtonPanel6(table);
+            //return panel;
+        } else if (buttonPanelType == ActionButton.VIEW_EDIT_BUTTON) {
+            panel = new ActionButtonPanel7(table);
             //return panel;
         } else {
             //ActionButtonPanel4 panel = new ActionButtonPanel4(table);

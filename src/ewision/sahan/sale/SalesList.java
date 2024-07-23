@@ -52,17 +52,13 @@ public class SalesList extends javax.swing.JPanel {
 //        jTable1.getColumn("Image").setCellRenderer(new TableImageCellRenderer());
         //jTable1.getColumnModel().getColumn(8).setCellRenderer(new TableActionCellRender());
         HashMap<String, ActionButtonEvent> eventMap = new HashMap<>();
-        eventMap.put("delete", (ActionButtonEvent) (int row) -> {
-            System.out.println("Delete: " + row);
-            System.out.println("Delete: " + String.valueOf(jTable1.getValueAt(row, 8)));
-        });
         eventMap.put("view", (ActionButtonEvent) (int row) -> {
             System.out.println("View: " + row);
         });
         eventMap.put("edit", (ActionButtonEvent) (int row) -> {
             System.out.println("Edit: " + row);
         });
-        jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
+        jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_BUTTON, eventMap));
     }
 
     private void loadTestData() {

@@ -16,6 +16,9 @@ public class ActionButton extends JButton {
     public static final int EDIT_DELETE_BUTTON = 2; 
     public static final int VIEW_EDIT_DELETE_BUTTON = 3; 
     public static final int DELETE_BUTTON = 4; 
+    public static final int VIEW_BUTTON = 5; 
+    public static final int EDIT_BUTTON = 6; 
+    public static final int VIEW_EDIT_BUTTON = 7; 
     
     private boolean mousePress;
 

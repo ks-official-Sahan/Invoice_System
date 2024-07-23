@@ -63,7 +63,7 @@ public class PurchaseList extends javax.swing.JPanel {
         eventMap.put("edit", (ActionButtonEvent) (int row) -> {
             System.out.println("Edit: " + row);
         });
-        jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
+        jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_BUTTON, eventMap));
     }
 
     private void loadTestData() {
