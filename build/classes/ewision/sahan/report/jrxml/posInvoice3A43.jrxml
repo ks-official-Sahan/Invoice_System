@@ -133,7 +133,7 @@
 				<reportElement x="11" y="10" width="38" height="14" uuid="5e7d17d6-8258-4f9c-987a-1f2bc71f8c64">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3d5a4a21-a4af-4d1d-a9d6-a582184e822f"/>
 				</reportElement>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<text><![CDATA[Ln]]></text>
@@ -209,7 +209,7 @@
 				<reportElement x="11" y="2" width="38" height="14" uuid="647878fa-c48d-47f7-8106-f1a904efdfca">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4c3133e4-a090-40cd-a4de-0d723bd13663"/>
 				</reportElement>
-				<textElement textAlignment="Left" verticalAlignment="Bottom">
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{COLUMN_0}]]></textFieldExpression>

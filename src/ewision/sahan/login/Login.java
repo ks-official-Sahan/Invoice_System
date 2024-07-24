@@ -13,12 +13,11 @@ import javax.swing.JOptionPane;
 import ewision.sahan.model.MySQL;
 import ewision.sahan.model.Shop;
 import ewision.sahan.model.User;
-import java.awt.Taskbar;
 import javax.swing.ImageIcon;
 
 /**
  *
- * @author RAVEN
+ * @author ks.official.sahan
  */
 public class Login extends javax.swing.JFrame {
 
@@ -153,7 +152,7 @@ public class Login extends javax.swing.JFrame {
                     if (resultSet.getString("status").equals("1")) {
                         User user = new User(resultSet.getString("id"), resultSet.getString("role_id"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("phone"));
 
-                        Application application = new Application(user);
+                        //Application application = new Application(user);
                         
                         ResultSet shopRs = MySQL.execute("SELECT * FROM `shop` WHERE `id`='"+resultSet.getString("shop_id")+"'");
                         Shop shop = new Shop();
@@ -168,8 +167,8 @@ public class Login extends javax.swing.JFrame {
                         }
                         
                         //application.setUser(user);
-                        application.setVisible(true);
-                        application.setShop(shop);
+//                        application.setVisible(true);
+//                        Application.setShop(shop);
                         this.dispose();
                     } else {
                         JOptionPane.showMessageDialog(this, "User is blocked", "Warning", JOptionPane.ERROR_MESSAGE);

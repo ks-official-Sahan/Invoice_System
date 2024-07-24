@@ -6,19 +6,21 @@ package ewision.sahan.model;
  */
 public class User {
 
-    private int id;
-    private int statusId;
-    private int roleId;
-    private String role;
-    private String status;
-    private String username;
-    private String email;
-    private String mobile;
+    private int id = 0;
+    private int statusId = 1;
+    private int roleId = 2;
+    private String role = "User";
+    private String status = "Active";
+    private String username = "Default";
+    private String email = "default";
+    private String mobile = "default";
+
+    public User() {
+    }
 
     public User(int id, int roleId, String username, String email, String mobile) {
         this.id = id;
         this.roleId = roleId;
-        this.role = role;
         this.username = username;
         this.email = email;
         this.mobile = mobile;
@@ -27,7 +29,6 @@ public class User {
     public User(String id, String roleId, String username, String email, String mobile) {
         this.id = Integer.parseInt(id);
         this.roleId = Integer.parseInt(roleId);
-        this.role = role;
         this.username = username;
         this.email = email;
         this.mobile = mobile;

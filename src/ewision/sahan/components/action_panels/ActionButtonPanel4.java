@@ -1,5 +1,6 @@
 package ewision.sahan.components.action_panels;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import ewision.sahan.components.action_button.ActionButtonEvent;
 import ewision.sahan.model.Constants;
 import ewision.sahan.utils.ImageScaler;
@@ -35,7 +36,9 @@ public class ActionButtonPanel4 extends javax.swing.JPanel {
 
     
     private void renderButtons() {
-        delete.setIcon(new ImageScaler().getSvgIcon("/delete.svg", 30));
+        //delete.setIcon(new ImageScaler().getSvgIcon("/delete.svg", 30));
+        //delete.setIcon(new FlatSVGIcon(getClass().getResource("/ewision/sahan/icon/svg/delete.svg").getPath(), 30, 30));
+        delete.setIcon(new FlatSVGIcon(getClass().getResource("/ewision/sahan/icon/svg/delete.svg")));
     }
 
     public void initEvent(int row) {

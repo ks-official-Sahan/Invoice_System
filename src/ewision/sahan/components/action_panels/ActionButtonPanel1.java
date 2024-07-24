@@ -1,10 +1,12 @@
 package ewision.sahan.components.action_panels;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import ewision.sahan.components.action_button.ActionButtonEvent;
 import ewision.sahan.model.Constants;
 import ewision.sahan.utils.ImageScaler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.HashMap;
 import javax.swing.JTable;
 
@@ -39,7 +41,10 @@ public class ActionButtonPanel1 extends javax.swing.JPanel {
     }
 
     private void renderButtons() {
-        actionMenu.setIcon(new ImageScaler().getSvgIcon("/action.svg", 30));
+        //actionMenu.setIcon(new ImageScaler().getSvgIcon("/action.svg", 30));
+        //actionMenu.setIcon(new FlatSVGIcon("/ewision/sahan/icon/svg/action.svg", 30, 30));
+        //actionMenu.setIcon(new FlatSVGIcon(getClass().getResource("/ewision/sahan/icon/svg/action.svg").getPath(), 30, 30));
+        actionMenu.setIcon(new FlatSVGIcon(getClass().getResource("/ewision/sahan/icon/svg/action.svg")));
     }
 
     public void initEvent(int row) {

@@ -2,238 +2,49 @@ package ewision.sahan.application;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
-import ewision.sahan.menu.Menu;
+import ewision.sahan.application.main.LoginForm1;
+import ewision.sahan.application.main.MainForm;
+import ewision.sahan.login.LoginForm;
 import ewision.sahan.model.Constants;
-import ewision.sahan.model.ModelMenu;
 import ewision.sahan.model.Shop;
 import ewision.sahan.model.User;
 import ewision.sahan.service.impl.AppServiceIMPL;
-import ewision.sahan.utils.ImageScaler;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
+import java.awt.Dimension;
+import java.awt.Font;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-import net.miginfocom.swing.MigLayout;
-import org.jdesktop.animation.timing.Animator;
-import org.jdesktop.animation.timing.TimingTarget;
-import org.jdesktop.animation.timing.TimingTargetAdapter;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import raven.toast.Notifications;
 
 /**
  *
- * @author ksoff
+ * @author ks.official.sahan
  */
 public class Application extends javax.swing.JFrame {
 
-    public static AppServiceIMPL appService;
+    private static Application app;
+    private final MainForm mainForm;
 
-    private Menu menu = new Menu();
-    private JPanel main = new JPanel();
-    private MigLayout layout;
-    private Animator animator;
-    private boolean menuShow;
+    public MainForm getMainForm() {
+        return mainForm;
+    }
+    private final LoginForm1 loginForm;
+    //private final LoginForm loginForm;
+    //private final SignIn loginForm;
 
-    private static User user;
+    public final static AppServiceIMPL appService = new AppServiceIMPL();
+    private static User user = new User();
     private static Shop shop;
-
-    /**
-     * Creates new form Main
-     */
-    public Application() {
-        initComponents();
-        appService = new AppServiceIMPL();
-        appService.setApp(this);
-        init();
-    }
-
-    public Application(User user) {
-        setUser(user);
-        initComponents();
-        appService = new AppServiceIMPL();
-        appService.setApp(this);
-        init();
-    }
-
-    private void init() {
-        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
-
-        ImageIcon imageIcon = new ImageIcon(getClass().getResource(Constants.GRADIENT_ICON));
-        this.setIconImage(imageIcon.getImage()); //Windows
-        //Taskbar taskbar = Taskbar.getTaskbar();
-        //taskbar.setIconImage(imageIcon.getImage()); //MacOS New
-        // //Application.getApplication().setDockIconImage(imageIcon.getImage()); //MacOS Old
-
-        setSize(1366, 768);
-        setLocationRelativeTo(null);
-
-        // setBackground(new Color(0, 0, 0, 0));
-        layout = new MigLayout("fill", "0[]10[]0", "0[fill]0");
-        body.setLayout(layout);
-
-        getMain().setOpaque(false);
-        getMain().setLayout(new BorderLayout());
-
-        setupMenu();
-
-        body.add(menu, "w 50!");
-        body.add(getMain(), "w 100%");
-
-        setupAnimation();
-    }
-
-    private void setupMenu() {
-        menu.addEventLogout((ActionEvent e) -> {
-            System.exit(0);
-        });
-        menu.addEventMenu((ActionEvent e) -> {
-            if (!animator.isRunning()) {
-                animator.start();
-            }
-        });
-        menu.setEvent((int index) -> {
-            switch (index) {
-                case 0 ->
-                    //appService.showPanel(new Dashboard());
-                    appService.openDashboard();
-                case 1 ->
-                    appService.openProductList();
-                case 2 ->
-                    appService.openServiceList();
-                case 3 ->
-                    appService.openCustomerList();
-                case 4 ->
-                    appService.openSupplierList();
-                case 5 ->
-                    // Sale
-                    //appService.openCreateSale();
-                    appService.openSaleList();
-                case 6 ->
-                    // Purchase
-                    //appService.openCreatePurchase();
-                    appService.openPurchaseList();
-                case 7 ->
-                    // POS
-                    appService.openPOS();
-                case 8 ->
-                    // User
-                    appService.openUserList();
-            }
-        });
-
-        ImageScaler scaler = new ImageScaler();
-        menu.addMenu(new ModelMenu("Dashboard", scaler.getSvgIcon("dashboard.svg", 30)), true);
-        menu.addMenu(new ModelMenu("Products", scaler.getSvgIcon("product.svg", 30)));
-        menu.addMenu(new ModelMenu("Services", scaler.getSvgIcon("service1.svg", 30)));
-        menu.addMenu(new ModelMenu("Customers", scaler.getSvgIcon("customer.svg", 30)));
-        menu.addMenu(new ModelMenu("Suppliers", scaler.getSvgIcon("supplier.svg", 30)));
-        menu.addMenu(new ModelMenu("Invoice", scaler.getSvgIcon("bill.svg", 30)));
-        menu.addMenu(new ModelMenu("Purchase", scaler.getSvgIcon("service.svg", 30)));
-        menu.addMenu(new ModelMenu("POS", scaler.getSvgIcon("dashboard1.svg", 30)));
-        if (user.getRoleId() == 1) {
-            menu.addMenu(new ModelMenu("Users", scaler.getSvgIcon("avatar.svg", 30)));
-        }
-        appService.openDashboard();
-    }
-
-    private void setupAnimation() {
-        TimingTarget target = new TimingTargetAdapter() {
-            @Override
-            public void timingEvent(float fraction) {
-                double width;
-                if (menuShow) {
-                    width = 50 + (150 * (1f - fraction));
-                    menu.setAlpha(1f - fraction);
-                } else {
-                    width = 50 + (150 * fraction);
-                    menu.setAlpha(fraction);
-                }
-                layout.setComponentConstraints(menu, "w " + width + "!");
-                body.revalidate();
-            }
-
-            @Override
-            public void end() {
-                menuShow = !menuShow;
-            }
-        };
-
-        animator = new Animator(400, target);
-        animator.setResolution(0);
-        animator.setAcceleration(0.5f);
-        animator.setDeceleration(0.5f);
-    }
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        body = new javax.swing.JPanel();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        body.setBorder(javax.swing.BorderFactory.createEmptyBorder(6, 6, 6, 4));
-
-        javax.swing.GroupLayout bodyLayout = new javax.swing.GroupLayout(body);
-        body.setLayout(bodyLayout);
-        bodyLayout.setHorizontalGroup(
-            bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 810, Short.MAX_VALUE)
-        );
-        bodyLayout.setVerticalGroup(
-            bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 529, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(body, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(body, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-
-        pack();
-        setLocationRelativeTo(null);
-    }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        FlatRobotoFont.install(); // Font Install
-        FlatLaf.registerCustomDefaultsSource("ewision.sahan.theme");
-        //FlatDarkLaf.setup();
-        FlatMacDarkLaf.setup();
-        //FlatMacLightLaf.setup();
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            new Application().setVisible(true);
-        });
-    }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel body;
-    // End of variables declaration//GEN-END:variables
-
-    public JPanel getMain() {
-        return main;
-    }
 
     public static User getUser() {
         return user;
     }
 
-    public void setUser(User aUser) {
+    public static void setUser(User aUser) {
         user = aUser;
     }
 
@@ -244,4 +55,94 @@ public class Application extends javax.swing.JFrame {
     public static void setShop(Shop aShop) {
         shop = aShop;
     }
+
+    public Application() {
+        initComponents();
+        mainForm = new MainForm();
+        loginForm = new LoginForm1();
+        //loginForm = new LoginForm();
+        //loginForm = new SignIn();
+        init();
+    }
+
+    private void init() {
+        ImageIcon imageIcon = new ImageIcon(getClass().getResource(Constants.GRADIENT_ICON));
+        this.setIconImage(imageIcon.getImage()); //Windows
+        //Taskbar taskbar = Taskbar.getTaskbar();
+        //taskbar.setIconImage(imageIcon.getImage()); //MacOS New
+        // //Application.getApplication().setDockIconImage(imageIcon.getImage()); //MacOS Old
+
+        setSize(new Dimension(1366, 768));
+        setLocationRelativeTo(null); // generate center
+        setContentPane(loginForm); // set current panel
+        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true); // Decorated without a header space
+        Notifications.getInstance().setJFrame(this);
+    }
+
+    /* Routes to showForm() method in mainForm */
+    //public static void showForm(Component component) {
+    public static void showForm(JPanel panel) {
+        panel.applyComponentOrientation(app.getComponentOrientation());
+        app.mainForm.showForm(panel);
+    }
+
+    /* Show Main Form */
+    public static void login() {
+        FlatAnimatedLafChange.showSnapshot();
+        app.setContentPane(app.mainForm);
+        app.mainForm.applyComponentOrientation(app.getComponentOrientation());
+        setSelectedMenu(0, 0);
+        app.mainForm.hideMenu();
+        SwingUtilities.updateComponentTreeUI(app.mainForm);
+        FlatAnimatedLafChange.hideSnapshotWithAnimation();
+    }
+
+    /* Show Login Form */
+    public static void logout() {
+        FlatAnimatedLafChange.showSnapshot();
+        app.setContentPane(app.loginForm);
+        app.loginForm.applyComponentOrientation(app.getComponentOrientation());
+        SwingUtilities.updateComponentTreeUI(app.loginForm);
+        FlatAnimatedLafChange.hideSnapshotWithAnimation();
+    }
+
+    /* Routes to setSelectedMenu() method in mainForm */
+    public static void setSelectedMenu(int index, int subIndex) {
+        app.mainForm.setSelectedMenu(index, subIndex);
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 719, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 521, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    public static void main(String args[]) {
+        FlatRobotoFont.install(); // Font Install
+        FlatLaf.registerCustomDefaultsSource("ewision.sahan.theme"); // Theme Property setup
+        UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13)); // Default font setup
+        FlatMacDarkLaf.setup(); // Theme Setup
+        java.awt.EventQueue.invokeLater(() -> {
+            app = new Application();
+            //  app.applyComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+            app.setVisible(true);
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // End of variables declaration//GEN-END:variables
 }

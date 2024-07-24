@@ -1,182 +1,286 @@
 package ewision.sahan.menu;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import ewision.sahan.menu.MenuSelectedEvent;
-import ewision.sahan.model.Constants;
-import ewision.sahan.model.ModelMenu;
-import ewision.sahan.utils.ImageScaler;
+import com.formdev.flatlaf.ui.FlatUIUtils;
+import com.formdev.flatlaf.util.UIScale;
+import ewision.sahan.application.Application;
+import ewision.sahan.menu.mode.LightDarkMode;
+import ewision.sahan.menu.mode.ToolBarAccentColor;
 import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import net.miginfocom.swing.MigLayout;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 
 /**
  *
- * @author ksoff
+ * @author ks.official.sahan
  */
-public class Menu extends javax.swing.JPanel {
-
-    private MigLayout layout;
+public class Menu extends JPanel {
+    
+    private JLabel header;
+    private JScrollPane scroll;
     private JPanel panelMenu;
-    private JButton cmdMenu;
-    //private ButtonCustom cmdLogOut;
-    private JButton cmdLogOut;
-    private Header header;
-    private Bottom bottom;
-    private MenuSelectedEvent event;
-
-    public void setEvent(MenuSelectedEvent event) {
-        this.event = event;
+    private LightDarkMode lightDarkMode;
+    private ToolBarAccentColor toolBarAccentColor;
+    
+    private final String menuItems[][] = {
+        {"~MAIN~"},
+        {"Dashboard"},
+        {"~Product~"},
+        {"Product"},
+        {"Service"},
+        {"~Transactions~"},
+        {"Sales"},
+        {"Purchases"},
+        {"~Human Resourses~"},
+        {"Customers"},
+        {"Suppliers"},
+        {"Users"},
+        {"~OTHER~"},
+        {"POS"},
+        //{"Settings", "System Settings", "Group Permissions", "Warehouse", "Category", "Brand", "Currency", "Unit", "Backup"},
+        {"Logout"}
+    };
+    
+    private final List<MenuEvent> events = new ArrayList<>();
+    private boolean menuFull = true;
+    private final String headerName = "Sahan Sachintha";
+    
+    protected final boolean hideMenuTitleOnMinimum = true;
+    protected final int menuTitleLeftInset = 5;
+    protected final int menuTitleVgap = 5;
+    protected final int menuMaxWidth = 250;
+    protected final int menuMinWidth = 60;
+    protected final int headerFullHgap = 5;
+    
+    public boolean isHideMenuTitleOnMinimum() {
+        return hideMenuTitleOnMinimum;
     }
-
-    /**
-     * Creates new form Menu
-     */
+    
+    public int getMenuTitleLeftInset() {
+        return menuTitleLeftInset;
+    }
+    
+    public int getMenuTitleVgap() {
+        return menuTitleVgap;
+    }
+    
+    public int getMenuMaxWidth() {
+        return menuMaxWidth;
+    }
+    
+    public int getMenuMinWidth() {
+        return menuMinWidth;
+    }
+    
+    public boolean isMenuFull() {
+        return menuFull;
+    }
+    
+    public void setMenuFull(boolean menuFull) {
+        this.menuFull = menuFull;
+        if (menuFull) {
+            header.setText(headerName);
+            header.setHorizontalAlignment(getComponentOrientation().isLeftToRight() ? JLabel.LEFT : JLabel.RIGHT);
+        } else {
+            header.setText("");
+            header.setHorizontalAlignment(JLabel.CENTER);
+        }
+        for (Component com : panelMenu.getComponents()) {
+            if (com instanceof MenuItem) {
+                ((MenuItem) com).setFull(menuFull);
+            }
+        }
+        lightDarkMode.setMenuFull(menuFull);
+        toolBarAccentColor.setMenuFull(menuFull);
+    }
+    
     public Menu() {
-        initComponents();
-        setOpaque(false);
         init();
     }
-
+    
     private void init() {
-        putClientProperty(FlatClientProperties.STYLE, "background:$Menu.background");
-        //putClientProperty(FlatClientProperties.STYLE, "arc:20");
+        setLayout(new MenuLayout());
+        putClientProperty(FlatClientProperties.STYLE, ""
+                + "border:20,2,2,2;"
+                + "background:$Menu.background;"
+                + "arc:10");
+        header = new JLabel(headerName);
+        header.setIcon(new ImageIcon(
+                (Image) new ImageIcon(getClass().getResource("/ewision/sahan/icon/png/logo.png"))
+                        .getImage()
+                        .getScaledInstance(70, 60, Image.SCALE_SMOOTH)));
+        header.setIconTextGap(0);
+        header.putClientProperty(FlatClientProperties.STYLE, ""
+                + "font:$Menu.header.font;"
+                + "foreground:$Menu.foreground");
 
-        setLayout(new MigLayout("wrap, fillx, insets 0", "[fill]", "5[100]40[]push[60]0")); //sets bottom to bottom
-        //setLayout(new MigLayout("wrap, fillx, insets 0", "[fill]", "5[]0"));
-        panelMenu = new JPanel();
-        header = new Header();
-        bottom = new Bottom();
-
-        createButtonMenu();
-        createLogoutButton();
-        panelMenu.setOpaque(false);
-        layout = new MigLayout("fillx, wrap", "0[fill]0", "5[]0");
-        panelMenu.setLayout(layout);
-
-        add(cmdMenu, "pos 1al 0al 100% 20");
-        add(cmdLogOut, "pos 1al 1al 100% 100, height 70!");
+        //  Menu
+        scroll = new JScrollPane();
+        panelMenu = new JPanel(new MenuItemLayout(this));
+        panelMenu.putClientProperty(FlatClientProperties.STYLE, ""
+                + "border:5,5,5,5;"
+                + "background:$Menu.background");
+        
+        scroll.setViewportView(panelMenu);
+        scroll.putClientProperty(FlatClientProperties.STYLE, ""
+                + "border:null");
+        JScrollBar vscroll = scroll.getVerticalScrollBar();
+        vscroll.setUnitIncrement(10);
+        vscroll.putClientProperty(FlatClientProperties.STYLE, ""
+                + "width:$Menu.scroll.width;"
+                + "trackInsets:$Menu.scroll.trackInsets;"
+                + "thumbInsets:$Menu.scroll.thumbInsets;"
+                + "background:$Menu.ScrollBar.background;"
+                + "thumb:$Menu.ScrollBar.thumb");
+        createMenu();
+        lightDarkMode = new LightDarkMode();
+        toolBarAccentColor = new ToolBarAccentColor(this);
+        toolBarAccentColor.setVisible(FlatUIUtils.getUIBoolean("AccentControl.show", false));
         add(header);
-        add(panelMenu);
-        add(bottom);
+        add(scroll);
+        add(lightDarkMode);
+        add(toolBarAccentColor);
     }
-
-    private void createLogoutButton() {
-//        cmdLogOut = new ButtonCustom();
-//        cmdLogOut.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseEntered(MouseEvent e) {
-//                cmdLogOut.setMouseOver(true);
-//                cmdLogOut.repaint();
-//            }
-//
-//            @Override
-//            public void mouseExited(MouseEvent e) {
-//                cmdLogOut.setMouseOver(false);
-//                cmdLogOut.repaint();
-//            }
-//        });
-        cmdLogOut = new JButton();
-        cmdLogOut.putClientProperty(FlatClientProperties.STYLE, "arc:99;");
-        //cmdLogOut.setBackground(Constants.TRANSPARENT);
-        cmdLogOut.setBorder(new EmptyBorder(0, 0, 0, 10));
-        cmdLogOut.setContentAreaFilled(false);
-        cmdLogOut.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        //cmdLogOut.setIcon(new ImageIcon(getClass().getResource("/ewision/sahan/icon/png/edit-30.png")));
-        cmdLogOut.setIcon(new ImageScaler().getSvgIcon("logout.svg", 30));
-    }
-
-    private void createButtonMenu() {
-        cmdMenu = new JButton();
-        cmdMenu.setBorder(new EmptyBorder(0, 0, 0, 10));
-        cmdMenu.setContentAreaFilled(false);
-        cmdMenu.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        //cmdMenu.setIcon(new ImageIcon(getClass().getResource("/ewision/sahan/icon/png/view-30.png")));
-
-        //cmdMenu.setIcon(new FlatSVGIcon("ewision//sahan//icon//svg//menu.svg", 30, 30));
-        //FlatSVGIcon icon = new FlatSVGIcon(getClass().getResource("/ewision//sahan//icon//svg//menu.svg"));
-        //icon = icon.derive(30, 30);
-        //cmdMenu.setIcon(icon);
-        cmdMenu.setIcon(new ImageScaler().getSvgIcon("menu.svg", 30));
-        //cmdMenu.setBorder(new EmptyBorder(0, 0, 0, 0));
-    }
-
-    public void addEventMenu(ActionListener event) {
-        cmdMenu.addActionListener(event);
-    }
-
-    public void addEventLogout(ActionListener event) {
-        cmdLogOut.addActionListener(event);
-    }
-
-    public void addMenu(ModelMenu menu) {
-        addMenu(menu, false);
-    }
-
-    public void addMenu(ModelMenu menu, boolean isSelected) {
-        MenuItem item = new MenuItem(menu.getIcon(), menu.getMenuName(), panelMenu.getComponentCount(), isSelected);
-        item.addEvent(new MenuSelectedEvent() {
-            @Override
-            public void selected(int index) {
-                clearMenu(index);
-            }
-        });
-        item.addEvent(event);
-        panelMenu.add(item);
-    }
-
-    private void clearMenu(int selectedIndex) {
-        for (Component com : panelMenu.getComponents()) {
-            MenuItem item = (MenuItem) com;
-            if (item.getIndex() != selectedIndex) {
-                item.setSelected(false);
+    
+    private void createMenu() {
+        int index = 0;
+        for (int i = 0; i < menuItems.length; i++) {
+            String menuName = menuItems[i][0];
+            if (menuName.startsWith("~") && menuName.endsWith("~")) {
+                panelMenu.add(createTitle(menuName));
+            } else {
+                MenuItem menuItem = new MenuItem(this, menuItems[i], index++, events);
+                panelMenu.add(menuItem);
             }
         }
     }
-
-    public void setAlpha(float alpha) {
-        header.setAlpha(alpha);
-        bottom.setAlpha(alpha);
+    
+    private JLabel createTitle(String title) {
+        String menuName = title.substring(1, title.length() - 1);
+        JLabel lbTitle = new JLabel(menuName);
+        lbTitle.putClientProperty(FlatClientProperties.STYLE, ""
+                + "font:$Menu.label.font;"
+                + "foreground:$Menu.title.foreground");
+        return lbTitle;
     }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
-        //GradientPaint gradientPaint = new GradientPaint(0, 0, Color.decode("#60a5fa"), 0, getHeight(), Color.decode("#047857"));
-        //g2.setPaint(gradientPaint);
-        //g2.setColor(new Color(49,62,74));
-        g2.setColor(getBackground());
-        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-        super.paintComponent(g);
+    
+    public void setSelectedMenu(int index, int subIndex) {
+        runEvent(index, subIndex);
     }
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 255, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 685, Short.MAX_VALUE)
-        );
-    }// </editor-fold>//GEN-END:initComponents
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
+    
+    protected void setSelected(int index, int subIndex) {
+        int size = panelMenu.getComponentCount();
+        for (int i = 0; i < size; i++) {
+            Component com = panelMenu.getComponent(i);
+            if (com instanceof MenuItem) {
+                MenuItem item = (MenuItem) com;
+                if (item.getMenuIndex() == index) {
+                    item.setSelectedIndex(subIndex);
+                } else {
+                    item.setSelectedIndex(-1);
+                }
+            }
+        }
+    }
+    
+    protected void runEvent(int index, int subIndex) {
+        MenuAction menuAction = new MenuAction();
+        for (MenuEvent event : events) {
+            event.menuSelected(index, subIndex, menuAction);
+        }
+        if (!menuAction.isCancel()) {
+            setSelected(index, subIndex);
+        }
+    }
+    
+    public void addMenuEvent(MenuEvent event) {
+        events.add(event);
+    }
+    
+    public void hideMenuItem() {
+        for (Component com : panelMenu.getComponents()) {
+            if (com instanceof MenuItem) {
+                ((MenuItem) com).hideMenuItem();
+            }
+        }
+        revalidate();
+    }
+    
+    private class MenuLayout implements LayoutManager {
+        
+        @Override
+        public void addLayoutComponent(String name, Component comp) {
+        }
+        
+        @Override
+        public void removeLayoutComponent(Component comp) {
+        }
+        
+        @Override
+        public Dimension preferredLayoutSize(Container parent) {
+            synchronized (parent.getTreeLock()) {
+                return new Dimension(5, 5);
+            }
+        }
+        
+        @Override
+        public Dimension minimumLayoutSize(Container parent) {
+            synchronized (parent.getTreeLock()) {
+                return new Dimension(0, 0);
+            }
+        }
+        
+        @Override
+        public void layoutContainer(Container parent) {
+            synchronized (parent.getTreeLock()) {
+                Insets insets = parent.getInsets();
+                int x = insets.left;
+                int y = insets.top;
+                int gap = UIScale.scale(5);
+                int sheaderFullHgap = UIScale.scale(headerFullHgap);
+                int width = parent.getWidth() - (insets.left + insets.right);
+                int height = parent.getHeight() - (insets.top + insets.bottom);
+                int iconWidth = width;
+                int iconHeight = header.getPreferredSize().height;
+                int hgap = menuFull ? sheaderFullHgap : 0;
+                int accentColorHeight = 0;
+                if (toolBarAccentColor.isVisible()) {
+                    accentColorHeight = toolBarAccentColor.getPreferredSize().height + gap;
+                }
+                
+                header.setBounds(x + hgap, y, iconWidth - (hgap * 2), iconHeight);
+                int ldgap = UIScale.scale(10);
+                int ldWidth = width - ldgap * 2;
+                int ldHeight = lightDarkMode.getPreferredSize().height;
+                int ldx = x + ldgap;
+                int ldy = y + height - ldHeight - ldgap - accentColorHeight;
+                
+                int menux = x;
+                int menuy = y + iconHeight + gap;
+                int menuWidth = width;
+                int menuHeight = height - (iconHeight + gap) - (ldHeight + ldgap * 2) - (accentColorHeight);
+                scroll.setBounds(menux, menuy, menuWidth, menuHeight);
+                
+                lightDarkMode.setBounds(ldx, ldy, ldWidth, ldHeight);
+                
+                if (toolBarAccentColor.isVisible()) {
+                    int tbheight = toolBarAccentColor.getPreferredSize().height;
+                    int tbwidth = Math.min(toolBarAccentColor.getPreferredSize().width, ldWidth);
+                    int tby = y + height - tbheight - ldgap;
+                    int tbx = ldx + ((ldWidth - tbwidth) / 2);
+                    toolBarAccentColor.setBounds(tbx, tby, tbwidth, tbheight);
+                }
+            }
+        }
+    }
 }

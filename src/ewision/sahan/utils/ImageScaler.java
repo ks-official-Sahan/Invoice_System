@@ -29,20 +29,26 @@ public class ImageScaler {
         return getScaledIcon(path, width, height, true, false);
     }
 
+    ImageIcon icon;
+
     public ImageIcon getScaledIcon(String path, int width, int height, boolean isSmooth, boolean isAbsolutePath) {
-        ImageIcon imageIcon = new ImageIcon(getClass().getResource(defaultImagePath));
-        try {
-            if (isAbsolutePath) {
-                imageIcon = new ImageIcon(path);
-            } else {
-                imageIcon = new ImageIcon(getClass().getResource(path));
+        //Thread t = new Thread(() -> {
+            ImageIcon imageIcon = new ImageIcon(getClass().getResource(defaultImagePath));
+            try {
+                if (isAbsolutePath) {
+                    imageIcon = new ImageIcon(path);
+                } else {
+                    imageIcon = new ImageIcon(getClass().getResource(path));
+                }
+            } catch (NullPointerException e) {
+                JOptionPane.showMessageDialog(new JFrame(), "Image path: " + path + " is incorrect : \n " + e.getMessage(), "Invalid Path", JOptionPane.WARNING_MESSAGE);
+                CommonLogger.logger.log(Level.SEVERE, "Path: " + path + " is Invalid. \n" + getClass().getName() + "\n" + e.getMessage(), path);
             }
-        } catch (NullPointerException e) {
-            JOptionPane.showMessageDialog(new JFrame(), "Image path: " + path + " is incorrect : \n " + e.getMessage(), "Invalid Path", JOptionPane.WARNING_MESSAGE);
-            CommonLogger.logger.log(Level.SEVERE, "Path: " + path + " is Invalid. \n" + getClass().getName() + "\n" + e.getMessage(), path);
-        }
-        Image image = imageIcon.getImage().getScaledInstance(width, height, isSmooth ? Image.SCALE_SMOOTH : Image.SCALE_AREA_AVERAGING);
-        return new ImageIcon(image);
+            Image image = imageIcon.getImage().getScaledInstance(width, height, isSmooth ? Image.SCALE_SMOOTH : Image.SCALE_AREA_AVERAGING);
+            icon = new ImageIcon(image);
+        //});
+        //t.start();
+        return icon;
     }
 
     /* SVG Icons */
@@ -56,35 +62,43 @@ public class ImageScaler {
         return svgIcon;
     }
 
+    FlatSVGIcon icon2;
+    String image2;
+
     public FlatSVGIcon getSvgIcon(String image) {
+        this.image2 = image;
+        //Thread t = new Thread(() -> {
         Color lightColor = FlatUIUtils.getUIColor("Menu.icon.lightColor", Color.red);
         Color darkColor = FlatUIUtils.getUIColor("Menu.icon.darkColor", Color.red);
 
-        if (!image.toLowerCase().contains(".svg")) {
-            image += ".svg";
+        if (!image2.toLowerCase().contains(".svg")) {
+            image2 += ".svg";
         }
 
-        if (!image.toLowerCase().contains("/svg/")) {
-            image = "/ewision/sahan/icon/svg/" + image;
-        } else if (!image.toLowerCase().contains("/icon/")) {
-            image = "/ewision/sahan/icon/" + image;
-        } else if (!image.toLowerCase().contains("/ewision/sahan/")) {
-            image = "/ewision/sahan/" + image;
+        if (!image2.toLowerCase().contains("/svg/")) {
+            image2 = "/ewision/sahan/icon/svg/" + image2;
+        } else if (!image2.toLowerCase().contains("/icon/")) {
+            image2 = "/ewision/sahan/icon/" + image2;
+        } else if (!image2.toLowerCase().contains("/ewision/sahan/")) {
+            image2 = "/ewision/sahan/" + image2;
         }
 
         FlatSVGIcon svgIcon;
         try {
-            svgIcon = new FlatSVGIcon(getClass().getResource(image));
+            svgIcon = new FlatSVGIcon(getClass().getResource(image2));
         } catch (NullPointerException e) {
             svgIcon = new FlatSVGIcon(getClass().getResource(defaultSvgPath));
-            CommonLogger.logger.log(Level.SEVERE, "SVG Path: {0}is Invalid. {1} \n Location: {2}", new Object[]{image, e.getMessage(), getClass().getName()});
+            CommonLogger.logger.log(Level.SEVERE, "SVG Path: {0}is Invalid. {1} \n Location: {2}", new Object[]{image2, e.getMessage(), getClass().getName()});
         }
 
         FlatSVGIcon.ColorFilter filter = new FlatSVGIcon.ColorFilter();
         filter.add(Color.decode("#ff8f8f"), lightColor, Color.GREEN);
         svgIcon.setColorFilter(filter);
 
-        return svgIcon;
+        icon2 = svgIcon;
+        //});
+        //t.start();
+        return icon2;
     }
 
 }

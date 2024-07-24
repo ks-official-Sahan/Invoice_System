@@ -46,7 +46,7 @@ public class Background extends JComponent {
     private Component blur;
 
     public Background() {
-        image = new ImageIcon(getClass().getResource("/ewision/sahan/login/src/img_2.jpg"));
+        image = new ImageIcon(getClass().getResource("/ewision/sahan/login/src/img_4.jpg"));
     }
 
     private void createImage() {
@@ -72,12 +72,12 @@ public class Background extends JComponent {
         int y = blur.getY();
         int width = blur.getWidth();
         int height = blur.getHeight();
-        int shadow = 8;
+        int shadow = 3;
         if (width > 0 && height > 0) {
             BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = img.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            Shape shape = new FancyBorderRadius(width, height, "32% 68% 65% 35% / 60% 78% 22% 40%").getShape();
+            Shape shape = new FancyBorderRadius(width, height, "50% 50% 50% 50% / 50% 50% 50% 50%").getShape();
             g2.fill(shape);
             g2.setComposite(AlphaComposite.SrcIn);
             g2.drawImage(ImageUtil.blur(bufferedImage.getSubimage(x, y, width, height), 30f), 0, 0, null);

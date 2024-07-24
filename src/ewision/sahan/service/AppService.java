@@ -9,9 +9,11 @@ import javax.swing.JPanel;
  */
 public interface AppService {
 
-    public void setApp(Application app);
+    //public void setApp(Application app);
 
     public void showPanel(JPanel panel);
+
+    public void openLogin();
 
     public void openDashboard();
 

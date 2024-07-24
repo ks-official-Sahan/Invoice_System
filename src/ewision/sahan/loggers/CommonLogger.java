@@ -1,6 +1,7 @@
 package ewision.sahan.loggers;
 
 import ewision.sahan.utils.SQLDateFormatter;
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.logging.FileHandler;
@@ -17,6 +18,9 @@ public class CommonLogger {
     static {
 
         try {
+            File common = new File("logs/common");
+            common.mkdirs();
+            
             FileHandler fileHandler = new FileHandler("logs//common//" + new SQLDateFormatter().getStringDate(new Date()) + "_" + System.currentTimeMillis() + "_common.log");
             //FileHandler fileHandler = new FileHandler("logs//" + new SQLDateFormatter().getStringDate(new Date()) + "_" + System.currentTimeMillis() + "_common.log");
             //FileHandler fileHandler = new FileHandler("logs//" + new SQLDateFormatter().getStringDate(new Date()) + "_common.log");

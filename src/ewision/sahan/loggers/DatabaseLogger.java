@@ -1,6 +1,7 @@
 package ewision.sahan.loggers;
 
 import ewision.sahan.utils.SQLDateFormatter;
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.logging.FileHandler;
@@ -19,6 +20,9 @@ public class DatabaseLogger {
     static {
 
         try {
+            File db = new File("logs/db");
+            db.mkdirs();
+
             FileHandler fileHandler = new FileHandler("logs//db//" + new SQLDateFormatter().getStringDate(new Date()) + "_" + System.currentTimeMillis() + "_db.log");
             //FileHandler fileHandler = new FileHandler("logs//" + new SQLDateFormatter().getStringDate(new Date()) + "_" + System.currentTimeMillis() + "_db.log");
             //FileHandler fileHandler = new FileHandler("logs//" + new SQLDateFormatter().getStringDate(new Date()) + "_db.log");

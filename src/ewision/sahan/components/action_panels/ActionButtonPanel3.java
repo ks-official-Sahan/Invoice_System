@@ -1,5 +1,6 @@
 package ewision.sahan.components.action_panels;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import ewision.sahan.components.action_button.ActionButtonEvent;
 import ewision.sahan.model.Constants;
 import ewision.sahan.utils.ImageScaler;
@@ -42,10 +43,16 @@ public class ActionButtonPanel3 extends javax.swing.JPanel {
     }
     
     private void renderButtons() {
-        ImageScaler scaler = new ImageScaler();
-        delete.setIcon(scaler.getSvgIcon("/delete.svg", 30));
-        edit.setIcon(scaler.getSvgIcon("/edit.svg", 30));
-        view.setIcon(scaler.getSvgIcon("/view.svg", 30));
+        //ImageScaler scaler = new ImageScaler();
+        delete.setIcon(new FlatSVGIcon(getClass().getResource("/ewision/sahan/icon/svg/delete.svg")));
+        edit.setIcon(new FlatSVGIcon(getClass().getResource("/ewision/sahan/icon/svg/edit.svg")));
+        view.setIcon(new FlatSVGIcon(getClass().getResource("/ewision/sahan/icon/svg/view.svg")));
+        //delete.setIcon(new FlatSVGIcon(getClass().getResource("/ewision/sahan/icon/svg/delete.svg").getPath(), 30, 30));
+        //edit.setIcon(new FlatSVGIcon(getClass().getResource("/ewision/sahan/icon/svg/edit.svg").getPath(), 30, 30));
+        //view.setIcon(new FlatSVGIcon(getClass().getResource("/ewision/sahan/icon/svg/view.svg").getPath(), 30, 30));
+        //delete.setIcon(scaler.getSvgIcon("/delete.svg", 30));
+        //edit.setIcon(scaler.getSvgIcon("/edit.svg", 30));
+        //view.setIcon(scaler.getSvgIcon("/view.svg", 30));
     }
     
     public void initEvent(int row) {

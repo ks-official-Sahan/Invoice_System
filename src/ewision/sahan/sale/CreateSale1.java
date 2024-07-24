@@ -999,7 +999,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                         //String id = String.valueOf(mil).substring(3);
                         //System.out.println(id);
 
-                        System.out.println(customerId);
+                        //System.out.println(customerId);
 
                         String query = "INSERT INTO `sales` "
                                 + "(`id`, `user_id`, `date`, `Ref`, `is_pos`, `client_id`, `warehouse_id`, `tax_rate`, `TaxNet`, `discount`, `shipping`, "

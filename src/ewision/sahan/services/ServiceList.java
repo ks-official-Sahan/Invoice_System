@@ -49,8 +49,6 @@ public class ServiceList extends javax.swing.JPanel {
      * Intialization
      */
     private void init() {
-        cmdSearch.setIcon(new ImageScaler().getSvgIcon("/search", 28));
-        cmdSearch.setContentAreaFilled(false);
         renderTable();
         //loadTestData();
         loadServices("");
@@ -64,7 +62,11 @@ public class ServiceList extends javax.swing.JPanel {
 
         HashMap<String, ActionButtonEvent> eventMap = new HashMap<>();
         eventMap.put("delete", (ActionButtonEvent) (int row) -> {
-            System.out.println("Delete");
+            System.out.println("Delete: " + row);
+            System.out.println("Delete: " + String.valueOf(jTable1.getValueAt(row, 8)));
+            String id = String.valueOf(jTable1.getValueAt(row, 1));
+            System.out.println("Delete: " + id);
+            deleteProduct(id);
         });
         eventMap.put("view", (ActionButtonEvent) (int row) -> {
             System.out.println("View");
@@ -74,20 +76,32 @@ public class ServiceList extends javax.swing.JPanel {
         });
         jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
         //jTable1.getColumnModel().getColumn(8).setCellRenderer(new TableActionCellRender());
+    }
 
+    private void deleteProduct(String id) {
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure about deleting this product?", "Delete Warning", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            try {
+                String query = "UPDATE `products` SET `is_active`='0' WHERE `id`='" + id + "'";
+                MySQL.execute(query);
+                loadServices("");
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Products delete error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
     }
 
     private void loadServices(String service) {
         try {
             String query = "SELECT * FROM `products` "
                     //                    + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
-                    + "WHERE `product_type`='service' AND (`products`.`name` LIKE '%" + service + "%' OR `products`.`code` LIKE '%" + service + "%' OR `products`.`id` LIKE '%" + service + "%') ORDER BY `products`.`code` ASC";
+                    + "WHERE `product_type`='service' AND `is_active`='1' AND (`products`.`name` LIKE '%" + service + "%' OR `products`.`code` LIKE '%" + service + "%' OR `products`.`id` LIKE '%" + service + "%') ORDER BY `products`.`code` ASC";
             ResultSet resultSet = MySQL.execute(query);
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.setRowCount(0);
 
-            ImageIcon image = new ImageScaler().getScaledIcon(Constants.GRADIENT_ICON, jTable1.getRowHeight() + 20, jTable1.getRowHeight() + 20);
+            ImageIcon image = new ImageScaler().getScaledIcon(Constants.GRADIENT_ICON, jTable1.getRowHeight() -10, jTable1.getRowHeight() - 10);
             while (resultSet.next()) {
 
                 Vector row = new Vector();
@@ -208,7 +222,6 @@ public class ServiceList extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        cmdSearch = new javax.swing.JButton();
         searchField = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jButton6 = new javax.swing.JButton();
@@ -246,10 +259,6 @@ public class ServiceList extends javax.swing.JPanel {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 0, 5, 0));
         jPanel2.setPreferredSize(new java.awt.Dimension(600, 69));
-
-        cmdSearch.setBackground(Constants.TRANSPARENT);
-        cmdSearch.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdSearch.setPreferredSize(new java.awt.Dimension(34, 34));
 
         searchField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -346,9 +355,7 @@ public class ServiceList extends javax.swing.JPanel {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(cmdSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(128, 128, 128)
                 .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -356,10 +363,8 @@ public class ServiceList extends javax.swing.JPanel {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(cmdSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 27, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(18, Short.MAX_VALUE)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -541,7 +546,6 @@ public class ServiceList extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton cmdSearch;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;

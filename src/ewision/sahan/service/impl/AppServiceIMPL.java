@@ -1,32 +1,22 @@
 package ewision.sahan.service.impl;
 
-import ewision.sahan.application.Application;
 import ewision.sahan.application.main.Dashboard;
-import ewision.sahan.product.CreateProduct;
-import ewision.sahan.services.CreateService;
-import ewision.sahan.product.ProductList;
-import ewision.sahan.services.ServiceList;
-import ewision.sahan.service.AppService;
 import ewision.sahan.customer.CreateCustomer;
 import ewision.sahan.customer.CustomerList;
+import ewision.sahan.login.LoginForm;
 import ewision.sahan.pos.POS;
 import ewision.sahan.supplier.CreateSupplier;
 import ewision.sahan.supplier.SupplierList;
-import java.awt.BorderLayout;
 
 import ewision.sahan.product.CreateProduct1;
 import ewision.sahan.services.CreateService;
 import ewision.sahan.product.ProductList;
-import ewision.sahan.purchase.CreatePurchase;
 import ewision.sahan.purchase.CreatePurchase1;
 import ewision.sahan.purchase.PurchaseList;
-import ewision.sahan.sale.CreateSale;
 import ewision.sahan.sale.CreateSale1;
 import ewision.sahan.sale.SalesList;
 import ewision.sahan.services.ServiceList;
-import ewision.sahan.service.AppService;
 import ewision.sahan.users.UserList;
-import java.awt.BorderLayout;
 import javax.swing.JPanel;
 
 /**
@@ -133,5 +123,11 @@ public class AppServiceIMPL extends AppServiceAbstract {
     public void openPOS() {
         POS pos = new POS();
         showMainPanel((JPanel) pos);
+    }
+
+    @Override
+    public void openLogin() {
+        LoginForm signIn = new LoginForm();
+        showMainPanel((JPanel) signIn);
     }
 }
