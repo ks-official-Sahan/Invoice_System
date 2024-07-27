@@ -139,7 +139,7 @@ public class LoginForm1 extends javax.swing.JPanel {
                             serial.mkdir();
 
                             File shop_file = new File("serial/_shop.ser");
-                            if (shop_file.exists()) {
+                            if (shop_file.exists() || shop_file.createNewFile()) {
                                 FileInputStream fis = new FileInputStream(shop_file);
                                 ObjectInputStream ois = new ObjectInputStream(fis);
                                 Object result = ois.readObject();

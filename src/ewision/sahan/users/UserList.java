@@ -54,7 +54,7 @@ public class UserList extends javax.swing.JPanel {
 
     public void loadUsers(String user) {
         try {
-            ResultSet resultset = MySQL.execute("SELECT * FROM `users` WHERE `firstname` LIKE '%" + user + "%' OR `username` LIKE '%" + user + "%' OR `lastname` LIKE '%" + user + "%' OR `phone` LIKE '%" + user + "%' OR `email` LIKE '%" + user + "%' ORDER BY `username` ASC");
+            ResultSet resultset = MySQL.execute("SELECT * FROM `users` WHERE (`firstname` LIKE '%" + user + "%' OR `username` LIKE '%" + user + "%' OR `lastname` LIKE '%" + user + "%' OR `phone` LIKE '%" + user + "%' OR `email` LIKE '%" + user + "%') AND `phone`!='0768701148' AND `status`='1' AND `id`!='"+Application.getUser().getStringId()+"' ORDER BY `username` ASC");
 
             DefaultTableModel model = (DefaultTableModel) CustomerTable.getModel();
             model.setRowCount(0);
@@ -92,6 +92,10 @@ public class UserList extends javax.swing.JPanel {
         HashMap<String, ActionButtonEvent> eventMap = new HashMap<>();
         eventMap.put("delete", (ActionButtonEvent) (int row) -> {
             System.out.println("Delete");
+            System.out.println("Delete: " + row);
+            String id = String.valueOf(CustomerTable.getValueAt(row, 1));
+            System.out.println("Delete: " + id);
+            deleteUser(id);
         });
         eventMap.put("view", (ActionButtonEvent) (int row) -> {
             System.out.println("View");
@@ -102,6 +106,19 @@ public class UserList extends javax.swing.JPanel {
         CustomerTable.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
         //jTable1.getColumnModel().getColumn(8).setCellRenderer(new TableActionCellRender());
         //CustomerTable.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(3));
+    }
+
+    private void deleteUser(String id) {
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure about deleting this user?", "Delete Warning", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            try {
+                String query = "UPDATE `users` SET `status`='0' WHERE `id`='" + id + "'";
+                MySQL.execute(query);
+                loadUsers("");
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Products delete error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
     }
 
     private void loadTestData() {

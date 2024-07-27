@@ -1,31 +1,18 @@
 package ewision.sahan.payment;
 
 import ewision.sahan.purchase.*;
-import ewision.sahan.sale.*;
 import com.formdev.flatlaf.FlatClientProperties;
-import ewision.sahan.application.main.DialogModal;
+import ewision.sahan.application.Application;
 import ewision.sahan.loggers.CommonLogger;
 import ewision.sahan.loggers.DatabaseLogger;
-import ewision.sahan.model.Constants;
 import ewision.sahan.model.MySQL;
 import ewision.sahan.model.Product;
-import ewision.sahan.model.Service;
 import ewision.sahan.model.Stock;
 import ewision.sahan.utils.SQLDateFormatter;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.Vector;
 import java.util.logging.Level;
-import javax.swing.JFormattedTextField;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.text.DefaultFormatter;
 
 /**
  *
@@ -37,6 +24,7 @@ public class AddPayment extends javax.swing.JPanel {
     private Product product;
     private Stock stock;
     private String stock_id;
+    private String id;
 
     /**
      * Creates new form SelectStock
@@ -360,43 +348,74 @@ public class AddPayment extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-        // Add to Invoice
-        if (createPurchase != null) {
-            String code = refferenceField.getText();
-            String currentQuantity = "0";
-            //String currentQuantity = quantity;
-            String price = changeField.getText();
-            String tax = paymentField.getText();
-            String discount = receiveField.getText();
-
-            Date exp = jDateChooser1.getDate();
-
-            if (code.isBlank()) {
-            } else if (price.isBlank() || price.equals("0.00")) {
-            } else if (discount.isBlank()) {
-            } else if (tax.isBlank()) {
-            } else {
-                if (stock == null) {
-                    stock = new Stock();
-                    stock.setProduct(product);
-                } else {
-                    currentQuantity = String.valueOf(stock.getStock_quantity());
-                    //currentQuantity = String.valueOf(stock.getStock_quantity() + Double.parseDouble(quantity));
-                }
-
-
-                stock.setStock_code(code);
-                stock.setStock_quantity(currentQuantity);
-
-                stock.setStock_discount(discount);
-                stock.setStock_price(price);
-                stock.setStock_tax(tax);
-
-                createPurchase.addProductToInvoice(stock);
-                reset();
-                createPurchase.closeModal();
-            }
+        // Add payment
+        double total = 0;
+        try {
+            total = Double.valueOf(receiveField.getText());
+        } catch (NumberFormatException | NullPointerException e) {
+            CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate receive: " + e.getMessage(), e.getMessage());
         }
+
+        double payment = 0.00;
+        try {
+            payment = Double.parseDouble(String.valueOf(paymentField.getText()));
+        } catch (NumberFormatException | NullPointerException e) {
+            CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate payment: " + e.getMessage(), e.getMessage());
+        }
+
+        double balance = 0.00;
+        balance = total - payment;
+        
+        SQLDateFormatter dateFormatter = new SQLDateFormatter();
+
+        String currentDate = dateFormatter.getStringDate(new Date());
+        String currentDateTime = dateFormatter.getStringDateTime(new Date());
+
+        long mil = System.currentTimeMillis();
+        String ref = String.valueOf((int) mil).substring(3);
+
+        String payQuery = "INSERT INTO `payment_sales` (`user_id`, `date`, `Ref`, `sale_id`, `montant`, `change`, `Reglement`, `notes`, `created_at`, `updated_at`, `deleted_at`) VALUES ('" + Application.getUser().getStringId() + "', '" + currentDate + "', '" + ref + "', '" + this.id + "', '" + total + "', '" + balance + "', '" + payment + "', NULL, '" + currentDateTime + "', NULL, NULL)";
+        try {
+            MySQL.execute(payQuery);
+        } catch (SQLException e) {
+            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale payment: " + e.getMessage(), e.getMessage());
+        }
+
+//        if (createPurchase != null) {
+//            String code = refferenceField.getText();
+//            String currentQuantity = "0";
+//            //String currentQuantity = quantity;
+//            String price = changeField.getText();
+//            String tax = paymentField.getText();
+//            String discount = receiveField.getText();
+//
+//            Date exp = jDateChooser1.getDate();
+//
+//            if (code.isBlank()) {
+//            } else if (price.isBlank() || price.equals("0.00")) {
+//            } else if (discount.isBlank()) {
+//            } else if (tax.isBlank()) {
+//            } else {
+//                if (stock == null) {
+//                    stock = new Stock();
+//                    stock.setProduct(product);
+//                } else {
+//                    currentQuantity = String.valueOf(stock.getStock_quantity());
+//                    //currentQuantity = String.valueOf(stock.getStock_quantity() + Double.parseDouble(quantity));
+//                }
+//
+//                stock.setStock_code(code);
+//                stock.setStock_quantity(currentQuantity);
+//
+//                stock.setStock_discount(discount);
+//                stock.setStock_price(price);
+//                stock.setStock_tax(tax);
+//
+//                createPurchase.addProductToInvoice(stock);
+//                reset();
+//                createPurchase.closeModal();
+//            }
+//        }
     }//GEN-LAST:event_addButtonActionPerformed
 
     private void receiveFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_receiveFieldFocusGained

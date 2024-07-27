@@ -1021,6 +1021,16 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                         }
 
                         if (isComplete) {
+                            String payQuery = "INSERT INTO `payment_purchases` (`user_id`, `date`, `Ref`, `purchase_id`, `montant`, `change`, `Reglement`, `notes`, `created_at`, `updated_at`, `deleted_at`) VALUES ('" + Application.getUser().getStringId() + "', '" + currentDate + "', '" + (id + 100) + "', '" + id + "', '" + total + "', '" + balance + "', '" + payment + "', NULL, '" + currentDateTime + "', NULL, NULL)";
+                            try {
+                                MySQL.execute(payQuery);
+                            } catch (SQLException e) {
+                                isComplete = false;
+                                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale payment: " + e.getMessage(), e.getMessage());
+                            }
+                        }
+
+                        if (isComplete) {
                             for (Stock stock : stockMap.values()) {
                                 if (stock.getStock_id() == 0) {
 

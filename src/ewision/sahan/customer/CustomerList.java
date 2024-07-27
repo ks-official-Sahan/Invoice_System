@@ -88,7 +88,7 @@ public class CustomerList extends javax.swing.JPanel {
         eventMap.put("edit", (ActionButtonEvent) (int row) -> {
             System.out.println("Edit");
         });
-        CustomerTable.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
+        CustomerTable.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_BUTTON, eventMap));
         //jTable1.getColumnModel().getColumn(8).setCellRenderer(new TableActionCellRender());
         //CustomerTable.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(3));
     }
@@ -387,7 +387,7 @@ public class CustomerList extends javax.swing.JPanel {
         String dateTime = new SQLDateFormatter().getStringDateTime(new Date());
         for (String[] dataRow : dataList) {
             String query = "INSERT IGNORE INTO `clients` (`name`, `code`, `email`, `city`, `phone`, `adresse`, `created_at`, `country_id`) "
-                    + "VALUES ('" + dataRow[1] + "', '" + dataRow[2] + "', '" + dataRow[4] + "', '" + dataRow[5] + "', '" + dataRow[3] + "', '" + dataRow[6] + "', '" + dateTime + "', '"+countryMap.get(dataRow[7])+"')";
+                    + "VALUES ('" + dataRow[1] + "', '" + dataRow[2] + "', '" + dataRow[4] + "', '" + dataRow[5] + "', '" + dataRow[3] + "', '" + dataRow[6] + "', '" + dateTime + "', '" + countryMap.get(dataRow[7]) + "')";
             try {
                 MySQL.execute(query);
                 DatabaseLogger.logger.log(Level.FINE, "Customers Imported: " + Arrays.toString(dataRow));

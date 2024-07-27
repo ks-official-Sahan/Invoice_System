@@ -319,7 +319,7 @@ public class CreateProduct1 extends javax.swing.JPanel {
                 taxField.setText("0.00");
             }
 
-            String dateTime = formatDate(System.currentTimeMillis(), "yyyy-mm-dd HH:mm:ss");
+            String dateTime = formatDate(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss");
 
             String query = "INSERT INTO "
                     + "`products` (`code`, `name`, `category_id`, `brand_id`, `unit_id`, `unit_sale_id`, `unit_purchase_id`, `TaxNet`, "

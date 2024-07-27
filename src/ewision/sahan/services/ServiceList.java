@@ -63,7 +63,6 @@ public class ServiceList extends javax.swing.JPanel {
         HashMap<String, ActionButtonEvent> eventMap = new HashMap<>();
         eventMap.put("delete", (ActionButtonEvent) (int row) -> {
             System.out.println("Delete: " + row);
-            System.out.println("Delete: " + String.valueOf(jTable1.getValueAt(row, 8)));
             String id = String.valueOf(jTable1.getValueAt(row, 1));
             System.out.println("Delete: " + id);
             deleteProduct(id);
@@ -79,14 +78,14 @@ public class ServiceList extends javax.swing.JPanel {
     }
 
     private void deleteProduct(String id) {
-        int result = JOptionPane.showConfirmDialog(this, "Are you sure about deleting this product?", "Delete Warning", JOptionPane.YES_NO_OPTION);
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure about deleting this service?", "Delete Warning", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
             try {
                 String query = "UPDATE `products` SET `is_active`='0' WHERE `id`='" + id + "'";
                 MySQL.execute(query);
                 loadServices("");
             } catch (SQLException ex) {
-                DatabaseLogger.logger.log(Level.SEVERE, "Products delete error: " + ex.getMessage(), ex.getMessage());
+                DatabaseLogger.logger.log(Level.SEVERE, "Service delete error: " + ex.getMessage(), ex.getMessage());
             }
         }
     }

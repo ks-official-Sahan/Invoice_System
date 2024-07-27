@@ -52,6 +52,48 @@ public class CreateSale1 extends javax.swing.JPanel {
         init();
     }
 
+    public CreateSale1(String saleId) {
+        initComponents();
+        init();
+        loadSale(saleId);
+    }
+
+    private void loadSale(String saleId) {
+        DefaultTableModel model = (DefaultTableModel) productChargeTable.getModel();
+        model.setRowCount(0);
+
+        model.addRow(new Object[]{0, "Apple", "150.00", "1025", "10", "10", "10", "1500", ""});
+
+        String query = "SELECT * FROM `sales` INNER JOIN `clients` ON `clients`.`id`=`sales`.`client_id` INNER JOIN `users` ON `users`.`id`=`sales`.`user_id` ";
+        if (!product.isEmpty()) {
+            query += "WHERE `sales`.`id`='"+saleId+"' ";
+        }
+
+        try {
+            ResultSet resultSet = MySQL.execute(query);
+
+            while (resultSet.next()) {
+                Vector rowData = new Vector();
+
+                rowData.add(resultSet.getString("sales.id"));
+                rowData.add(resultSet.getString("products.name"));
+                rowData.add(resultSet.getString("products.price"));
+                //rowData.add(resultSet.getString("100"));
+                rowData.add("100");
+                rowData.add("2");
+                rowData.add("10");
+                rowData.add("10");
+                rowData.add(Double.parseDouble(resultSet.getString("products.price")) * 2);
+                rowData.add("");
+
+                model.addRow(rowData);
+            }
+        } catch (SQLException e) {
+            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Order Products Search: " + e.getMessage(), e.getMessage());
+        }
+
+    }
+
     // <editor-fold defaultstate="collapsed" desc="Intializing">
     private void init() {
         render();
@@ -281,7 +323,6 @@ public class CreateSale1 extends javax.swing.JPanel {
         model.setRowCount(0);
 
         //model.addRow(new Object[]{0, "Apple", "1025", "150.00", "-", "Fruit"});
-
         //String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` INNER JOIN `units` ON `units`.`id`=`products`.`unit_id` ";
         String query = "SELECT * FROM `products` "
                 + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
@@ -324,7 +365,6 @@ public class CreateSale1 extends javax.swing.JPanel {
         model.setRowCount(0);
 
         //model.addRow(new Object[]{0, "Service", "0602", "1500.00", "service", "Assembly Charge"});
-
         //String query = "SELECT * FROM `services` INNER JOIN `categories` ON `categories`.`id`=`services`.`categories_id` ";
         //if (!service.isEmpty()) {
         //    query += "WHERE `services`.`name` LIKE '%" + service + "%' "
@@ -986,7 +1026,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                     ResultSet refResult = MySQL.execute("SELECT * FROM `sales` WHERE `Ref`='" + referenceNo + "'");
 
                     String currentDate = dateFormatter.getStringDate(new Date());
-                    String currentDateTime = dateFormatter.getStringDate(new Date(), "yyyy-MM-dd HH:mm:ss");
+                    String currentDateTime = dateFormatter.getStringDateTime(new Date());
 
                     if (refResult.next()) {
                         JOptionPane.showMessageDialog(this, "Reference No. already used!", "Warning", JOptionPane.WARNING_MESSAGE);
@@ -1000,7 +1040,6 @@ public class CreateSale1 extends javax.swing.JPanel {
                         //System.out.println(id);
 
                         //System.out.println(customerId);
-
                         String query = "INSERT INTO `sales` "
                                 + "(`id`, `user_id`, `date`, `Ref`, `is_pos`, `client_id`, `warehouse_id`, `tax_rate`, `TaxNet`, `discount`, `shipping`, "
                                 + "`GrandTotal`, `paid_amount`, `payment_statut`, `statut`, `notes`, `created_at`, `updated_at`, `deleted_at`, `shipping_status`) "
@@ -1012,6 +1051,16 @@ public class CreateSale1 extends javax.swing.JPanel {
                         } catch (SQLException e) {
                             isComplete = false;
                             DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale row: " + e.getMessage(), e.getMessage());
+                        }
+
+                        if (isComplete) {
+                            String payQuery = "INSERT INTO `payment_sales` (`user_id`, `date`, `Ref`, `sale_id`, `montant`, `change`, `Reglement`, `notes`, `created_at`, `updated_at`, `deleted_at`) VALUES ('" + Application.getUser().getStringId() + "', '" + currentDate + "', '" + (id + 100) + "', '" + id + "', '" + total + "', '" + balance + "', '" + payment + "', NULL, '" + currentDateTime + "', NULL, NULL)";
+                            try {
+                                MySQL.execute(payQuery);
+                            } catch (SQLException e) {
+                                isComplete = false;
+                                DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Sale payment: " + e.getMessage(), e.getMessage());
+                            }
                         }
 
                         if (isComplete) {

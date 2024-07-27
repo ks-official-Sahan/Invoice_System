@@ -92,7 +92,7 @@ public class SupplierList extends javax.swing.JPanel {
         eventMap.put("edit", (ActionButtonEvent) (int row) -> {
             System.out.println("Edit");
         });
-        SupplierTable.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
+        SupplierTable.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_BUTTON, eventMap));
         //SupplierTable.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(3));
     }
 
