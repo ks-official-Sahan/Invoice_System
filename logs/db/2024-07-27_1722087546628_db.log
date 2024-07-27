@@ -1,0 +1,4 @@
+Jul 27, 2024 7:09:06 PM ewision.sahan.model.MySQL creteConnection
+INFO: 1722087546636 :: DB CONNECTED 
+Jul 27, 2024 7:14:55 PM ewision.sahan.services.ServiceList importServices
+SEVERE: Customers Importing DB error: Unknown column 'categories_id' in 'field list'

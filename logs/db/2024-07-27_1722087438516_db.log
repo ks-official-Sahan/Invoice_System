@@ -1,0 +1,6 @@
+Jul 27, 2024 7:07:18 PM ewision.sahan.model.MySQL creteConnection
+INFO: 1722087438525 :: DB CONNECTED 
+Jul 27, 2024 7:07:56 PM ewision.sahan.services.CreateService registerService
+SEVERE: Service registration error: Unknown column 'categories_id' in 'field list'
+Jul 27, 2024 7:08:02 PM ewision.sahan.services.CreateService registerService
+SEVERE: Service registration error: Unknown column 'categories_id' in 'field list'

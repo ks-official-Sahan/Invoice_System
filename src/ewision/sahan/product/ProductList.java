@@ -19,6 +19,7 @@ import ewision.sahan.utils.CSVFileOperator;
 import ewision.sahan.utils.SQLDateFormatter;
 import java.io.File;
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -124,7 +125,7 @@ public class ProductList extends javax.swing.JPanel {
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.setRowCount(0);
 
-            ImageIcon image = new ImageScaler().getScaledIcon(Constants.GRADIENT_ICON, jTable1.getRowHeight()-10, jTable1.getRowHeight()-10);
+            ImageIcon image = new ImageScaler().getScaledIcon(Constants.GRADIENT_ICON, jTable1.getRowHeight() - 10, jTable1.getRowHeight() - 10);
             while (resultSet.next()) {
                 Vector row = new Vector();
                 row.add(false);
@@ -187,15 +188,68 @@ public class ProductList extends javax.swing.JPanel {
     private void importProducts(List<String[]> dataList) {
         String dateTime = new SQLDateFormatter().getStringDateTime(new Date());
         for (String[] dataRow : dataList) {
-            String query = "INSERT IGNORE INTO "
-                    + "`products` (`code`, `name`, `cost`, `price`, `category_id`, `brand_id`, `unit_id`, `unit_sale_id`, `unit_purchase_id`, `TaxNet`, "
-                    + "`note`, `stock_alert`, `is_variant`, `is_imei`, `is_active`, `created_at`, `barcode_type_id`, `tax_method_id`, `product_type`) "
-                    + "VALUES ('" + dataRow[2] + "', '" + dataRow[1] + "', '" + dataRow[3] + "', '" + dataRow[4] + "', '" + categoryMap.get(dataRow[7]) + "', '" + brandMap.get(dataRow[8]) + "', "
-                    + "'" + unitMap.get(dataRow[6]) + "', '" + unitMap.get(dataRow[6]) + "', '" + unitMap.get(dataRow[6]) + "', '" + dataRow[9] + "', '" + dataRow[10] + "', "
-                    + "'" + dataRow[11] + "', '0', '" + dataRow[12] + "', 1, "
-                    + "'" + dateTime + "', '" + barcodeTypeMap.get(dataRow[14]) + "', '" + taxMethodMap.get(dataRow[15]) + "', '" + dataRow[5] + "')";
+//            String query = "INSERT IGNORE INTO "
+//                    + "`products` (`code`, `name`, `cost`, `price`, `category_id`, `brand_id`, `unit_id`, `unit_sale_id`, `unit_purchase_id`, `TaxNet`, "
+//                    + "`note`, `stock_alert`, `is_variant`, `is_imei`, `is_active`, `created_at`, `barcode_type_id`, `tax_method_id`, `product_type`) "
+//                    + "VALUES ('" + dataRow[2] + "', '" + dataRow[1] + "', '" + dataRow[3] + "', '" + dataRow[4] + "', '" + categoryMap.get(dataRow[7]) + "', '" + brandMap.get(dataRow[8]) + "', "
+//                    + "'" + unitMap.get(dataRow[6]) + "', '" + unitMap.get(dataRow[6]) + "', '" + unitMap.get(dataRow[6]) + "', '" + dataRow[9] + "', '" + dataRow[10] + "', "
+//                    + "'" + dataRow[11] + "', '0', '" + dataRow[12] + "', 1, "
+//                    + "'" + dateTime + "', '" + barcodeTypeMap.get(dataRow[14]) + "', '" + taxMethodMap.get(dataRow[15]) + "', '" + dataRow[5] + "')";
             try {
-                MySQL.execute(query);
+                PreparedStatement ps = MySQL.getPreparedStatement("INSERT IGNORE INTO "
+                        + "`products` (`code`, `name`, `cost`, `price`, `category_id`, `brand_id`, `unit_id`, `unit_sale_id`, `unit_purchase_id`, `TaxNet`, "
+                        + "`note`, `stock_alert`, `is_variant`, `is_imei`, `is_active`, `created_at`, `barcode_type_id`, `tax_method_id`, `product_type`) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '0', ?, 1, '" + dateTime + "', ?, ?, 'product')");
+
+                ps.setString(1, dataRow[2]);
+                ps.setString(2, dataRow[1]);
+                ps.setString(3, dataRow[3]);
+                ps.setString(4, dataRow[4]);
+
+                if (categoryMap.get(dataRow[7]) != null) {
+                    ps.setInt(5, categoryMap.get(dataRow[7]));
+                } else {
+                    ps.setNull(5, java.sql.Types.NULL);
+                }
+
+                if (brandMap.get(dataRow[8]) != null) {
+                    ps.setInt(6, brandMap.get(dataRow[8]));
+                } else {
+                    ps.setNull(6, java.sql.Types.NULL);
+                }
+
+                if (unitMap.get(dataRow[6]) != null) {
+                    int uId = unitMap.get(dataRow[6]);
+                    ps.setInt(7, uId);
+                    ps.setInt(8, uId);
+                    ps.setInt(9, uId);
+                } else {
+                    ps.setNull(7, java.sql.Types.NULL);
+                    ps.setNull(8, java.sql.Types.NULL);
+                    ps.setNull(9, java.sql.Types.NULL);
+                }
+
+                ps.setString(10, dataRow[9]);
+                ps.setString(11, dataRow[10]);
+                ps.setString(12, dataRow[11]);
+                ps.setString(13, dataRow[12]);
+                //dataRow[13] // -> sale Price
+                
+                if (barcodeTypeMap.get(dataRow[14]) != null) {
+                    ps.setInt(14, barcodeTypeMap.get(dataRow[14]));
+                } else {
+                    ps.setNull(14, java.sql.Types.NULL);
+                }
+
+                if (taxMethodMap.get(dataRow[15]) != null) {
+                    ps.setInt(15, taxMethodMap.get(dataRow[15]));
+                } else {
+                    ps.setNull(15, java.sql.Types.NULL);
+                }
+
+                //MySQL.execute(query);
+                //System.out.println(ps);
+                MySQL.executeIUD(ps);
                 DatabaseLogger.logger.log(Level.FINE, "Product Imported: " + Arrays.toString(dataRow));
                 loadProducts("");
             } catch (SQLException ex) {

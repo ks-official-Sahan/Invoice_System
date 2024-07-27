@@ -36,7 +36,7 @@ public class TableActionPanelCellRenderer extends DefaultTableCellRenderer {
             table.getColumnModel().getColumn(column).setCellEditor(new TableActionPanelCellEditor(buttonPanelType, eventMap));
 
             JPanel panel;
-            System.out.println(buttonPanelType);
+            //System.out.println(buttonPanelType);
             panel = switch (buttonPanelType) {
                 case ActionButton.ACTION_BUTTON ->
                     new ActionButtonPanel1(table);

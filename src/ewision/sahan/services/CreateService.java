@@ -1,5 +1,6 @@
 package ewision.sahan.services;
 
+import ewision.sahan.application.Application;
 import ewision.sahan.loggers.DatabaseLogger;
 import ewision.sahan.model.MySQL;
 import java.sql.ResultSet;
@@ -123,11 +124,12 @@ public class CreateService extends javax.swing.JPanel {
 //            }
             String query = "INSERT INTO `products` (`code`, `cost`, `price`, `name`, `barcode_type_id`, `note`, `product_type`) VALUES ('" + barcode + "', '" + cost + "', '" + charge + "', '" + name + "', '" + barcodeTypeMap.get(barcodeType) + "', '" + description + "', 'service')";
             if (!category.equalsIgnoreCase("select")) {
-                query = "INSERT INTO `products` (`code`, `cost`, `price`, `categories_id`, `name`, `barcode_type_id`, `note`, `product_type`) VALUES ('" + barcode + "', '" + cost + "', '" + charge + "', '" + categoryMap.get(category) + "', '" + name + "', '" + barcodeTypeMap.get(barcodeType) + "', '" + description + "', 'service')";
+                query = "INSERT INTO `products` (`code`, `cost`, `price`, `category_id`, `name`, `barcode_type_id`, `note`, `product_type`) VALUES ('" + barcode + "', '" + cost + "', '" + charge + "', '" + categoryMap.get(category) + "', '" + name + "', '" + barcodeTypeMap.get(barcodeType) + "', '" + description + "', 'service')";
             }
             try {
                 MySQL.execute(query);
                 reset();
+                Application.appService.openServiceList();
             } catch (SQLException ex) {
                 DatabaseLogger.logger.log(Level.SEVERE, "Service registration error: " + ex.getMessage(), ex.getMessage());
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Something went wrong!!", JOptionPane.WARNING_MESSAGE);

@@ -891,7 +891,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         String customerName = customerField.getText();
         String customerId = this.customer;
-        System.out.println(customerId);
+        //System.out.println(customerId);
 
         String warehouseName = warehouseField.getText();
         String warehouseId = this.warehouse;
