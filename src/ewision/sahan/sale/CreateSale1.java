@@ -280,7 +280,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         DefaultTableModel model = (DefaultTableModel) productTable.getModel();
         model.setRowCount(0);
 
-        model.addRow(new Object[]{0, "Apple", "1025", "150.00", "-", "Fruit"});
+        //model.addRow(new Object[]{0, "Apple", "1025", "150.00", "-", "Fruit"});
 
         //String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` INNER JOIN `units` ON `units`.`id`=`products`.`unit_id` ";
         String query = "SELECT * FROM `products` "
@@ -323,7 +323,7 @@ public class CreateSale1 extends javax.swing.JPanel {
         DefaultTableModel model = (DefaultTableModel) serviceTable.getModel();
         model.setRowCount(0);
 
-        model.addRow(new Object[]{0, "Service", "0602", "1500.00", "service", "Assembly Charge"});
+        //model.addRow(new Object[]{0, "Service", "0602", "1500.00", "service", "Assembly Charge"});
 
         //String query = "SELECT * FROM `services` INNER JOIN `categories` ON `categories`.`id`=`services`.`categories_id` ";
         //if (!service.isEmpty()) {

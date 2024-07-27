@@ -6,6 +6,7 @@ import ewision.sahan.loggers.DatabaseLogger;
 import ewision.sahan.model.MySQL;
 import ewision.sahan.model.Product;
 import ewision.sahan.model.Stock;
+import ewision.sahan.pos.POSUI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -27,6 +28,7 @@ import javax.swing.text.DefaultFormatter;
 public class SelectStock1 extends javax.swing.JPanel {
 
     private CreateSale1 createSale;
+    private POSUI posui;
     private Product product;
     private Stock stock;
     private String stock_id;
@@ -50,6 +52,14 @@ public class SelectStock1 extends javax.swing.JPanel {
     public SelectStock1(CreateSale1 createSale, Product product) {
         initComponents();
         this.createSale = createSale;
+        this.product = product;
+        setUIData();
+        init();
+    }
+
+    public SelectStock1(POSUI posui, Product product) {
+        initComponents();
+        this.posui = posui;
         this.product = product;
         setUIData();
         init();
@@ -495,6 +505,20 @@ public class SelectStock1 extends javax.swing.JPanel {
                 createSale.addProductToInvoice(stock);
                 reset();
                 createSale.closeModal();
+            }
+        }
+        if (posui != null) {
+            if (stock == null) {
+                stockTable.requestFocus();
+            } else {
+                stock.setQuantity(String.valueOf(quantitySpinner.getValue()));
+                stock.setStock_discount(discountField.getText());
+                stock.setStock_tax(taxField.getText());
+
+                //createSale.addProductToInvoice(stock_id, String.valueOf(quantitySpinner.getValue()), discountField.getText(), taxField.getText());
+                posui.addProductToInvoice(stock);
+                reset();
+                posui.closeModal();
             }
         }
     }//GEN-LAST:event_addButtonActionPerformed

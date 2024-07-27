@@ -2,14 +2,23 @@ package ewision.sahan.application.main;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import ewision.sahan.application.Application;
+import ewision.sahan.loggers.FileLogger;
 import ewision.sahan.model.MySQL;
 import ewision.sahan.model.Shop;
 import ewision.sahan.model.User;
 import java.awt.HeadlessException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import net.miginfocom.swing.MigLayout;
+//import net.miginfocom.swing.MigLayout;
 
 /**
  *
@@ -123,22 +132,47 @@ public class LoginForm1 extends javax.swing.JPanel {
                     if (resultSet.getString("status").equals("1")) {
                         User user = new User(resultSet.getString("id"), resultSet.getString("role_id"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("phone"));
 
-                        //Application application = new Application(user);
-                        ResultSet shopRs = MySQL.execute("SELECT * FROM `shop` WHERE `id`='" + resultSet.getString("shop_id") + "'");
-                        Shop shop = new Shop();
-                        if (shopRs.next()) {
-                            shop.setId(shopRs.getInt("id"));
-                            shop.setName(shopRs.getString("name"));
-                            shop.setAddress(shopRs.getString("address"));
-                            shop.setEmail(shopRs.getString("email"));
-                            shop.setMobile(shopRs.getString("mobile"));
-                            shop.setLogoPath(shopRs.getString("logoPath"));
-                            shop.setLogo2Path(shopRs.getString("logo2Path"));
+                        try {
+                            Shop shop;
+
+                            File serial = new File("serial");
+                            serial.mkdir();
+
+                            File shop_file = new File("serial/_shop.ser");
+                            if (shop_file.exists()) {
+                                FileInputStream fis = new FileInputStream(shop_file);
+                                ObjectInputStream ois = new ObjectInputStream(fis);
+                                Object result = ois.readObject();
+                                shop = (Shop) result;
+                            } else {
+                                ResultSet shopRs = MySQL.execute("SELECT * FROM `shop` WHERE `id`='" + resultSet.getString("shop_id") + "'");
+                                shop = new Shop();
+                                if (shopRs.next()) {
+                                    shop.setId(shopRs.getInt("id"));
+                                    shop.setName(shopRs.getString("name"));
+                                    shop.setAddress(shopRs.getString("address"));
+                                    shop.setEmail(shopRs.getString("email"));
+                                    shop.setMobile(shopRs.getString("mobile"));
+                                    shop.setLogoPath(shopRs.getString("logoPath"));
+                                    shop.setLogo2Path(shopRs.getString("logo_black_path"));
+                                } else {
+                                    // Add shop information popup
+                                }
+
+                                FileOutputStream fos = new FileOutputStream(shop_file);
+                                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                                oos.writeObject(shop);
+                            }
+
+                            //Application application = new Application(user);
+                            Application.setUser(user);
+                            Application.setShop(shop);
+                            Application.login();
+                        } catch (IOException | ClassNotFoundException e) {
+                            FileLogger.logger.log(Level.SEVERE, e.getMessage(), e.getMessage());
+                            JOptionPane.showMessageDialog(this, "Something went wrong", "Warning", JOptionPane.ERROR_MESSAGE);
                         }
 
-                        Application.setUser(user);
-                        Application.setShop(shop);
-                        Application.login();
                     } else {
                         JOptionPane.showMessageDialog(this, "User is blocked", "Warning", JOptionPane.ERROR_MESSAGE);
                     }

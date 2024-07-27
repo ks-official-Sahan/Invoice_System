@@ -122,7 +122,7 @@ public class SalesList extends javax.swing.JPanel {
                 model.addRow(row);
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
             DatabaseLogger.logger.log(Level.SEVERE, "Sale loading error: " + ex.getMessage(), ex.getMessage());
             loadTestData();
         }

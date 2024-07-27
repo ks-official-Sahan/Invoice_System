@@ -5,6 +5,7 @@ import ewision.sahan.customer.CreateCustomer;
 import ewision.sahan.customer.CustomerList;
 import ewision.sahan.login.LoginForm;
 import ewision.sahan.pos.POS;
+import ewision.sahan.pos.POSUI;
 import ewision.sahan.supplier.CreateSupplier;
 import ewision.sahan.supplier.SupplierList;
 
@@ -121,7 +122,8 @@ public class AppServiceIMPL extends AppServiceAbstract {
 
     @Override
     public void openPOS() {
-        POS pos = new POS();
+        //POS pos = new POS();
+        POSUI pos = new POSUI();
         showMainPanel((JPanel) pos);
     }
 

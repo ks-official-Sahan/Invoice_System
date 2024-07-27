@@ -8,7 +8,6 @@ import javax.swing.*;
 import net.miginfocom.swing.MigLayout;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.border.EmptyBorder;
 import raven.toast.Notifications;
 
@@ -29,7 +28,7 @@ public class HeaderBar extends JPanel {
     }
 
     public HeaderBar() {
-        setBorder(new EmptyBorder(5, 150, 5, 150));
+        setBorder(new EmptyBorder(0, 150, 0, 150));
 
         setLayout(new MigLayout("insets 0, fillx, aligny center",
                 "[fill]10[center]10[fill]",
@@ -43,11 +42,11 @@ public class HeaderBar extends JPanel {
         //ImageIcon icon = new ImageIcon(getClass().getResource("/ewision/sahan/icon/png/logo.png"));
         //Image image = (Image) icon.getImage().getScaledInstance(80, 60, Image.SCALE_SMOOTH);
         //icon = new ImageIcon(image);
-        ImageIcon icon = new ImageScaler().getScaledIcon(Constants.GRADIENT_ICON, 30, 35);
+        //ImageIcon icon = new ImageScaler().getScaledIcon(Constants.GRADIENT_ICON, 30, 35);
 
         // Logo and text on the left
         logoLabel = new JLabel();
-        logoLabel.setIcon(icon);
+        //logoLabel.setIcon(icon);
         logoLabel.setFont(new Font("Arial", Font.BOLD, 16));
         add(logoLabel, "left");
 
@@ -58,14 +57,14 @@ public class HeaderBar extends JPanel {
 
         // User profile icon on the right
         JButton userProfileIcon = new JButton();
-        userProfileIcon.setIcon(icon);
+        //userProfileIcon.setIcon(icon);
         userProfileIcon.setHorizontalAlignment(SwingConstants.TRAILING);
         userProfileIcon.addActionListener(((e) -> {
             Notifications.getInstance().show(Notifications.Type.INFO, Notifications.Location.TOP_RIGHT, "Hello sample message");
         }));
         userProfileIcon.setBorder(new EmptyBorder(0, 0, 0, 0));
         userProfileIcon.setContentAreaFilled(false);
-        userProfileIcon.setMaximumSize(new Dimension(80, 50));
+        userProfileIcon.setMaximumSize(new Dimension(80, 40));
         add(userProfileIcon, "right");
 
         // Initialize the session timer

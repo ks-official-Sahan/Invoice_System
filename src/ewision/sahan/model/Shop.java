@@ -1,10 +1,12 @@
 package ewision.sahan.model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author ksoff
  */
-public class Shop {
+public class Shop implements Serializable {
 
     private int id = 0;
     private String name = "default";

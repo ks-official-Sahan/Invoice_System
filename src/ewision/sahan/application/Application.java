@@ -15,6 +15,7 @@ import ewision.sahan.service.impl.AppServiceIMPL;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -73,6 +74,7 @@ public class Application extends javax.swing.JFrame {
         // //Application.getApplication().setDockIconImage(imageIcon.getImage()); //MacOS Old
 
         setSize(new Dimension(1366, 768));
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null); // generate center
         setContentPane(loginForm); // set current panel
         getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true); // Decorated without a header space
@@ -92,6 +94,8 @@ public class Application extends javax.swing.JFrame {
         app.setContentPane(app.mainForm);
         app.mainForm.applyComponentOrientation(app.getComponentOrientation());
         setSelectedMenu(0, 0);
+        app.mainForm.menu.setHeaderName(user.getUsername());
+        app.mainForm.menu.getHeader().setText(user.getUsername());
         app.mainForm.hideMenu();
         SwingUtilities.updateComponentTreeUI(app.mainForm);
         FlatAnimatedLafChange.hideSnapshotWithAnimation();

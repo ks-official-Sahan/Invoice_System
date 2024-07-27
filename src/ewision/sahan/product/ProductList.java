@@ -727,7 +727,7 @@ public class ProductList extends javax.swing.JPanel {
                 String price = resultset.getString("price");
                 String sale_price = resultset.getString("sale_price");
                 String quantity = resultset.getString("quantity");
-                String pid = resultset.getString("product_id");
+                String pid = resultset.getString("products_id");
                 String is_expire = resultset.getString("is_expire");
                 String exp = resultset.getString("exp_date");
                 String mfd = resultset.getString("mfd_date");

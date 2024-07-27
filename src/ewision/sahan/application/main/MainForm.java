@@ -32,7 +32,7 @@ import javax.swing.border.EmptyBorder;
  */
 public class MainForm extends JLayeredPane {
 
-    private Menu menu;
+    public Menu menu;
     private JPanel panelBody;
     private HeaderBar headerBar;
     private JButton menuButton;

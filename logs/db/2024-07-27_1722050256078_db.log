@@ -1,0 +1,4 @@
+Jul 27, 2024 8:47:36 AM ewision.sahan.model.MySQL creteConnection
+INFO: 1722050256088 :: DB CONNECTED 
+Jul 27, 2024 8:47:51 AM ewision.sahan.product.ProductList exportStocks
+SEVERE: Services exporting DB error: Column 'product_id' not found.
