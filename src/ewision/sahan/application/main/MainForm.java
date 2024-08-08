@@ -69,6 +69,7 @@ public class MainForm extends JLayeredPane {
         add(menuButton);
         add(menu);
         add(panelBody);
+
     }
 
     @Override
@@ -92,7 +93,8 @@ public class MainForm extends JLayeredPane {
             if (index == 0) {
                 //Application.showForm(new Form0());
                 //Application.showForm(new CreateProduct());
-                Application.appService.openDashboard();
+                //Application.appService.openDashboard();
+                Application.appService.openPOS();
             } else if (index == 1) {
                 Application.appService.openProductList();
 //                if (subIndex == 1) {
@@ -112,15 +114,15 @@ public class MainForm extends JLayeredPane {
                 Application.appService.openCustomerList();
             } else if (index == 6) {
                 Application.appService.openSupplierList();
+//            } else if (index == 7) {
+//                if (Application.getUser().getRoleId() == 1) {
+//                    Application.appService.openUserList();
+//                } else {
+//                    Application.appService.openDashboard();
+//                }
+//            } else if (index == 8) {
+//                Application.appService.openPOS();
             } else if (index == 7) {
-                if (Application.getUser().getRoleId() == 1) {
-                    Application.appService.openUserList();
-                } else {
-                    Application.appService.openDashboard();
-                }
-            } else if (index == 8) {
-                Application.appService.openPOS();
-            } else if (index == 9) {
                 Application.logout();
             } else {
                 action.cancel();

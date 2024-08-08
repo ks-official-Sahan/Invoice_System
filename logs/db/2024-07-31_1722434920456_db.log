@@ -1,0 +1,6 @@
+Jul 31, 2024 7:38:40 PM ewision.sahan.model.MySQL creteConnection
+INFO: 1722434920465 :: DB CONNECTED 
+Jul 31, 2024 7:39:17 PM ewision.sahan.sale.CreateSale1 submitSale
+SEVERE: SQLException in ewision.sahan.sale.CreateSale1 Sale Submit Sale row: Incorrect integer value: '' for column 'client_id' at row 1
+Jul 31, 2024 7:39:23 PM ewision.sahan.sale.CreateSale1 submitSale
+SEVERE: SQLException in ewision.sahan.sale.CreateSale1 Sale Submit Sale row: Incorrect integer value: '' for column 'client_id' at row 1

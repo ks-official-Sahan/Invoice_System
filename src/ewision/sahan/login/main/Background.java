@@ -77,7 +77,7 @@ public class Background extends JComponent {
             BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = img.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            Shape shape = new FancyBorderRadius(width, height, "50% 50% 50% 50% / 50% 50% 50% 50%").getShape();
+            Shape shape = new FancyBorderRadius(width, height, "10% 10% 10% 10% / 10% 10% 10% 10%").getShape();
             g2.fill(shape);
             g2.setComposite(AlphaComposite.SrcIn);
             g2.drawImage(ImageUtil.blur(bufferedImage.getSubimage(x, y, width, height), 30f), 0, 0, null);

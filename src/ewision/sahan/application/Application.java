@@ -99,6 +99,8 @@ public class Application extends javax.swing.JFrame {
         app.mainForm.hideMenu();
         SwingUtilities.updateComponentTreeUI(app.mainForm);
         FlatAnimatedLafChange.hideSnapshotWithAnimation();
+        
+        appService.openPOS();
     }
 
     /* Show Login Form */

@@ -35,7 +35,8 @@ public class Menu extends JPanel {
 
     private final String menuItems[][] = {
         {"~MAIN~"},
-        {"Dashboard"},
+        //        {"Dashboard"},
+        {"POS"},
         {"~Product~"},
         {"Product"},
         {"Service"},
@@ -45,13 +46,13 @@ public class Menu extends JPanel {
         {"~Human Resourses~"},
         {"Customers"},
         {"Suppliers"},
-        {"Users"},
+        //        {"Users"},
         {"~OTHER~"},
-        {"POS"},
+        //        {"POS"},
         //{"Settings", "System Settings", "Group Permissions", "Warehouse", "Category", "Brand", "Currency", "Unit", "Backup"},
         {"Logout"}
     };
-    
+
     private final List<MenuEvent> events = new ArrayList<>();
     private boolean menuFull = true;
     private String headerName = "Sahan Sachintha";
