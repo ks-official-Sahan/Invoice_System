@@ -139,7 +139,8 @@ public class LoginForm1 extends javax.swing.JPanel {
                             serial.mkdir();
 
                             File shop_file = new File("serial/_shop.ser");
-                            if (shop_file.exists() || shop_file.createNewFile()) {
+                            // if (shop_file.exists() || shop_file.createNewFile()) {
+                            if (shop_file.exists()) {
                                 FileInputStream fis = new FileInputStream(shop_file);
                                 ObjectInputStream ois = new ObjectInputStream(fis);
                                 Object result = ois.readObject();
@@ -169,7 +170,7 @@ public class LoginForm1 extends javax.swing.JPanel {
                             Application.setShop(shop);
                             Application.login();
                         } catch (IOException | ClassNotFoundException e) {
-                            FileLogger.logger.log(Level.SEVERE, e.getMessage(), e.getMessage());
+                            FileLogger.logger.log(Level.SEVERE, "Serialization failed "+ e.getMessage(), e.getMessage());
                             JOptionPane.showMessageDialog(this, "Something went wrong", "Warning", JOptionPane.ERROR_MESSAGE);
                         }
 

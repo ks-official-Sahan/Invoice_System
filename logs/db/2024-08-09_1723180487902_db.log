@@ -1,0 +1,4 @@
+Aug 09, 2024 10:44:47 AM ewision.sahan.model.MySQL creteConnection
+INFO: 1723180487910 :: DB CONNECTED 
+Aug 09, 2024 10:46:40 AM ewision.sahan.purchase.CreatePurchase1 submitPurchase
+SEVERE: SQLException in ewision.sahan.purchase.CreatePurchase1 Purchase Submit Stock Detail row: Parameter index out of range (10 > number of parameters, which is 9).

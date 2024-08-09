@@ -33,9 +33,11 @@ public class Menu extends JPanel {
     private LightDarkMode lightDarkMode;
     private ToolBarAccentColor toolBarAccentColor;
 
-    private final String menuItems[][] = {
+    private String menuItems[][] = {
+        //        {"~Exit~"},
+        //        {"Logout"},
         {"~MAIN~"},
-        //        {"Dashboard"},
+        //{"Dashboard"},
         {"POS"},
         {"~Product~"},
         {"Product"},
@@ -46,11 +48,10 @@ public class Menu extends JPanel {
         {"~Human Resourses~"},
         {"Customers"},
         {"Suppliers"},
-        //        {"Users"},
+        {"Users"},
         {"~OTHER~"},
-        //        {"POS"},
-        //{"Settings", "System Settings", "Group Permissions", "Warehouse", "Category", "Brand", "Currency", "Unit", "Backup"},
-        {"Logout"}
+        {"Logout"}, //        {"POS"},
+    //{"Settings", "System Settings", "Group Permissions", "Warehouse", "Category", "Brand", "Currency", "Unit", "Backup"},
     };
 
     private final List<MenuEvent> events = new ArrayList<>();

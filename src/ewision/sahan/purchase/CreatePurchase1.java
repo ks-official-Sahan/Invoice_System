@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
@@ -1037,11 +1038,12 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                                     String[] keys = {"id"};
                                     String stockQuery = "INSERT INTO "
                                             + "`stocks` (`name`, `code`, `cost`, `price`, `sale_price`, `is_expire`, `exp_date`, `mfd_date`, `quantity`, `products_id`) "
-                                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                                     try {
                                         //PreparedStatement preparedStatement = MySQL.getPreparedStatement(stockQuery, PreparedStatement.RETURN_GENERATED_KEYS);
-                                        PreparedStatement preparedStatement = MySQL.getPreparedStatement(stockQuery, keys);
+                                        //PreparedStatement preparedStatement = MySQL.getPreparedStatement(stockQuery, keys);
+                                        PreparedStatement preparedStatement = MySQL.getPreparedStatement(stockQuery);
 
                                         preparedStatement.setString(1, stock.getStock_name());
                                         preparedStatement.setString(2, stock.getStock_code());
@@ -1057,12 +1059,13 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                                         ResultSet resultSet = MySQL.executeInsert(preparedStatement);
 
                                         if (resultSet.next()) {
+
                                             double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
                                             String purchaseItemQuery = "INSERT INTO "
                                                     + "`purchase_details` (`cost`, `purchase_unit_id`, `TaxNet`, `discount`, `discount_method`, `purchase_id`, `product_id`, "
                                                     + "`product_variant_id`, `imei_number`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`, `stocks_id`) "
                                                     + "VALUES ('" + stock.getStock_cost() + "', NULL, '" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + id + "', '" + stock.getStringId() + "', "
-                                                    + "NULL, NULL, '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, NULL, '" + resultSet.getString("id") + "')";
+                                                    + "NULL, NULL, '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, NULL, '" + resultSet.getString(1) + "')";
 
                                             try {
                                                 MySQL.execute(purchaseItemQuery);
@@ -1079,6 +1082,19 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                                     }
                                 } else {
 
+                                    double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
+                                    String purchaseItemQuery = "INSERT INTO "
+                                            + "`purchase_details` (`cost`, `purchase_unit_id`, `TaxNet`, `discount`, `discount_method`, `purchase_id`, `product_id`, "
+                                            + "`product_variant_id`, `imei_number`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`, `stocks_id`) "
+                                            + "VALUES ('" + stock.getStock_cost() + "', NULL, '" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + id + "', '" + stock.getStringId() + "', "
+                                            + "NULL, NULL, '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, NULL, '" + stock.getStringStock_id() + "')";
+                                    try {
+                                        MySQL.execute(purchaseItemQuery);
+                                    } catch (SQLException e) {
+                                        isComplete = false;
+                                        DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Sale Details row: " + e.getMessage(), e.getMessage());
+                                    }
+
                                     double qty = stock.getStock_quantity() + stock.getQuantity();
                                     String stockQuery = "UPDATE `stocks` SET `quantity`='" + qty + "' WHERE `id`='" + stock.getStock_id() + "';";
                                     //String stockQuery = "UPDATE `stocks` SET `quantity`=`quantity`+'"+stock.getQuantity()+"' WHERE `id`='" + stock.getStock_id() + "';";
@@ -1088,6 +1104,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                                         isComplete = false;
                                         DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Purchase Submit Stock Update row: " + e.getMessage(), e.getMessage());
                                     }
+
                                 }
 
                                 //stock.getStringStock_id();
@@ -1126,7 +1143,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
                         if (isComplete) {
                             Shop shop = Application.getShop();
-                            
+
                             HashMap<String, Object> parameters = new HashMap<>();
                             parameters.put("ShopName", shop.getName());
                             parameters.put("Email", shop.getEmail());

@@ -1,0 +1,4 @@
+Aug 09, 2024 12:57:00 AM ewision.sahan.model.MySQL creteConnection
+INFO: 1723145220784 :: DB CONNECTED 
+Aug 09, 2024 1:18:10 AM ewision.sahan.sale.UpdateSale loadSale
+SEVERE: SQLException in ewision.sahan.sale.UpdateSale Order Products Search: Column 'products.name' not found.

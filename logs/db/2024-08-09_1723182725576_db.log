@@ -1,0 +1,4 @@
+Aug 09, 2024 11:22:05 AM ewision.sahan.model.MySQL creteConnection
+INFO: 1723182725585 :: DB CONNECTED 
+Aug 09, 2024 11:22:31 AM ewision.sahan.purchase.CreatePurchase1 submitPurchase
+SEVERE: SQLException in ewision.sahan.purchase.CreatePurchase1 Purchase Submit Sale Details row: Cannot add or update a child row: a foreign key constraint fails (`alpha_sub`.`purchase_details`, CONSTRAINT `fk_purchase_details_stocks1` FOREIGN KEY (`stocks_id`) REFERENCES `stocks` (`id`))

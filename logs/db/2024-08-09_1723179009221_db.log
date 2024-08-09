@@ -1,0 +1,4 @@
+Aug 09, 2024 10:20:09 AM ewision.sahan.model.MySQL creteConnection
+INFO: 1723179009227 :: DB CONNECTED 
+Aug 09, 2024 10:20:13 AM ewision.sahan.purchase.UpdatePurchase loadPurchase
+SEVERE: SQLException in ewision.sahan.purchase.UpdatePurchase loadSale: Unknown column 'sale_id' in 'where clause' -- Unknown column 'sale_id' in 'where clause'

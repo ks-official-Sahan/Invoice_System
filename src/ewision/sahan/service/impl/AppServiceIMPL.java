@@ -14,8 +14,10 @@ import ewision.sahan.services.CreateService;
 import ewision.sahan.product.ProductList;
 import ewision.sahan.purchase.CreatePurchase1;
 import ewision.sahan.purchase.PurchaseList;
+import ewision.sahan.purchase.UpdatePurchase;
 import ewision.sahan.sale.CreateSale1;
 import ewision.sahan.sale.SalesList;
+import ewision.sahan.sale.UpdateSale;
 import ewision.sahan.services.ServiceList;
 import ewision.sahan.users.UserList;
 import javax.swing.JPanel;
@@ -71,7 +73,6 @@ public class AppServiceIMPL extends AppServiceAbstract {
         showMainPanel((JPanel) serviceList);
     }
 
-    //////////// Chathura
     @Override
     public void openCustomerList() {
         CustomerList customerList = new CustomerList();
@@ -131,5 +132,17 @@ public class AppServiceIMPL extends AppServiceAbstract {
     public void openLogin() {
         LoginForm signIn = new LoginForm();
         showMainPanel((JPanel) signIn);
+    }
+
+    @Override
+    public void openUpdateSale(String saledId, boolean isUpdate) {
+        UpdateSale updateSale = new UpdateSale(saledId, isUpdate);
+        showMainPanel((JPanel) updateSale);
+    }
+
+    @Override
+    public void openUpdatePurchase(String purchaseId, boolean isUpdate) {
+        UpdatePurchase updateSale = new UpdatePurchase(purchaseId, isUpdate);
+        showMainPanel((JPanel) updateSale);
     }
 }

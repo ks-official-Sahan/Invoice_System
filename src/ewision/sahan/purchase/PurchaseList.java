@@ -57,9 +57,15 @@ public class PurchaseList extends javax.swing.JPanel {
         });
         eventMap.put("view", (ActionButtonEvent) (int row) -> {
             System.out.println("View: " + row);
+            String id = String.valueOf(jTable1.getValueAt(row, 0));
+            System.out.println("View: " + id);
+            Application.appService.openUpdatePurchase(id, false);
         });
         eventMap.put("edit", (ActionButtonEvent) (int row) -> {
             System.out.println("Edit: " + row);
+            String id = String.valueOf(jTable1.getValueAt(row, 0));
+            System.out.println("Edit: " + id);
+            Application.appService.openUpdatePurchase(id, true);
         });
         jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_BUTTON, eventMap));
     }

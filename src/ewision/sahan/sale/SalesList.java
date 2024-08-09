@@ -52,9 +52,15 @@ public class SalesList extends javax.swing.JPanel {
         HashMap<String, ActionButtonEvent> eventMap = new HashMap<>();
         eventMap.put("view", (ActionButtonEvent) (int row) -> {
             System.out.println("View: " + row);
+            String id = String.valueOf(jTable1.getValueAt(row, 0));
+            System.out.println("View: " + id);
+            Application.appService.openUpdateSale(id, false);
         });
         eventMap.put("edit", (ActionButtonEvent) (int row) -> {
             System.out.println("Edit: " + row);
+            String id = String.valueOf(jTable1.getValueAt(row, 0));
+            System.out.println("Edit: " + id);
+            Application.appService.openUpdateSale(id, true);
         });
         jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_BUTTON, eventMap));
     }

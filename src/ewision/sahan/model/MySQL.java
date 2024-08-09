@@ -59,7 +59,7 @@ public class MySQL {
 
     public static PreparedStatement getPreparedStatement(String query) throws SQLException {
         try {
-            PreparedStatement pStatement = connection.prepareStatement(query);
+            PreparedStatement pStatement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             return pStatement;
         } catch (NullPointerException e) {
             DatabaseLogger.logger.log(Level.SEVERE, System.currentTimeMillis() + " :: " + e.getLocalizedMessage() + " -- " + e.getClass().getName(), e.getLocalizedMessage());

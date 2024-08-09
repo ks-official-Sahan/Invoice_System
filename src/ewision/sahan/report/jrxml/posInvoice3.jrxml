@@ -312,7 +312,7 @@
 		</band>
 	</columnFooter>
 	<pageFooter>
-		<band height="88" splitType="Stretch">
+		<band height="68" splitType="Stretch">
 			<staticText>
 				<reportElement x="11" y="27" width="187" height="22" uuid="f59951ba-cf8a-4581-a959-f282f4651696"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -326,20 +326,6 @@
 					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Thank You! Come Back]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="11" y="64" width="187" height="12" uuid="9ba792ba-b412-4657-a6d9-00f08a000b71"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Powered by QuantmCod]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="11" y="76" width="187" height="12" uuid="8d1cde61-7649-4dec-86bf-d8d7ac57043d"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[+94 77 599 4409]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="11" y="49" width="187" height="15" forecolor="#32B2CF" uuid="921e1677-df6a-4411-bcad-0418ae0a2a03"/>

@@ -312,7 +312,7 @@ public class AddStock extends javax.swing.JPanel {
 
         quantitySpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 1.0d, null, 1.0d));
         quantitySpinner.setEditor(new javax.swing.JSpinner.NumberEditor(quantitySpinner, ""));
-        quantitySpinner.setNextFocusableComponent(addButton);
+        quantitySpinner.setNextFocusableComponent(salePriceField);
         quantitySpinner.setPreferredSize(new java.awt.Dimension(277, 33));
         quantitySpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -331,7 +331,7 @@ public class AddStock extends javax.swing.JPanel {
 
         costField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         costField.setText("0.00");
-        costField.setNextFocusableComponent(taxField);
+        costField.setNextFocusableComponent(priceField);
         costField.setPreferredSize(new java.awt.Dimension(277, 33));
         costField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -346,6 +346,7 @@ public class AddStock extends javax.swing.JPanel {
 
         isExpire.setText("Expire Date");
         isExpire.setMinimumSize(new java.awt.Dimension(20, 5));
+        isExpire.setNextFocusableComponent(jDateChooser1);
         isExpire.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 isExpireActionPerformed(evt);
@@ -356,8 +357,10 @@ public class AddStock extends javax.swing.JPanel {
 
         jLabel4.setText("Manufacture Date");
 
+        jDateChooser1.setNextFocusableComponent(jDateChooser2);
         jDateChooser1.setPreferredSize(new java.awt.Dimension(210, 33));
 
+        jDateChooser2.setNextFocusableComponent(quantitySpinner);
         jDateChooser2.setPreferredSize(new java.awt.Dimension(210, 33));
 
         javax.swing.GroupLayout expireDateContainerLayout = new javax.swing.GroupLayout(expireDateContainer);
@@ -410,7 +413,7 @@ public class AddStock extends javax.swing.JPanel {
 
         priceField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         priceField.setText("0.00");
-        priceField.setNextFocusableComponent(taxField);
+        priceField.setNextFocusableComponent(discountField);
         priceField.setPreferredSize(new java.awt.Dimension(277, 33));
         priceField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -427,7 +430,7 @@ public class AddStock extends javax.swing.JPanel {
 
         taxField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         taxField.setText("0.00");
-        taxField.setNextFocusableComponent(taxField);
+        taxField.setNextFocusableComponent(isExpire);
         taxField.setPreferredSize(new java.awt.Dimension(277, 33));
         taxField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -442,6 +445,7 @@ public class AddStock extends javax.swing.JPanel {
 
         jLabel12.setText("Code");
 
+        codeField.setNextFocusableComponent(addButton);
         codeField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 codeFieldFocusGained(evt);
@@ -450,7 +454,7 @@ public class AddStock extends javax.swing.JPanel {
 
         salePriceField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         salePriceField.setText("0.00");
-        salePriceField.setNextFocusableComponent(taxField);
+        salePriceField.setNextFocusableComponent(codeField);
         salePriceField.setPreferredSize(new java.awt.Dimension(277, 33));
         salePriceField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -573,7 +577,8 @@ public class AddStock extends javax.swing.JPanel {
         );
 
         addButton.setText("Add");
-        addButton.setNextFocusableComponent(discountField);
+        addButton.setNextFocusableComponent(costField);
+        addButton.setRolloverEnabled(false);
         addButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addButtonActionPerformed(evt);
