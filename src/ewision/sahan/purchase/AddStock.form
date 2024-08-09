@@ -205,14 +205,14 @@
                               <Component id="jLabel7" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="costField" alignment="0" pref="153" max="32767" attributes="0"/>
-                              <Component id="discountField" alignment="0" pref="153" max="32767" attributes="0"/>
-                              <Component id="quantitySpinner" pref="153" max="32767" attributes="0"/>
+                              <Component id="costField" alignment="0" pref="209" max="32767" attributes="0"/>
+                              <Component id="discountField" alignment="0" pref="209" max="32767" attributes="0"/>
+                              <Component id="quantitySpinner" pref="209" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace min="31" pref="31" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="taxField" alignment="1" pref="153" max="32767" attributes="0"/>
-                              <Component id="priceField" alignment="1" pref="153" max="32767" attributes="0"/>
+                              <Component id="taxField" alignment="1" pref="210" max="32767" attributes="0"/>
+                              <Component id="priceField" alignment="1" pref="210" max="32767" attributes="0"/>
                               <Component id="salePriceField" alignment="1" pref="0" max="32767" attributes="0"/>
                               <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
@@ -225,7 +225,7 @@
                           </Group>
                       </Group>
                       <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
-                      <Component id="codeField" alignment="1" pref="337" max="32767" attributes="0"/>
+                      <Component id="codeField" alignment="1" pref="450" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
               </Group>
@@ -353,12 +353,12 @@
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jDateChooser1" pref="150" max="32767" attributes="0"/>
+                          <Component id="jDateChooser1" pref="206" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                          <Component id="jDateChooser2" pref="150" max="32767" attributes="0"/>
+                          <Component id="jDateChooser2" pref="207" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>

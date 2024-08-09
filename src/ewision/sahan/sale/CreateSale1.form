@@ -31,7 +31,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jSeparator1" alignment="1" max="32767" attributes="0"/>
                   <Component id="headerPanel" alignment="1" max="32767" attributes="0"/>
-                  <Component id="bodyScroll" alignment="0" max="32767" attributes="0"/>
+                  <Component id="bodyScroll" alignment="0" pref="648" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -1321,7 +1321,7 @@
                                           <Component id="jLabel15" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="orderTaxField" max="32767" attributes="0"/>
                                           <Component id="jLabel18" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="statusComboBox" alignment="0" pref="120" max="32767" attributes="0"/>
+                                          <Component id="statusComboBox" alignment="0" pref="168" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                                   </Group>
@@ -1398,7 +1398,7 @@
                                       <Group type="103" groupAlignment="1" attributes="0">
                                           <Component id="paymentStatusComboBox" max="32767" attributes="0"/>
                                           <Component id="jLabel16" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="discountField" alignment="1" pref="120" max="32767" attributes="0"/>
+                                          <Component id="discountField" alignment="1" pref="168" max="32767" attributes="0"/>
                                           <Component id="jLabel19" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
@@ -1485,7 +1485,7 @@
                                                       <Component id="jLabel17" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                                   </Group>
-                                                  <Component id="shippingField" alignment="0" pref="120" max="32767" attributes="0"/>
+                                                  <Component id="shippingField" alignment="0" pref="168" max="32767" attributes="0"/>
                                               </Group>
                                               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                                           </Group>

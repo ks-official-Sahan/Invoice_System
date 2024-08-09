@@ -47,6 +47,8 @@ public class CreateProduct1 extends javax.swing.JPanel {
     private void init() {
         jPanel5.setVisible(false);
         variantTableScroll.setVisible(false);
+        int ref = (int) System.currentTimeMillis();
+        barcodeField.setText(String.valueOf((int) (ref > 0 ? ref : -(ref))));
 
         loadBarcodeTypes();
         loadBrands();
@@ -900,7 +902,7 @@ public class CreateProduct1 extends javax.swing.JPanel {
         // Add Brand
         DialogModal modal = new DialogModal(this);
         modal.openBrandReg();
-        modal.setVisible(true);        
+        modal.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed

@@ -37,6 +37,9 @@ public class CreateService extends javax.swing.JPanel {
     private void init() {
         loadCategories();
         loadBarcodeTypes();
+        
+        int ref = (int) System.currentTimeMillis();
+        barcodeField.setText(String.valueOf((int) (ref > 0 ? ref : -(ref))));
     }
 
     private HashMap<String, Integer> categoryMap = new HashMap<>();
