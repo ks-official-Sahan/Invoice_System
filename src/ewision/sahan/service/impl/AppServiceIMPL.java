@@ -12,6 +12,7 @@ import ewision.sahan.supplier.SupplierList;
 import ewision.sahan.product.CreateProduct1;
 import ewision.sahan.services.CreateService;
 import ewision.sahan.product.ProductList;
+import ewision.sahan.product.ViewProduct;
 import ewision.sahan.purchase.CreatePurchase1;
 import ewision.sahan.purchase.PurchaseList;
 import ewision.sahan.purchase.UpdatePurchase;
@@ -145,4 +146,11 @@ public class AppServiceIMPL extends AppServiceAbstract {
         UpdatePurchase updateSale = new UpdatePurchase(purchaseId, isUpdate);
         showMainPanel((JPanel) updateSale);
     }
+
+    @Override
+    public void openViewProduct(String id) {
+        ViewProduct viewProduct = new ViewProduct(id);
+        showMainPanel((JPanel) viewProduct);
+    }
+
 }

@@ -17,7 +17,9 @@ import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableImageCellRenderer;
 import ewision.sahan.utils.CSVFileOperator;
 import ewision.sahan.utils.SQLDateFormatter;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -73,9 +76,13 @@ public class ProductList extends javax.swing.JPanel {
         });
         eventMap.put("view", (ActionButtonEvent) (int row) -> {
             System.out.println("View: " + row);
+            String id = String.valueOf(jTable1.getValueAt(row, 1));
+            Application.appService.openViewProduct(id);
         });
         eventMap.put("edit", (ActionButtonEvent) (int row) -> {
             System.out.println("Edit: " + row);
+            String id = String.valueOf(jTable1.getValueAt(row, 1));
+            Application.appService.openViewProduct(id);
         });
         jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
     }
@@ -834,11 +841,33 @@ public class ProductList extends javax.swing.JPanel {
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // Export Barcodes
-
+        exportBarcodes();
     }//GEN-LAST:event_jButton7ActionPerformed
 
-    private List exportProductBarcodes() {
-        List<String> data = new ArrayList<>();
+    private void exportBarcodes() {
+        CSVFileOperator csvFileWriter = new CSVFileOperator();
+        File fileDirectory = csvFileWriter.selectCSVPath(this);
+
+        File file = new File(fileDirectory + "/barcodes_" + System.currentTimeMillis() + ".txt");
+
+        try {
+            FileWriter fw = new FileWriter(file);
+            BufferedWriter bw = new BufferedWriter(fw);
+            
+            for (Object code: exportProductBarcodes()) {
+                bw.write((String) code);
+                bw.newLine();
+            }
+            
+            bw.flush();
+            JOptionPane.showMessageDialog(this, "Data Exported to: " + file, "Saved", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            CSVLogger.logger.log(Level.SEVERE, "Stocks exporting error:" + e.getMessage(), e.getMessage());
+        }
+    }
+
+    private HashSet exportProductBarcodes() {
+        HashSet<String> data = new HashSet<>();
         data.add("BarCode");
 
         try {

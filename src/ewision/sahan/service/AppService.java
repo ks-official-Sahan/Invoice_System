@@ -49,4 +49,6 @@ public interface AppService {
     public void openUserList();
 
     public void openPOS();
+
+    public void openViewProduct(String id);
 }
