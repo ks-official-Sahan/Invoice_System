@@ -216,7 +216,6 @@ public class POSUI extends javax.swing.JPanel {
         model.setRowCount(0);
 
         //model.addRow(new Object[]{0, "Apple", "1025", "150.00", "-", "Fruit"});
-
         //String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` INNER JOIN `units` ON `units`.`id`=`products`.`unit_id` ";
         String query = "SELECT * FROM `products` "
                 + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
@@ -240,7 +239,8 @@ public class POSUI extends javax.swing.JPanel {
                 rowData.add(resultSet.getString("products.id"));
                 rowData.add(resultSet.getString("products.name"));
                 rowData.add(resultSet.getString("products.code"));
-                rowData.add(resultSet.getString("units.shortName"));
+                rowData.add(resultSet.getString("units.operator_value") + resultSet.getString("units.shortName"));
+//                rowData.add(resultSet.getString("units.shortName"));
                 rowData.add(resultSet.getString("brands.name"));
                 rowData.add(resultSet.getString("categories.name"));
 
@@ -259,7 +259,6 @@ public class POSUI extends javax.swing.JPanel {
         model.setRowCount(0);
 
         //model.addRow(new Object[]{0, "Service", "0602", "1500.00", "service", "Assembly Charge"});
-
         //String query = "SELECT * FROM `services` INNER JOIN `categories` ON `categories`.`id`=`services`.`categories_id` ";
         //if (!service.isEmpty()) {
         //    query += "WHERE `services`.`name` LIKE '%" + service + "%' "
@@ -439,7 +438,7 @@ public class POSUI extends javax.swing.JPanel {
 //        if (productContainer.isVisible()) {
 //            productContainer.setVisible(!productContainer.isVisible());
 //        } else {
-            loadProducts("");
+        loadProducts("");
 //        }
         productField.requestFocus();
     }

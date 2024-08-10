@@ -51,8 +51,51 @@ public class PrintReport {
             //JasperPrint jasperReport = JasperFillManager.fillReport(report, parameters, connection); // DatabaseSource is Database Connection
             //JasperPrint jasperReport = JasperFillManager.fillReport(report, parameters, new JRTableModelDataSource(new DefaultTableModel()));
             //JasperPrint jasperReport = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
+            //JasperViewer.viewReport(jasperReport, false);
+            JasperPrintManager.printReport(jasperReport, false);
+        } catch (NullPointerException e) {
+            CommonLogger.logger.log(Level.SEVERE, "NullpointerException in Jasper Report Compiling: " + e.getMessage(), e.getMessage());
+        } catch (JRException e) {
+            CommonLogger.logger.log(Level.SEVERE, "JRException in Jasper Report Filling: " + e.getMessage(), e.getMessage());
+        }
+    }
+
+    public void PrintViewReport(String reportPath, HashMap parameters, JRRewindableDataSource dataSource) {
+        try {
+            JasperPrint jasperReport = JasperFillManager.fillReport(getClass().getResourceAsStream(reportPath), parameters, new JREmptyDataSource());
+            if (dataSource instanceof JRTableModelDataSource) {
+                jasperReport = JasperFillManager.fillReport(getClass().getResourceAsStream(reportPath), parameters, (JRTableModelDataSource) dataSource);
+            } else {
+                jasperReport = JasperFillManager.fillReport(getClass().getResourceAsStream(reportPath), parameters, dataSource);
+            }
+            //JasperPrint jasperReport = JasperFillManager.fillReport(getClass().getResourceAsStream("/ewision/sahan/reports/report.jrxml"), parameters, dataSource);
+
+            //JasperPrint jasperReport = JasperFillManager.fillReport(report, parameters, connection); // DatabaseSource is Database Connection
+            //JasperPrint jasperReport = JasperFillManager.fillReport(report, parameters, new JRTableModelDataSource(new DefaultTableModel()));
+            //JasperPrint jasperReport = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
             JasperViewer.viewReport(jasperReport, false);
             JasperPrintManager.printReport(jasperReport, false);
+        } catch (NullPointerException e) {
+            CommonLogger.logger.log(Level.SEVERE, "NullpointerException in Jasper Report Compiling: " + e.getMessage(), e.getMessage());
+        } catch (JRException e) {
+            CommonLogger.logger.log(Level.SEVERE, "JRException in Jasper Report Filling: " + e.getMessage(), e.getMessage());
+        }
+    }
+    public void ViewReport(String reportPath, HashMap parameters, JRRewindableDataSource dataSource) {
+        try {
+            JasperPrint jasperReport = JasperFillManager.fillReport(getClass().getResourceAsStream(reportPath), parameters, new JREmptyDataSource());
+            if (dataSource instanceof JRTableModelDataSource) {
+                jasperReport = JasperFillManager.fillReport(getClass().getResourceAsStream(reportPath), parameters, (JRTableModelDataSource) dataSource);
+            } else {
+                jasperReport = JasperFillManager.fillReport(getClass().getResourceAsStream(reportPath), parameters, dataSource);
+            }
+            //JasperPrint jasperReport = JasperFillManager.fillReport(getClass().getResourceAsStream("/ewision/sahan/reports/report.jrxml"), parameters, dataSource);
+
+            //JasperPrint jasperReport = JasperFillManager.fillReport(report, parameters, connection); // DatabaseSource is Database Connection
+            //JasperPrint jasperReport = JasperFillManager.fillReport(report, parameters, new JRTableModelDataSource(new DefaultTableModel()));
+            //JasperPrint jasperReport = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
+            JasperViewer.viewReport(jasperReport, false);
+            //JasperPrintManager.printReport(jasperReport, false);
         } catch (NullPointerException e) {
             CommonLogger.logger.log(Level.SEVERE, "NullpointerException in Jasper Report Compiling: " + e.getMessage(), e.getMessage());
         } catch (JRException e) {

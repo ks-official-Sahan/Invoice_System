@@ -1408,7 +1408,7 @@ public class UpdateSale extends javax.swing.JPanel {
         headerPanel.setMinimumSize(new java.awt.Dimension(20, 5));
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
-        jLabel1.setText("Create Sale");
+        jLabel1.setText("Sale");
 
         referenceNoField.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 5));
 

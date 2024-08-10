@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -51,10 +52,6 @@ public class PurchaseList extends javax.swing.JPanel {
 //        jTable1.getColumn("Image").setCellRenderer(new TableImageCellRenderer());
         //jTable1.getColumnModel().getColumn(8).setCellRenderer(new TableActionCellRender());
         HashMap<String, ActionButtonEvent> eventMap = new HashMap<>();
-        eventMap.put("delete", (ActionButtonEvent) (int row) -> {
-            System.out.println("Delete: " + row);
-            System.out.println("Delete: " + String.valueOf(jTable1.getValueAt(row, 8)));
-        });
         eventMap.put("view", (ActionButtonEvent) (int row) -> {
             System.out.println("View: " + row);
             String id = String.valueOf(jTable1.getValueAt(row, 0));
@@ -67,7 +64,33 @@ public class PurchaseList extends javax.swing.JPanel {
             System.out.println("Edit: " + id);
             Application.appService.openUpdatePurchase(id, true);
         });
-        jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_BUTTON, eventMap));
+        if (Application.getUser().getRoleId() == 1) {
+            eventMap.put("delete", (ActionButtonEvent) (int row) -> {
+                System.out.println("delete: " + row);
+                String id = String.valueOf(jTable1.getValueAt(row, 0));
+                System.out.println("delete: " + id);
+                deletePurchase(id);
+            });
+            Application.appService.openUserList();
+            jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
+        } else {
+            jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_BUTTON, eventMap));
+        }
+    }
+
+    private void deletePurchase(String id) {
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure about deleting this Purchase?", "Delete Warning", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            try {
+                String query = "UPDATE `purchases` SET `statut`='delete' WHERE `Ref`='" + id + "'";
+                MySQL.execute(query);
+
+                //String query = "SELECT * FROM `sale_details` WHERE `sale_id`";
+                loadSales("");
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Purchase delete error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
     }
 
     private void loadTestData() {
@@ -95,9 +118,9 @@ public class PurchaseList extends javax.swing.JPanel {
             String query = "SELECT * FROM `purchases` "
                     + "INNER JOIN `users` ON `users`.`id`=`purchases`.`user_id` "
                     + "JOIN `providers` ON `providers`.`id`=`purchases`.`provider_id` "
-                    + "WHERE `purchases`.`Ref` LIKE '%" + txt + "%' "
+                    + "WHERE (`purchases`.`Ref` LIKE '%" + txt + "%' "
                     + "OR `users`.`username` LIKE '%" + txt + "%' "
-                    + "OR `providers`.`name` LIKE '%" + txt + "%' ";
+                    + "OR `providers`.`name` LIKE '%" + txt + "%') AND `statut`<>'delete' ";
             ResultSet resultSet = MySQL.execute(query);
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();

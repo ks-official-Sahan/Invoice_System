@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -62,9 +63,36 @@ public class SalesList extends javax.swing.JPanel {
             System.out.println("Edit: " + id);
             Application.appService.openUpdateSale(id, true);
         });
-        jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_BUTTON, eventMap));
+        if (Application.getUser().getRoleId() == 1) {
+        eventMap.put("delete", (ActionButtonEvent) (int row) -> {
+            System.out.println("delete: " + row);
+            String id = String.valueOf(jTable1.getValueAt(row, 0));
+            System.out.println("delete: " + id);
+            deleteSale(id);
+        });
+            Application.appService.openUserList();
+            jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
+        } else {
+            jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_BUTTON, eventMap));
+        }
     }
 
+    private void deleteSale(String id) {
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure about deleting this Sale?", "Delete Warning", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            try {
+                String query = "UPDATE `sales` SET `statut`='delete' WHERE `Ref`='" + id + "'";
+                MySQL.execute(query);
+                
+                //String query = "SELECT * FROM `sale_details` WHERE `sale_id`";
+                
+                loadSales("");
+            } catch (SQLException ex) {
+                DatabaseLogger.logger.log(Level.SEVERE, "Sale delete error: " + ex.getMessage(), ex.getMessage());
+            }
+        }
+    }
+    
     private void loadTestData() {
         Thread t = new Thread(() -> {
 
@@ -90,9 +118,9 @@ public class SalesList extends javax.swing.JPanel {
             String query = "SELECT * FROM `sales` "
                     + "INNER JOIN `users` ON `users`.`id`=`sales`.`user_id` "
                     + "INNER JOIN `clients` ON `clients`.`id`=`sales`.`client_id` "
-                    + "WHERE `sales`.`Ref` LIKE '%" + txt + "%' "
+                    + "WHERE (`sales`.`Ref` LIKE '%" + txt + "%' "
                     + "OR `users`.`username` LIKE '%" + txt + "%' "
-                    + "OR `clients`.`name` LIKE '%" + txt + "%' ";
+                    + "OR `clients`.`name` LIKE '%" + txt + "%') AND `statut`<>'delete' ";
             ResultSet resultSet = MySQL.execute(query);
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();

@@ -115,6 +115,9 @@ public class UpdatePurchase extends javax.swing.JPanel {
                 String referenceNo = saleResult.getString("Ref");
                 String clientId = saleResult.getString("providers.name") + ": " + saleResult.getString("providers.phone");
                 String warehouseId = saleResult.getString("warehouse_id");
+                if (warehouseId == null) {
+                    warehouseId = "Default";
+                }
                 warehouseId = warehouseId.equals("0") ? "Default" : warehouseId;
                 double taxRate = saleResult.getDouble("tax_rate");
                 double taxNet = saleResult.getDouble("TaxNet");
@@ -1431,7 +1434,7 @@ public class UpdatePurchase extends javax.swing.JPanel {
         headerPanel.setMinimumSize(new java.awt.Dimension(20, 5));
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
-        jLabel1.setText("Create Purchase");
+        jLabel1.setText("Purchase");
 
         referenceNoField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         referenceNoField.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 5));

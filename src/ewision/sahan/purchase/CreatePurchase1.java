@@ -151,7 +151,8 @@ public class CreatePurchase1 extends javax.swing.JPanel {
             }
         };
 
-        TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(event, 3);
+        TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(event);
+        //TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(event, 3);
         //TableSpinnerCellEditor tableSpinnerCellEditor = new TableSpinnerCellEditor(2, 7, 3);
         productChargeTable.getColumnModel().getColumn(4).setCellEditor(tableSpinnerCellEditor);
 
@@ -289,7 +290,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
         DefaultTableModel model = (DefaultTableModel) productTable.getModel();
         model.setRowCount(0);
 
-        model.addRow(new Object[]{0, "Apple", "1025", "150.00", "-", "Fruit"});
+        //model.addRow(new Object[]{0, "Apple", "1025", "150.00", "-", "Fruit"});
 
         //String query = "SELECT * FROM `products` INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` INNER JOIN `units` ON `units`.`id`=`products`.`unit_id` ";
         String query = "SELECT * FROM `products` "
@@ -1161,7 +1162,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                             parameters.put("NetAmount ", String.valueOf(total));
                             parameters.put("Payment", String.valueOf(payment));
                             parameters.put("Balance", String.valueOf(balance));
-                            new PrintReport().PrintReport("/ewision/sahan/report/jasper/posInvoice3A43.jasper", parameters, new JRTableModelDataSource(productChargeTable.getModel()));
+                            new PrintReport().ViewReport("/ewision/sahan/report/jasper/posInvoice3A43.jasper", parameters, new JRTableModelDataSource(productChargeTable.getModel()));
 
                             JOptionPane.showMessageDialog(this, "Successfully completed!", "Successful", JOptionPane.INFORMATION_MESSAGE);
                             //Application.appService.openCreatePurchase();

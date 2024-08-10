@@ -240,7 +240,7 @@ public class POSUI1 extends javax.swing.JPanel {
                 rowData.add(resultSet.getString("products.id"));
                 rowData.add(resultSet.getString("products.name"));
                 rowData.add(resultSet.getString("products.code"));
-                rowData.add(resultSet.getString("units.shortName"));
+                rowData.add(resultSet.getString("units.operator_value")+resultSet.getString("units.shortName"));
                 rowData.add(resultSet.getString("brands.name"));
                 rowData.add(resultSet.getString("categories.name"));
 
@@ -896,7 +896,7 @@ public class POSUI1 extends javax.swing.JPanel {
                             parameters.put("NetAmount ", String.valueOf(total));
                             parameters.put("Payment", String.valueOf(payment));
                             parameters.put("Balance", String.valueOf(balance));
-                            new PrintReport().PrintReport("/ewision/sahan/report/jasper/posInvoice3.jasper", parameters, new JRTableModelDataSource(productChargeTable.getModel()));
+                            new PrintReport().PrintViewReport("/ewision/sahan/report/jasper/posInvoice3.jasper", parameters, new JRTableModelDataSource(productChargeTable.getModel()));
 
                             JOptionPane.showMessageDialog(this, "Successfully completed!", "Successful", JOptionPane.INFORMATION_MESSAGE);
                             //Application.appService.openCreateSale();

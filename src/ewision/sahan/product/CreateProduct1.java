@@ -158,8 +158,8 @@ public class CreateProduct1 extends javax.swing.JPanel {
 
             unitMap.clear();
             while (resultSet.next()) {
-                data.add(resultSet.getString("ShortName"));
-                unitMap.put(resultSet.getString("ShortName"), resultSet.getInt("id"));
+                data.add(resultSet.getString("operator_value")+ " " + resultSet.getString("ShortName"));
+                unitMap.put((resultSet.getString("operator_value")+ " " + resultSet.getString("ShortName")), resultSet.getInt("id"));
             }
 
             JComboBox[] comboBoxes = {purchaseUnitBox, productUnitBox, saleUnitBox};

@@ -22,6 +22,7 @@ public class UnitRegistration extends javax.swing.JPanel {
      */
     public UnitRegistration() {
         initComponents();
+        operatorField.setText("1");
     }
 
     private DialogModal modal;
@@ -49,10 +50,12 @@ public class UnitRegistration extends javax.swing.JPanel {
         categoryName = new javax.swing.JTextField();
         categoryCode = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        operatorField = new javax.swing.JTextField();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setMinimumSize(new java.awt.Dimension(720, 305));
-        setPreferredSize(new java.awt.Dimension(720, 305));
+        setPreferredSize(new java.awt.Dimension(720, 390));
 
         jLabel1.setFont(new java.awt.Font("SansSerif", 1, 30)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -88,6 +91,9 @@ public class UnitRegistration extends javax.swing.JPanel {
         jLabel3.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         jLabel3.setText("Enter Unit Short Name");
 
+        jLabel4.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        jLabel4.setText("Operator Value (eg: 100) (use numbers)");
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -96,12 +102,14 @@ public class UnitRegistration extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(categoryName)
+                    .addComponent(categoryCode)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addGap(0, 557, Short.MAX_VALUE))
-                    .addComponent(categoryCode))
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4))
+                        .addGap(0, 458, Short.MAX_VALUE))
+                    .addComponent(operatorField))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -115,7 +123,11 @@ public class UnitRegistration extends javax.swing.JPanel {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(categoryCode, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(7, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel4)
+                .addGap(11, 11, 11)
+                .addComponent(operatorField, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -128,9 +140,7 @@ public class UnitRegistration extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator1)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, 0)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -140,8 +150,8 @@ public class UnitRegistration extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(15, 15, 15)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -154,7 +164,9 @@ public class UnitRegistration extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -162,22 +174,28 @@ public class UnitRegistration extends javax.swing.JPanel {
 
         String category = categoryName.getText();
         String catCode = this.categoryCode.getText();
+        String operator = operatorField.getText();
 
         if (category.equals("")) {
             JOptionPane.showMessageDialog(this, "Enter Unit Name", "Warning", JOptionPane.ERROR_MESSAGE);
         } else if (catCode.equals("")) {
             JOptionPane.showMessageDialog(this, "Enter Short Name", "Warning", JOptionPane.ERROR_MESSAGE);
         } else {
+            if (operator.equals("")) {
+                operator = "1";
+                operatorField.setText(operator);
+            }
             try {
                 Date dt = new Date();
                 SimpleDateFormat st = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
                 String tt = st.format(dt);
 
-                MySQL.execute("INSERT INTO `units` (`ShortName`,`name`,`created_at`)"
-                        + "VALUES ('" + catCode + "','" + category + "','" + tt + "')");
+                MySQL.execute("INSERT INTO `units` (`ShortName`,`name`, `operator_value`,`created_at`)"
+                        + "VALUES ('" + catCode + "','" + category + "', '"+operator+"','" + tt + "')");
 
                 categoryName.setText("");
                 this.categoryCode.setText("");
+                operatorField.setText("1");
                 Application.appService.openCreateProduct();
                 modal.closeModal();
             } catch (Exception e) {
@@ -197,9 +215,11 @@ public class UnitRegistration extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTextField operatorField;
     // End of variables declaration//GEN-END:variables
 }
