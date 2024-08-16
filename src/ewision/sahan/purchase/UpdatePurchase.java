@@ -187,10 +187,10 @@ public class UpdatePurchase extends javax.swing.JPanel {
                         if (stockRs.next()) {
                             stocks = stockRs.getString("quantity");
                             unitPrice = stockRs.getDouble("cost");
-                            String isSalePrice = saleItemsResult.getString("is_sale_price");
-                            if (isSalePrice.equals("1")) {
-                                unitPrice = stockRs.getDouble("sale_price");
-                            }
+//                            String isSalePrice = saleItemsResult.getString("is_sale_price");
+//                            if (isSalePrice.equals("1")) {
+//                                unitPrice = stockRs.getDouble("sale_price");
+//                            }
                         }
                     }
 
@@ -199,7 +199,7 @@ public class UpdatePurchase extends javax.swing.JPanel {
                 }
             }
         } catch (SQLException ex) {
-            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " loadSale: " + ex.getMessage() + " -- " + ex.getLocalizedMessage(), ex.getMessage());
+            DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " loadPurchase: " + ex.getMessage() + " -- " + ex.getLocalizedMessage(), ex.getMessage());
             JOptionPane.showMessageDialog(this, "Error loading purchase details.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }

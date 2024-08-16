@@ -4,21 +4,18 @@ import ewision.sahan.application.Application;
 import ewision.sahan.components.action_button.ActionButton;
 import ewision.sahan.components.action_button.ActionButtonEvent;
 import ewision.sahan.loggers.DatabaseLogger;
-import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
-import ewision.sahan.table.header.TableCheckBoxHeaderRenderer;
 import ewision.sahan.model.Constants;
 import ewision.sahan.model.MySQL;
-import ewision.sahan.utils.ImageScaler;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
-import ewision.sahan.table.TableImageCellRenderer;
+import ewision.sahan.utils.SQLDateFormatter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -64,12 +61,12 @@ public class SalesList extends javax.swing.JPanel {
             Application.appService.openUpdateSale(id, true);
         });
         if (Application.getUser().getRoleId() == 1) {
-        eventMap.put("delete", (ActionButtonEvent) (int row) -> {
-            System.out.println("delete: " + row);
-            String id = String.valueOf(jTable1.getValueAt(row, 0));
-            System.out.println("delete: " + id);
-            deleteSale(id);
-        });
+            eventMap.put("delete", (ActionButtonEvent) (int row) -> {
+                System.out.println("delete: " + row);
+                String id = String.valueOf(jTable1.getValueAt(row, 0));
+                System.out.println("delete: " + id);
+                deleteSale(id);
+            });
             Application.appService.openUserList();
             jTable1.getColumn("Action").setCellRenderer(new TableActionPanelCellRenderer(ActionButton.VIEW_EDIT_DELETE_BUTTON, eventMap));
         } else {
@@ -80,19 +77,59 @@ public class SalesList extends javax.swing.JPanel {
     private void deleteSale(String id) {
         int result = JOptionPane.showConfirmDialog(this, "Are you sure about deleting this Sale?", "Delete Warning", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
+
+//            try {
+//                String query = "UPDATE `sales` SET `statut`='delete' WHERE `Ref`='" + id + "'";
+//                MySQL.execute(query);
+//               loadSales("");
+//            } catch (SQLException ex) {
+//                DatabaseLogger.logger.log(Level.SEVERE, "Sale delete error: " + ex.getMessage(), ex.getMessage());
+//            }
+            boolean isSuccess = true;
+            String pId = "0";
             try {
-                String query = "UPDATE `sales` SET `statut`='delete' WHERE `Ref`='" + id + "'";
-                MySQL.execute(query);
-                
+                String query = "SELECT * FROM `sales` WHERE `Ref`='" + id + "'";
+                ResultSet resultSet = MySQL.execute(query);
+                if (resultSet.next()) {
+                    pId = resultSet.getString("id");
+                }
                 //String query = "SELECT * FROM `sale_details` WHERE `sale_id`";
-                
-                loadSales("");
             } catch (SQLException ex) {
-                DatabaseLogger.logger.log(Level.SEVERE, "Sale delete error: " + ex.getMessage(), ex.getMessage());
+                isSuccess = false;
+                DatabaseLogger.logger.log(Level.SEVERE, "Sales delete search error: " + ex.getMessage(), ex.getMessage());
             }
+            if (isSuccess) {
+                try {
+                    String query = "UPDATE `sales` SET `statut`='delete' WHERE `Ref`='" + id + "' OR `id`='" + pId + "'";
+                    MySQL.execute(query);
+
+                    //String query = "SELECT * FROM `sale_details` WHERE `sale_id`";
+                    loadSales("");
+                } catch (SQLException ex) {
+                    DatabaseLogger.logger.log(Level.SEVERE, "Sale delete error: " + ex.getMessage(), ex.getMessage());
+                }
+            }
+            if (isSuccess) {
+                try {
+                    String pdQuery = "SELECT * FROM `sale_details` WHERE `sale_id`='" + pId + "'";
+                    ResultSet execute = MySQL.execute(pdQuery);
+                    while (execute.next()) {
+
+                        String stock_id = execute.getString("stocks_id");
+                        if (stock_id != null) {
+                            String query = "UPDATE `stocks` SET `quantity`=`quantity`+" + execute.getDouble("quantity") + " WHERE `id`='" + stock_id + "'";
+                            MySQL.execute(query);
+                        }
+                    }
+                } catch (SQLException ex) {
+                    isSuccess = false;
+                    DatabaseLogger.logger.log(Level.SEVERE, "Sales details delete error: " + ex.getMessage(), ex.getMessage());
+                }
+            }
+            loadSales("");
         }
     }
-    
+
     private void loadTestData() {
         Thread t = new Thread(() -> {
 
@@ -120,11 +157,17 @@ public class SalesList extends javax.swing.JPanel {
                     + "INNER JOIN `clients` ON `clients`.`id`=`sales`.`client_id` "
                     + "WHERE (`sales`.`Ref` LIKE '%" + txt + "%' "
                     + "OR `users`.`username` LIKE '%" + txt + "%' "
-                    + "OR `clients`.`name` LIKE '%" + txt + "%') AND `statut`<>'delete' ";
+                    + "OR `clients`.`name` LIKE '%" + txt + "%') AND `statut`<>'delete' "
+                    + "ORDER BY `date` DESC";
             ResultSet resultSet = MySQL.execute(query);
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.setRowCount(0);
+
+            int count = 0;
+            int todayCount = 0;
+            Date today = new Date();
+            String todayString = new SQLDateFormatter().getStringDate(today);
 
             while (resultSet.next()) {
                 Vector row = new Vector();
@@ -139,7 +182,9 @@ public class SalesList extends javax.swing.JPanel {
 
                 //row.add(false);
                 row.add(resultSet.getString("sales.Ref"));
-                row.add(resultSet.getString("date"));
+
+                String date = resultSet.getString("date");
+                row.add(date);
                 //row.add(resultSet.getString("user_id"));
                 row.add(resultSet.getString("users.username"));
                 //row.add(resultSet.getString("client_id"));
@@ -154,6 +199,14 @@ public class SalesList extends javax.swing.JPanel {
                 row.add(resultSet.getString("sales.shipping_status"));
 
                 model.addRow(row);
+
+                if (date.equalsIgnoreCase(todayString)) {
+                    todayCount++;
+                }
+                count++;
+
+                totalCount.setText(String.valueOf(count));
+                toadyCount.setText(String.valueOf(todayCount));
             }
         } catch (SQLException ex) {
             //ex.printStackTrace();
@@ -174,6 +227,10 @@ public class SalesList extends javax.swing.JPanel {
         jPopupMenu1 = new javax.swing.JPopupMenu();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        totalCount = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        toadyCount = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jTextField1 = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
@@ -192,6 +249,16 @@ public class SalesList extends javax.swing.JPanel {
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 24)); // NOI18N
         jLabel1.setText("Sales List");
 
+        totalCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        totalCount.setText("0");
+
+        jLabel3.setText("Total Sales:");
+
+        jLabel4.setText("Today:");
+
+        toadyCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        toadyCount.setText("0");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -199,14 +266,35 @@ public class SalesList extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(totalCount, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(toadyCount, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(toadyCount)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(totalCount)
+                            .addComponent(jLabel3)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 0, 5, 0));
@@ -321,13 +409,14 @@ public class SalesList extends javax.swing.JPanel {
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, true, false, false, true
+                false, false, false, false, false, false, false, false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.setColumnSelectionAllowed(true);
         jTable1.setIntercellSpacing(new java.awt.Dimension(0, 1));
         jTable1.setMinimumSize(new java.awt.Dimension(0, 80));
         jTable1.setOpaque(false);
@@ -343,17 +432,7 @@ public class SalesList extends javax.swing.JPanel {
         jScrollPane1.setViewportView(jTable1);
         jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setPreferredWidth(50);
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
-            jTable1.getColumnModel().getColumn(3).setResizable(false);
-            jTable1.getColumnModel().getColumn(4).setResizable(false);
-            jTable1.getColumnModel().getColumn(5).setResizable(false);
-            jTable1.getColumnModel().getColumn(6).setResizable(false);
-            jTable1.getColumnModel().getColumn(7).setResizable(false);
-            jTable1.getColumnModel().getColumn(8).setResizable(false);
-            jTable1.getColumnModel().getColumn(9).setResizable(false);
+            jTable1.getColumnModel().getColumn(1).setMinWidth(80);
             jTable1.getColumnModel().getColumn(10).setMinWidth(136);
             jTable1.getColumnModel().getColumn(10).setMaxWidth(150);
         }
@@ -376,7 +455,7 @@ public class SalesList extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -422,6 +501,8 @@ public class SalesList extends javax.swing.JPanel {
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -429,5 +510,7 @@ public class SalesList extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel toadyCount;
+    private javax.swing.JLabel totalCount;
     // End of variables declaration//GEN-END:variables
 }

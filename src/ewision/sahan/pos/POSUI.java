@@ -239,10 +239,10 @@ public class POSUI extends javax.swing.JPanel {
                 rowData.add(resultSet.getString("products.id"));
                 rowData.add(resultSet.getString("products.name"));
                 rowData.add(resultSet.getString("products.code"));
-                rowData.add(resultSet.getString("units.operator_value") + resultSet.getString("units.shortName"));
+                rowData.add(resultSet.getString("units.operator_value") +" "+ resultSet.getString("units.shortName"));
 //                rowData.add(resultSet.getString("units.shortName"));
-                rowData.add(resultSet.getString("brands.name"));
-                rowData.add(resultSet.getString("categories.name"));
+//                rowData.add(resultSet.getString("brands.name"));
+//                rowData.add(resultSet.getString("categories.name"));
 
                 model.addRow(rowData);
             }
@@ -538,6 +538,7 @@ public class POSUI extends javax.swing.JPanel {
                 currentStock.setQuantity((qty > stock.getStock_quantity() ? stock.getStock_quantity() : qty));
                 currentStock.setStock_discount(currentStock.getStock_discount() + stock.getStock_discount());
                 currentStock.setStock_tax(currentStock.getStock_tax() + stock.getStock_tax());
+                currentStock.setStock_price(stock.getStock_price());
             }
         }
         loadItems();
@@ -843,11 +844,21 @@ public class POSUI extends javax.swing.JPanel {
                         if (isComplete) {
                             for (Stock stock : stockMap.values()) {
                                 double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
+//                                String saleItemQuery = "INSERT INTO "
+//                                        + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
+//                                        + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`, `stocks_id`) "
+//                                        + "VALUES ('" + currentDate + "', '" + id + "', '" + stock.getStringId() + "', NULL, NULL, '" + stock.getStock_price() + "', NULL, "
+//                                        + "'" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, 2, '" + stock.getStock_id() + "');";
+                                String isSalePrice = stock.isIsSalePrice() ? "1" : "0";
+                                String isCommissionPrice = stock.isIsCommissionPrice() ? "1" : "0";
                                 String saleItemQuery = "INSERT INTO "
                                         + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
-                                        + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`, `stocks_id`) "
+                                        + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`, "
+                                        + "`stocks_id`, `is_sale_price`, `is_commission_price`) "
                                         + "VALUES ('" + currentDate + "', '" + id + "', '" + stock.getStringId() + "', NULL, NULL, '" + stock.getStock_price() + "', NULL, "
-                                        + "'" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, 2, '" + stock.getStock_id() + "');";
+                                        + "'" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, 2, "
+                                        + "'" + stock.getStock_id() + "', '" + isSalePrice + "', '" + isCommissionPrice + "');";
+
                                 try {
                                     MySQL.execute(saleItemQuery);
                                 } catch (SQLException e) {
@@ -1018,11 +1029,11 @@ public class POSUI extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Name", "Code", "Unit", "Brand", "Category"
+                "ID", "Name", "Code", "Unit"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -1039,7 +1050,14 @@ public class POSUI extends javax.swing.JPanel {
         });
         productScroll.setViewportView(productTable);
         if (productTable.getColumnModel().getColumnCount() > 0) {
-            productTable.getColumnModel().getColumn(0).setMaxWidth(80);
+            productTable.getColumnModel().getColumn(0).setMinWidth(25);
+            productTable.getColumnModel().getColumn(0).setPreferredWidth(35);
+            productTable.getColumnModel().getColumn(0).setMaxWidth(50);
+            productTable.getColumnModel().getColumn(1).setMinWidth(180);
+            productTable.getColumnModel().getColumn(2).setMinWidth(0);
+            productTable.getColumnModel().getColumn(2).setPreferredWidth(0);
+            productTable.getColumnModel().getColumn(2).setMaxWidth(10);
+            productTable.getColumnModel().getColumn(3).setMinWidth(50);
         }
 
         javax.swing.GroupLayout productContainerLayout = new javax.swing.GroupLayout(productContainer);
@@ -1055,7 +1073,7 @@ public class POSUI extends javax.swing.JPanel {
             productContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(productContainerLayout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addComponent(productScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
+                .addComponent(productScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
 
@@ -1169,7 +1187,7 @@ public class POSUI extends javax.swing.JPanel {
         );
         serviceContainerLayout.setVerticalGroup(
             serviceContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(serviceScroll1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
+            .addComponent(serviceScroll1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
         );
 
         jPanel14.setMinimumSize(new java.awt.Dimension(20, 5));
@@ -1546,7 +1564,7 @@ public class POSUI extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator6, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1872,7 +1890,7 @@ public class POSUI extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addComponent(bodyScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 786, Short.MAX_VALUE)
+                .addComponent(bodyScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 882, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -1953,7 +1971,7 @@ public class POSUI extends javax.swing.JPanel {
 
     private void productTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_productTableMouseClicked
         // Select Product
-        if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
+        if (evt.getClickCount() == 1 && SwingUtilities.isLeftMouseButton(evt)) {
             int selectedRow = productTable.getSelectedRow();
 
             if (selectedRow != -1) {

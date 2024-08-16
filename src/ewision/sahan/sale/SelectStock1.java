@@ -129,7 +129,7 @@ public class SelectStock1 extends javax.swing.JPanel {
                 + "INNER JOIN `categories` ON `categories`.`id`=`products`.`category_id` "
                 + "INNER JOIN `brands` ON `brands`.`id`=`products`.`brand_id` "
                 //+ "WHERE `products_id`='" + productId.getText() + "' AND `stocks`.`quantity`>'0' ";
-                + "WHERE `products_id`='" + product.getId() + "' AND `stocks`.`quantity`>'0' ";
+                + "WHERE `products_id`='" + product.getId() + "' AND `stocks`.`quantity`>'0'";
         if (!stock.isBlank()) {
             query += "AND (`stocks`.`id` LIKE '%" + stock + "%' "
                     + "OR `stocks`.`name` LIKE '%" + stock + "%' "
@@ -157,6 +157,7 @@ public class SelectStock1 extends javax.swing.JPanel {
                 rowData.add(resultSet.getString("stocks.cost"));
                 rowData.add(resultSet.getString("stocks.sale_price"));
                 rowData.add(resultSet.getString("stocks.price"));
+                rowData.add(resultSet.getString("stocks.commission_price"));
 
                 if (resultSet.getString("stocks.is_expire").equals("1")) {
                     rowData.add(resultSet.getString("stocks.exp_date"));
@@ -207,23 +208,24 @@ public class SelectStock1 extends javax.swing.JPanel {
         jLabel8 = new javax.swing.JLabel();
         searchField = new javax.swing.JTextField();
         isSalePrice = new javax.swing.JCheckBox();
+        isCommissionPrice = new javax.swing.JCheckBox();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 5, 1));
         setNextFocusableComponent(searchField);
 
         stockTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Name", "Code", "Quantity", "Cost", "Sale Price", "Price", "EXP", "MFD"
+                "ID", "Name", "Code", "Quantity", "Cost", "Sale Price", "Price", "Commission Price", "EXP", "MFD"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -371,6 +373,13 @@ public class SelectStock1 extends javax.swing.JPanel {
             }
         });
 
+        isCommissionPrice.setText("Commission Price");
+        isCommissionPrice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                isCommissionPriceActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -381,6 +390,8 @@ public class SelectStock1 extends javax.swing.JPanel {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(isCommissionPrice)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(isSalePrice))
                     .addComponent(searchField))
                 .addContainerGap())
@@ -392,7 +403,9 @@ public class SelectStock1 extends javax.swing.JPanel {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(isSalePrice, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(isSalePrice, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(isCommissionPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(5, 5, 5)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -449,7 +462,7 @@ public class SelectStock1 extends javax.swing.JPanel {
 
     private void stockTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stockTableMouseClicked
         // Select
-        if (evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
+        if (evt.getClickCount() == 1 && SwingUtilities.isLeftMouseButton(evt)) {
             int selectedRow = stockTable.getSelectedRow();
 
             if (selectedRow != -1) {
@@ -471,11 +484,13 @@ public class SelectStock1 extends javax.swing.JPanel {
                 stock.setStock_cost(String.valueOf(stockTable.getValueAt(selectedRow, 4)));
                 stock.setPrice(String.valueOf(stockTable.getValueAt(selectedRow, 5)));
                 stock.setStock_price(String.valueOf(stockTable.getValueAt(selectedRow, 6)));
-                if (!(String.valueOf(stockTable.getValueAt(selectedRow, 7)).isBlank())) {
-                    stock.setExp_date(String.valueOf(stockTable.getValueAt(selectedRow, 7)));
-                }
+                stock.setStock_commission_price(String.valueOf(stockTable.getValueAt(selectedRow, 7)));
+
                 if (!(String.valueOf(stockTable.getValueAt(selectedRow, 8)).isBlank())) {
-                    stock.setMfd_date(String.valueOf(stockTable.getValueAt(selectedRow, 8)));
+                    stock.setExp_date(String.valueOf(stockTable.getValueAt(selectedRow, 8)));
+                }
+                if (!(String.valueOf(stockTable.getValueAt(selectedRow, 9)).isBlank())) {
+                    stock.setMfd_date(String.valueOf(stockTable.getValueAt(selectedRow, 9)));
                 }
 
                 subTotalField.setText(String.valueOf(stock.getStock_price()));
@@ -556,23 +571,61 @@ public class SelectStock1 extends javax.swing.JPanel {
 
     private void isSalePriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isSalePriceActionPerformed
         // Sale Price Trigger
-        double price = stock.getPrice();
+        double sale_price = stock.getPrice();
         double stock_price = stock.getStock_price();
+        double commission_price = stock.getStock_commission_price();
         if (isSalePrice.isSelected()) {
-            stock.setStock_price(price);
+            if (isCommissionPrice.isSelected()) {
+                isCommissionPrice.setSelected(false);
+                double stock = stock_price;
+                stock_price = commission_price;
+                commission_price = stock;
+                this.stock.setIsCommissionPrice(false);
+            }
             stock.setPrice(stock_price);
+            stock.setStock_price(sale_price);
+            stock.setStock_commission_price(commission_price);
+            stock.setIsSalePrice(true);
         } else {
-            stock.setStock_price(price);
             stock.setPrice(stock_price);
+            stock.setStock_price(sale_price);
+            stock.setStock_commission_price(commission_price);
         }
         calculate();
     }//GEN-LAST:event_isSalePriceActionPerformed
+
+    private void isCommissionPriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isCommissionPriceActionPerformed
+        // Commission PriceTrigger
+        double sale_price = stock.getPrice();
+        double stock_price = stock.getStock_price();
+        double commission_price = stock.getStock_commission_price();
+        if (isCommissionPrice.isSelected()) {
+            if (isSalePrice.isSelected()) {
+                isSalePrice.setSelected(false);
+                double stock = stock_price;
+                stock_price = sale_price;
+                sale_price = stock;
+                this.stock.setIsSalePrice(false);
+            }
+            stock.setStock_commission_price(stock_price);
+            stock.setStock_price(commission_price);
+            stock.setPrice(sale_price);
+            stock.setIsCommissionPrice(true);
+        } else {
+            stock.setStock_commission_price(stock_price);
+            stock.setStock_price(commission_price);
+            stock.setPrice(sale_price);
+        }
+        calculate();
+
+    }//GEN-LAST:event_isCommissionPriceActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JPanel addPanel;
     private javax.swing.JFormattedTextField discountField;
+    private javax.swing.JCheckBox isCommissionPrice;
     private javax.swing.JCheckBox isSalePrice;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

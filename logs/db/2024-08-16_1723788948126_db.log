@@ -1,0 +1,4 @@
+Aug 16, 2024 11:45:48 AM ewision.sahan.model.MySQL creteConnection
+INFO: 1723788948132 :: DB CONNECTED 
+Aug 16, 2024 11:49:57 AM ewision.sahan.purchase.UpdatePurchase loadPurchase
+SEVERE: SQLException in ewision.sahan.purchase.UpdatePurchase loadSale: Column 'is_sale_price' not found. -- Column 'is_sale_price' not found.

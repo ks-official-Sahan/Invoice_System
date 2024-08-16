@@ -20,6 +20,7 @@ import ewision.sahan.sale.CreateSale1;
 import ewision.sahan.sale.SalesList;
 import ewision.sahan.sale.UpdateSale;
 import ewision.sahan.services.ServiceList;
+import ewision.sahan.stock.UpdateStock;
 import ewision.sahan.users.UserList;
 import javax.swing.JPanel;
 
@@ -151,6 +152,12 @@ public class AppServiceIMPL extends AppServiceAbstract {
     public void openViewProduct(String id) {
         ViewProduct viewProduct = new ViewProduct(id);
         showMainPanel((JPanel) viewProduct);
+    }
+
+    @Override
+    public void openUpdateStock() {
+        UpdateStock updateStock = new UpdateStock();
+        showMainPanel((JPanel) updateStock);        
     }
 
 }

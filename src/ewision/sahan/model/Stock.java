@@ -12,19 +12,23 @@ import java.util.logging.Level;
 public class Stock extends Product {
 
     protected int stock_id = 0;
-    protected String stock_name;
+    protected String stock_name = "";
     protected String stock_code;
     protected double stock_cost;
     protected double stock_price;
     protected double stock_discount = 0.00;
     protected double stock_tax = 0.00;
     protected double stock_quantity = 0.00;
+    private double stock_commission_price = 0.00;
     //protected double stock_subtotal;
     protected double quantity;
     protected int is_expire = 0;
     protected Date exp_date;
     protected Date mfd_date;
 
+    private boolean isSalePrice = false;
+    private boolean isCommissionPrice = false;
+    
     public Stock() {
     }
 
@@ -271,6 +275,38 @@ public class Stock extends Product {
         } catch (NumberFormatException e) {
             CommonLogger.logger.log(Level.SEVERE, "ParseException in " + getClass().getName() + " set Stock Quantity: " + e.getMessage(), e.getMessage());
         }
+    }
+
+    public double getStock_commission_price() {
+        return stock_commission_price;
+    }
+
+    public void setStock_commission_price(double stock_commission_price) {
+        this.stock_commission_price = stock_commission_price;
+    }
+
+    public void setStock_commission_price(String stock_commission_price) {
+        try {
+            this.setStock_commission_price(Double.parseDouble(stock_commission_price));
+        } catch (NumberFormatException e) {
+            CommonLogger.logger.log(Level.SEVERE, "ParseException in " + getClass().getName() + " set Stock Commission Price: " + e.getMessage(), e.getMessage());
+        }
+    }
+
+    public boolean isIsSalePrice() {
+        return isSalePrice;
+    }
+
+    public void setIsSalePrice(boolean isSalePrice) {
+        this.isSalePrice = isSalePrice;
+    }
+
+    public boolean isIsCommissionPrice() {
+        return isCommissionPrice;
+    }
+
+    public void setIsCommissionPrice(boolean isCommissionPrice) {
+        this.isCommissionPrice = isCommissionPrice;
     }
 
 }

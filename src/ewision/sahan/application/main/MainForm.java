@@ -93,9 +93,9 @@ public class MainForm extends JLayeredPane {
             if (index == 0) {
                 //Application.showForm(new Form0());
                 //Application.showForm(new CreateProduct());
-//                Application.appService.openDashboard();
                 Application.appService.openPOS();
             } else if (index == 1) {
+                Application.appService.openDashboard();
 //                if (subIndex == 1) {
 //                    Application.showForm(new FormInbox());
 //                } else if (subIndex == 2) {
@@ -103,19 +103,19 @@ public class MainForm extends JLayeredPane {
 //                } else {
 //                    action.cancel();
 //                }
-                Application.appService.openProductList();
             } else if (index == 2) {
-                Application.appService.openServiceList();
+                Application.appService.openProductList();
             } else if (index == 3) {
-                Application.appService.openSaleList();
+                Application.appService.openServiceList();
             } else if (index == 4) {
-                Application.appService.openPurchaseList();
+                Application.appService.openSaleList();
             } else if (index == 5) {
-                Application.appService.openCustomerList();
+                Application.appService.openPurchaseList();
             } else if (index == 6) {
-                Application.appService.openSupplierList();
+                Application.appService.openCustomerList();
             } else if (index == 7) {
-//            } else if (index == 7) {
+                Application.appService.openSupplierList();
+            } else if (index == 8) {
 //                Application.appService.openPOS();
                 if (Application.getUser().getRoleId() == 1) {
                     Application.appService.openUserList();
@@ -126,7 +126,13 @@ public class MainForm extends JLayeredPane {
 
 //                    Application.logout();
                 }
-            } else if (index == 8) {
+            } else if (index == 9) {
+                if (Application.getUser().getRoleId() == 1) {
+                    Application.appService.openUpdateStock();
+                } else {
+                    JOptionPane.showMessageDialog(this, "You don't have access to view User management", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            } else if (index == 10) {
                 Application.logout();
 //            } else if (index == 9) {
             } else {

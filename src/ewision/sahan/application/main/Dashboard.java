@@ -2,7 +2,16 @@ package ewision.sahan.application.main;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import ewision.sahan.chart.ModelChart;
+import ewision.sahan.loggers.DatabaseLogger;
+import ewision.sahan.model.MySQL;
+import ewision.sahan.utils.SQLDateFormatter;
 import java.awt.Color;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.Vector;
+import java.util.logging.Level;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -22,20 +31,83 @@ public class Dashboard extends javax.swing.JPanel {
         chart.putClientProperty(FlatClientProperties.STYLE, ""
                 + "arc:30;"
                 + "background:rgba(240,240,240,10)");
+        chart1.putClientProperty(FlatClientProperties.STYLE, ""
+                + "arc:30;"
+                + "background:rgba(240,240,240,10)");
+        loadSales("");
         loadData();
     }
 
     private void loadData() {
-        chart.addLegend("Income", new Color(245, 189, 135));
-        chart.addLegend("Expense", new Color(135, 189, 245));
-        chart.addLegend("Profit", new Color(189, 135, 245));
-        chart.addLegend("Cost", new Color(139, 229, 222));
-        chart.addData(new ModelChart("January", new double[]{100, 150, 200, 500}));
-        chart.addData(new ModelChart("February", new double[]{600, 750, 300, 150}));
-        chart.addData(new ModelChart("March", new double[]{200, 350, 1000, 900}));
-        chart.addData(new ModelChart("April", new double[]{480, 150, 750, 700}));
-        chart.addData(new ModelChart("May", new double[]{350, 540, 300, 150}));
-        chart.addData(new ModelChart("June", new double[]{190, 500, 700, 1000}));
+        int iValue = (int) value;
+        int iTValue = (int) tValue;
+
+        chart.addLegend("Total Sale Count", new Color(245, 189, 135));
+        chart.addLegend("Today Sale Count", new Color(189, 135, 245));
+
+        chart1.addLegend("Total Sale Income", new Color(135, 189, 245));
+        chart1.addLegend("Today Sale Income", new Color(139, 229, 222));
+
+        chart.addData(new ModelChart("Today", new double[]{count, todayCount}));
+        chart1.addData(new ModelChart("Total", new double[]{iValue, iTValue}));
+
+//        chart.addData(new ModelChart("February", new double[]{600, 750, 300, 150}));
+//        chart.addData(new ModelChart("March", new double[]{200, 350, 1000, 900}));
+//        chart.addData(new ModelChart("April", new double[]{480, 150, 750, 700}));
+//        chart.addData(new ModelChart("May", new double[]{350, 540, 300, 150}));
+//        chart.addData(new ModelChart("June", new double[]{190, 500, 700, 1000}));
+    }
+
+    int count = 0;
+    double value = 0;
+
+    int todayCount = 0;
+    double tValue = 0;
+
+    private void loadSales(String txt) {
+        try {
+            String query = "SELECT * FROM `sales` "
+                    + "INNER JOIN `users` ON `users`.`id`=`sales`.`user_id` "
+                    + "INNER JOIN `clients` ON `clients`.`id`=`sales`.`client_id` "
+                    + "WHERE (`sales`.`Ref` LIKE '%" + txt + "%' "
+                    + "OR `users`.`username` LIKE '%" + txt + "%' "
+                    + "OR `clients`.`name` LIKE '%" + txt + "%') AND `statut`<>'delete' "
+                    + "ORDER BY `date` DESC";
+            ResultSet resultSet = MySQL.execute(query);
+
+            Date today = new Date();
+            String todayString = new SQLDateFormatter().getStringDate(today);
+
+            while (resultSet.next()) {
+                Vector row = new Vector();
+
+                double due = 0.00;
+                //due = (Double.parseDouble(resultSet.getString("sales.GrandTotal")) - Double.parseDouble(resultSet.getString("sales.discount")) - Double.parseDouble(resultSet.getString("sales.paid_amount")));                
+                double total = Double.parseDouble(resultSet.getString("sales.GrandTotal"));
+                double payment = Double.parseDouble(resultSet.getString("sales.paid_amount"));
+                due = (total - payment);
+                due = (due >= 0 ? due : 0.00);
+                payment = (due >= 0 ? payment : total);
+
+                String date = resultSet.getString("date");
+                row.add(date);
+
+                if (date.equalsIgnoreCase(todayString)) {
+                    todayCount++;
+                    tValue += total;
+                }
+                count++;
+                value += total;
+
+                totalSales.setText(String.valueOf(count));
+                totalValue.setText(String.valueOf(value));
+                todaySales.setText(String.valueOf(todayCount));
+                todayValue.setText(String.valueOf(tValue));
+            }
+        } catch (SQLException ex) {
+            //ex.printStackTrace();
+            DatabaseLogger.logger.log(Level.SEVERE, "Sale loading error: " + ex.getMessage(), ex.getMessage());
+        }
     }
 
     /**
@@ -47,11 +119,130 @@ public class Dashboard extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        chart = new ewision.sahan.chart.Chart();
         jLabel2 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        totalSales = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        totalValue = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        todaySales = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        todayValue = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        chart = new ewision.sahan.chart.Chart();
+        chart1 = new ewision.sahan.chart.Chart();
 
         jLabel2.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
         jLabel2.setText("Dashboard");
+
+        jPanel1.setLayout(new java.awt.GridLayout(1, 0, 10, 10));
+
+        jPanel2.setBackground(new java.awt.Color(102, 255, 255));
+
+        jLabel1.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        jLabel1.setText("All Time Sales");
+
+        totalSales.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        totalSales.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        totalSales.setText("0");
+
+        jLabel6.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Value");
+
+        totalValue.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        totalValue.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        totalValue.setText("0");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(totalSales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(0, 162, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(totalValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(totalSales)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(totalValue))
+                .addGap(25, 25, 25))
+        );
+
+        jPanel1.add(jPanel2);
+
+        jPanel3.setBackground(new java.awt.Color(102, 102, 255));
+
+        jLabel4.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        jLabel4.setText("Today Sales");
+
+        todaySales.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        todaySales.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        todaySales.setText("0");
+
+        jLabel8.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("Value");
+
+        todayValue.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        todayValue.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        todayValue.setText("0");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(todaySales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(0, 192, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(todayValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(todaySales)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8)
+                    .addComponent(todayValue))
+                .addGap(25, 25, 25))
+        );
+
+        jPanel1.add(jPanel3);
+
+        jPanel4.setLayout(new java.awt.GridLayout(1, 0, 30, 20));
+        jPanel4.add(chart);
+        jPanel4.add(chart1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -60,10 +251,11 @@ public class Dashboard extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(chart, javax.swing.GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -72,14 +264,29 @@ public class Dashboard extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(chart, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
-                .addGap(58, 58, 58))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private ewision.sahan.chart.Chart chart;
+    private ewision.sahan.chart.Chart chart1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JLabel todaySales;
+    private javax.swing.JLabel todayValue;
+    private javax.swing.JLabel totalSales;
+    private javax.swing.JLabel totalValue;
     // End of variables declaration//GEN-END:variables
 }

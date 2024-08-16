@@ -1038,8 +1038,8 @@ public class CreatePurchase1 extends javax.swing.JPanel {
 
                                     String[] keys = {"id"};
                                     String stockQuery = "INSERT INTO "
-                                            + "`stocks` (`name`, `code`, `cost`, `price`, `sale_price`, `is_expire`, `exp_date`, `mfd_date`, `quantity`, `products_id`) "
-                                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                            + "`stocks` (`name`, `code`, `cost`, `price`, `sale_price`, `is_expire`, `exp_date`, `mfd_date`, `quantity`, `products_id`, `commission_price`) "
+                                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                                     try {
                                         //PreparedStatement preparedStatement = MySQL.getPreparedStatement(stockQuery, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -1056,6 +1056,7 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                                         preparedStatement.setDate(8, (java.sql.Date) stock.getExp_date());
                                         preparedStatement.setDouble(9, stock.getStock_quantity() + stock.getQuantity());
                                         preparedStatement.setInt(10, stock.getId());
+                                        preparedStatement.setDouble(11, stock.getStock_commission_price());
 
                                         ResultSet resultSet = MySQL.executeInsert(preparedStatement);
 

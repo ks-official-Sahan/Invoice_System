@@ -37,8 +37,8 @@ public class Menu extends JPanel {
         //        {"~Exit~"},
         //        {"Logout"},
         {"~MAIN~"},
-        //{"Dashboard"},
         {"POS"},
+        {"Dashboard"},
         {"~Product~"},
         {"Product"},
         {"Service"},
@@ -50,6 +50,7 @@ public class Menu extends JPanel {
         {"Suppliers"},
         {"Users"},
         {"~OTHER~"},
+        {"Update Stocks"},
         {"Logout"}, //        {"POS"},
     //{"Settings", "System Settings", "Group Permissions", "Warehouse", "Category", "Brand", "Currency", "Unit", "Backup"},
     };

@@ -81,15 +81,49 @@ public class PurchaseList extends javax.swing.JPanel {
     private void deletePurchase(String id) {
         int result = JOptionPane.showConfirmDialog(this, "Are you sure about deleting this Purchase?", "Delete Warning", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
-            try {
-                String query = "UPDATE `purchases` SET `statut`='delete' WHERE `Ref`='" + id + "'";
-                MySQL.execute(query);
+            boolean isSuccess = true;
 
+            String pId = "0";
+            try {
+                String query = "SELECT * FROM `purchases` WHERE `Ref`='" + id + "'";
+                ResultSet resultSet = MySQL.execute(query);
+                if (resultSet.next()) {
+                    pId = resultSet.getString("id");
+                }
                 //String query = "SELECT * FROM `sale_details` WHERE `sale_id`";
-                loadSales("");
             } catch (SQLException ex) {
+                isSuccess = false;
                 DatabaseLogger.logger.log(Level.SEVERE, "Purchase delete error: " + ex.getMessage(), ex.getMessage());
             }
+            if (isSuccess) {
+                try {
+                    String pQuery = "UPDATE `purchases` SET `statut`='delete' WHERE `Ref`='" + id + "' OR `id`='" + pId + "'";
+                    MySQL.execute(pQuery);
+
+                    //String query = "SELECT * FROM `sale_details` WHERE `sale_id`";
+                } catch (SQLException ex) {
+                    isSuccess = false;
+                    DatabaseLogger.logger.log(Level.SEVERE, "Purchase delete error: " + ex.getMessage(), ex.getMessage());
+                }
+            }
+            if (isSuccess) {
+                try {
+                    String pdQuery = "SELECT * FROM `purchase_details` WHERE `purchase_id`='" + pId + "'";
+                    ResultSet execute = MySQL.execute(pdQuery);
+                    while (execute.next()) {
+
+                        String stock_id = execute.getString("stocks_id");
+                        if (stock_id != null) {
+                            String query = "UPDATE `stocks` SET `quantity`=`quantity`-" + execute.getDouble("quantity") + " WHERE `id`='" + stock_id + "'";
+                            MySQL.execute(query);
+                        }
+                    }
+                } catch (SQLException ex) {
+                    isSuccess = false;
+                    DatabaseLogger.logger.log(Level.SEVERE, "Purchase details delete error: " + ex.getMessage(), ex.getMessage());
+                }
+            }
+            loadSales("");
         }
     }
 
@@ -120,7 +154,8 @@ public class PurchaseList extends javax.swing.JPanel {
                     + "JOIN `providers` ON `providers`.`id`=`purchases`.`provider_id` "
                     + "WHERE (`purchases`.`Ref` LIKE '%" + txt + "%' "
                     + "OR `users`.`username` LIKE '%" + txt + "%' "
-                    + "OR `providers`.`name` LIKE '%" + txt + "%') AND `statut`<>'delete' ";
+                    + "OR `providers`.`name` LIKE '%" + txt + "%') AND `statut`<>'delete' "
+                    + "ORDER BY `date` DESC";
             ResultSet resultSet = MySQL.execute(query);
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -343,16 +378,7 @@ public class PurchaseList extends javax.swing.JPanel {
         jScrollPane1.setViewportView(jTable1);
         jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setPreferredWidth(50);
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
-            jTable1.getColumnModel().getColumn(3).setResizable(false);
-            jTable1.getColumnModel().getColumn(4).setResizable(false);
-            jTable1.getColumnModel().getColumn(5).setResizable(false);
-            jTable1.getColumnModel().getColumn(6).setResizable(false);
-            jTable1.getColumnModel().getColumn(7).setResizable(false);
-            jTable1.getColumnModel().getColumn(8).setResizable(false);
+            jTable1.getColumnModel().getColumn(1).setMinWidth(80);
             jTable1.getColumnModel().getColumn(9).setMinWidth(136);
             jTable1.getColumnModel().getColumn(9).setMaxWidth(150);
         }

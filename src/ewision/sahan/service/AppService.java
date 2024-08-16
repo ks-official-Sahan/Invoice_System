@@ -46,6 +46,8 @@ public interface AppService {
 
     public void openSupplierList();
 
+    public void openUpdateStock();
+
     public void openUserList();
 
     public void openPOS();

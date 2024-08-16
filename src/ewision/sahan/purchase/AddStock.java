@@ -170,6 +170,7 @@ public class AddStock extends javax.swing.JPanel {
                 rowData.add(resultSet.getString("stocks.cost"));
                 rowData.add(resultSet.getString("stocks.sale_price"));
                 rowData.add(resultSet.getString("stocks.price"));
+                rowData.add(resultSet.getString("stocks.commission_price"));
 
                 if (resultSet.getString("stocks.is_expire").equals("1")) {
                     rowData.add(resultSet.getString("stocks.exp_date"));
@@ -262,10 +263,12 @@ public class AddStock extends javax.swing.JPanel {
         priceField = new javax.swing.JFormattedTextField();
         jLabel11 = new javax.swing.JLabel();
         taxField = new javax.swing.JFormattedTextField();
-        jLabel12 = new javax.swing.JLabel();
+        codeLabel = new javax.swing.JLabel();
         codeField = new javax.swing.JTextField();
         salePriceField = new javax.swing.JFormattedTextField();
         jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        commissionPriceField = new javax.swing.JFormattedTextField();
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         searchField = new javax.swing.JTextField();
@@ -283,11 +286,11 @@ public class AddStock extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Name", "Code", "Quantity", "Cost", "Sale Price", "Price", "EXP", "MFD"
+                "ID", "Name", "Code", "Quantity", "Cost", "Sale Price", "Price", "Commission Price", "EXP", "MFD"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -446,7 +449,7 @@ public class AddStock extends javax.swing.JPanel {
             }
         });
 
-        jLabel12.setText("Code");
+        codeLabel.setText("Code");
 
         codeField.setNextFocusableComponent(addButton);
         codeField.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -472,6 +475,23 @@ public class AddStock extends javax.swing.JPanel {
 
         jLabel13.setText("Sale Price");
 
+        jLabel14.setText("Commission Price");
+
+        commissionPriceField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        commissionPriceField.setText("0.00");
+        commissionPriceField.setNextFocusableComponent(codeField);
+        commissionPriceField.setPreferredSize(new java.awt.Dimension(277, 33));
+        commissionPriceField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                commissionPriceFieldFocusGained(evt);
+            }
+        });
+        commissionPriceField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                commissionPriceFieldKeyReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout addPanelLayout = new javax.swing.GroupLayout(addPanel);
         addPanel.setLayout(addPanelLayout);
         addPanelLayout.setHorizontalGroup(
@@ -482,26 +502,35 @@ public class AddStock extends javax.swing.JPanel {
                     .addComponent(expireDateContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(addPanelLayout.createSequentialGroup()
                         .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(isExpire, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel2)
-                            .addComponent(costField, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
-                            .addComponent(discountField, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
-                            .addComponent(quantitySpinner, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE))
-                        .addGap(31, 31, 31)
+                            .addGroup(addPanelLayout.createSequentialGroup()
+                                .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(commissionPriceField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                                    .addComponent(costField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                                    .addComponent(discountField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                    .addComponent(quantitySpinner, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, addPanelLayout.createSequentialGroup()
+                                        .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(isExpire, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))
+                                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGap(31, 31, 31))
+                            .addGroup(addPanelLayout.createSequentialGroup()
+                                .addComponent(jLabel14)
+                                .addGap(144, 144, 144)))
                         .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(taxField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
                             .addComponent(priceField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
                             .addComponent(salePriceField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addGroup(addPanelLayout.createSequentialGroup()
                                 .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(codeLabel)
                                     .addComponent(jLabel11)
                                     .addComponent(jLabel10)
                                     .addComponent(jLabel13))
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addComponent(jLabel12)
-                    .addComponent(codeField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(codeField, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap())
         );
         addPanelLayout.setVerticalGroup(
@@ -539,9 +568,13 @@ public class AddStock extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(salePriceField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel12)
+                .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(codeLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(codeField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(commissionPriceField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(codeField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -653,7 +686,7 @@ public class AddStock extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(addPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -712,14 +745,18 @@ public class AddStock extends javax.swing.JPanel {
                 stock.setStock_price(price);
                 priceField.setText(price);
 
-                String exp = String.valueOf(stockTable.getValueAt(selectedRow, 7));
+                String commission_price = String.valueOf(stockTable.getValueAt(selectedRow, 7));
+                stock.setStock_commission_price(commission_price);
+                commissionPriceField.setText(commission_price);
+                
+                String exp = String.valueOf(stockTable.getValueAt(selectedRow, 8));
                 if (!exp.isBlank()) {
                     isExpireDate = true;
                     isExpire.setSelected(true);
                     stock.setExp_date(exp);
                     jDateChooser1.setDate(new SQLDateFormatter().getDate(exp));
                 }
-                String mfd = String.valueOf(stockTable.getValueAt(selectedRow, 8));
+                String mfd = String.valueOf(stockTable.getValueAt(selectedRow, 9));
                 if (!mfd.isBlank()) {
                     isExpireDate = true;
                     isExpire.setSelected(true);
@@ -752,6 +789,7 @@ public class AddStock extends javax.swing.JPanel {
             String cost = costField.getText();
             String price = priceField.getText();
             String sale_price = salePriceField.getText();
+            String commission_price = commissionPriceField.getText();
             String tax = taxField.getText();
             String discount = discountField.getText();
 
@@ -763,8 +801,8 @@ public class AddStock extends javax.swing.JPanel {
             if (cost.isBlank()) {
             } else if (price.isBlank() || price.equals("0.00")) {
             } else if (sale_price.isBlank() || sale_price.equals("0.00")) {
-            } else if (discount.isBlank()) {
-            } else if (tax.isBlank()) {
+//            } else if (discount.isBlank()) {
+//            } else if (tax.isBlank()) {
             } else {
                 if (stock == null) {
                     stock = new Stock();
@@ -791,6 +829,7 @@ public class AddStock extends javax.swing.JPanel {
                 stock.setStock_cost(cost);
                 stock.setStock_price(price);
                 stock.setPrice(sale_price);
+                stock.setStock_commission_price(commission_price);
                 stock.setStock_tax(tax);
 
                 createPurchase.addProductToInvoice(stock);
@@ -886,11 +925,21 @@ public class AddStock extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_salePriceFieldKeyReleased
 
+    private void commissionPriceFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_commissionPriceFieldFocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_commissionPriceFieldFocusGained
+
+    private void commissionPriceFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_commissionPriceFieldKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_commissionPriceFieldKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JPanel addPanel;
     private javax.swing.JTextField codeField;
+    private javax.swing.JLabel codeLabel;
+    private javax.swing.JFormattedTextField commissionPriceField;
     private javax.swing.JFormattedTextField costField;
     private javax.swing.JFormattedTextField discountField;
     private javax.swing.JPanel expireDateContainer;
@@ -900,8 +949,8 @@ public class AddStock extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

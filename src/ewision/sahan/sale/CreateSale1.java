@@ -66,7 +66,7 @@ public class CreateSale1 extends javax.swing.JPanel {
 
         String query = "SELECT * FROM `sales` INNER JOIN `clients` ON `clients`.`id`=`sales`.`client_id` INNER JOIN `users` ON `users`.`id`=`sales`.`user_id` ";
         if (!product.isEmpty()) {
-            query += "WHERE `sales`.`id`='"+saleId+"' ";
+            query += "WHERE `sales`.`id`='" + saleId + "' ";
         }
 
         try {
@@ -673,6 +673,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                 currentStock.setQuantity((qty > stock.getStock_quantity() ? stock.getStock_quantity() : qty));
                 currentStock.setStock_discount(currentStock.getStock_discount() + stock.getStock_discount());
                 currentStock.setStock_tax(currentStock.getStock_tax() + stock.getStock_tax());
+                currentStock.setStock_price(stock.getStock_price());
             }
         }
         loadItems();
@@ -1066,11 +1067,15 @@ public class CreateSale1 extends javax.swing.JPanel {
                         if (isComplete) {
                             for (Stock stock : stockMap.values()) {
                                 double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
+                                String isSalePrice = stock.isIsSalePrice() ? "1" : "0";
+                                String isCommissionPrice = stock.isIsCommissionPrice() ? "1" : "0";
                                 String saleItemQuery = "INSERT INTO "
                                         + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
-                                        + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`, `stocks_id`) "
+                                        + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`, "
+                                        + "`stocks_id`, `is_sale_price`, `is_commission_price`) "
                                         + "VALUES ('" + currentDate + "', '" + id + "', '" + stock.getStringId() + "', NULL, NULL, '" + stock.getStock_price() + "', NULL, "
-                                        + "'" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, 2, '" + stock.getStock_id() + "');";
+                                        + "'" + stock.getStock_tax() + "', '" + stock.getStock_discount() + "', '1', '" + itemTotal + "', '" + stock.getQuantity() + "', '" + currentDateTime + "', NULL, 2, "
+                                        + "'" + stock.getStock_id() + "', '" + isSalePrice + "', '" + isCommissionPrice + "');";
                                 try {
                                     MySQL.execute(saleItemQuery);
                                 } catch (SQLException e) {
@@ -2630,7 +2635,7 @@ public class CreateSale1 extends javax.swing.JPanel {
     private void paymentFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_paymentFieldKeyReleased
         // Payment
         String text = paymentField.getText();
-        paymentField.setText(text.isBlank() ? "0.00" : text);
+        paymentField.setText(!text.isBlank() ? text : "0.00");
         if (!paymentField.getText().equals("0.00")) {
             calculate();
         }
