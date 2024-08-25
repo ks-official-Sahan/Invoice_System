@@ -93,6 +93,7 @@ public class UpdateStock extends javax.swing.JPanel {
         costField.setEnabled(enable);
         jDateChooser1.setEnabled(enable);
         jDateChooser2.setEnabled(enable);
+        quantitySpinner.setEnabled(enable);
         if (!codeField.getText().isEmpty()) {
             codeField.setEnabled(false);
         } else {

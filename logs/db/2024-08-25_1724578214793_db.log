@@ -1,0 +1,4 @@
+Aug 25, 2024 3:00:14 PM ewision.sahan.model.MySQL creteConnection
+INFO: 1724578214803 :: DB CONNECTED 
+Aug 25, 2024 3:00:28 PM ewision.sahan.expenses.CreateExpense addButtonActionPerformed
+SEVERE: SQLException in ewision.sahan.expenses.CreateExpense Expense insert: Cannot add or update a child row: a foreign key constraint fails

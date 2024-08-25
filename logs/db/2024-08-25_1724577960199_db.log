@@ -1,0 +1,6 @@
+Aug 25, 2024 2:56:00 PM ewision.sahan.model.MySQL creteConnection
+INFO: 1724577960214 :: DB CONNECTED 
+Aug 25, 2024 2:56:31 PM ewision.sahan.expenses.ExpenseCategoryRegistration jButton1ActionPerformed
+SEVERE: Expense Category registration error: Field 'user_id' doesn't have a default value
+Aug 25, 2024 2:56:33 PM ewision.sahan.expenses.ExpenseCategoryRegistration jButton1ActionPerformed
+SEVERE: Expense Category registration error: Field 'user_id' doesn't have a default value

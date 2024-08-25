@@ -14,7 +14,6 @@ import ewision.sahan.model.Service;
 import ewision.sahan.model.Shop;
 import ewision.sahan.model.Stock;
 import ewision.sahan.report.PrintReport;
-import ewision.sahan.service.impl.AppServiceIMPL;
 import ewision.sahan.table.button.TableActionPanelCellRenderer;
 import ewision.sahan.table.TableCenterCellRenderer;
 import ewision.sahan.table.spinner.SpinnerChangeEvent;
@@ -28,7 +27,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -1001,12 +999,13 @@ public class CreateSale1 extends javax.swing.JPanel {
                     CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate shipping: " + e.getMessage(), e.getMessage());
                 }
 
-                double sub = (subtotal - orderDiscount) + orderShipping;
+//                double sub = (subtotal) + orderShipping;
+                double sub = (subtotal);
                 int tax = (int) (sub * (orderTax / 100));
-
-                total = 0.00;
-                //total = subtotal - orderDiscount + orderShipping + orderTax;
-                total = sub + tax;
+//
+//                total = 0.00;
+// //                total = subtotal - orderDiscount + orderShipping + orderTax;
+//                total = sub + tax;
 
                 paymentAmount = 0.00;
                 try {
@@ -1064,9 +1063,11 @@ public class CreateSale1 extends javax.swing.JPanel {
                             }
                         }
 
+                        double grossTotal = 0;
                         if (isComplete) {
                             for (Stock stock : stockMap.values()) {
                                 double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
+                                grossTotal += itemTotal;
                                 String isSalePrice = stock.isIsSalePrice() ? "1" : "0";
                                 String isCommissionPrice = stock.isIsCommissionPrice() ? "1" : "0";
                                 String saleItemQuery = "INSERT INTO "
@@ -1098,6 +1099,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                         if (isComplete) {
                             for (Service service : serviceMap.values()) {
                                 double itemTotal = service.getPrice() * service.getQuantity() - service.getDiscount() + service.getTax();
+                                grossTotal += itemTotal;
                                 String saleItemQuery = "INSERT INTO "
                                         + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
                                         + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`) "
@@ -1129,7 +1131,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                             parameters.put("Tax", String.valueOf(tax));
                             parameters.put("Discount", String.valueOf(orderDiscount));
                             parameters.put("Method", "Cash");
-                            parameters.put("Total", String.valueOf(total));
+                            parameters.put("Total", String.valueOf(grossTotal));
                             parameters.put("NetAmount ", String.valueOf(total));
                             parameters.put("Payment", String.valueOf(payment));
                             parameters.put("Balance", String.valueOf(balance));
@@ -1142,11 +1144,9 @@ public class CreateSale1 extends javax.swing.JPanel {
                             JOptionPane.showMessageDialog(this, "Something went wrong!", "Warning", JOptionPane.WARNING_MESSAGE);
                         }
                     }
-
                 } catch (SQLException ex) {
                     DatabaseLogger.logger.log(Level.SEVERE, "SQLException in " + getClass().getName() + " Sale Submit Ref Search: " + ex.getMessage() + " -- " + ex.getLocalizedMessage(), ex.getMessage());
                 }
-
             }
         }
         return true;

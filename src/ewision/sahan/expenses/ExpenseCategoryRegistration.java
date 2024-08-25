@@ -1,4 +1,4 @@
-package ewision.sahan.product;
+package ewision.sahan.expenses;
 
 import ewision.sahan.application.Application;
 import ewision.sahan.application.main.DialogModal;
@@ -6,7 +6,6 @@ import ewision.sahan.loggers.DatabaseLogger;
 import ewision.sahan.model.MySQL;
 import ewision.sahan.utils.SQLDateFormatter;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
@@ -15,12 +14,12 @@ import javax.swing.JOptionPane;
  *
  * @author ksoff
  */
-public class CategoryRegistration extends javax.swing.JPanel {
+public class ExpenseCategoryRegistration extends javax.swing.JPanel {
 
     /**
      * Creates new form SelectProduct
      */
-    public CategoryRegistration() {
+    public ExpenseCategoryRegistration() {
         initComponents();
     }
 
@@ -58,7 +57,7 @@ public class CategoryRegistration extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("SansSerif", 1, 30)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Register Category");
+        jLabel1.setText("Register Expense Category");
 
         jButton1.setText("Submit");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -88,7 +87,7 @@ public class CategoryRegistration extends javax.swing.JPanel {
         jLabel2.setText("Enter Category Name");
 
         jLabel3.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        jLabel3.setText("Enter Category Code");
+        jLabel3.setText("Enter Category Description");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -102,7 +101,7 @@ public class CategoryRegistration extends javax.swing.JPanel {
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3))
-                        .addGap(0, 562, Short.MAX_VALUE))
+                        .addGap(0, 530, Short.MAX_VALUE))
                     .addComponent(categoryCode))
                 .addContainerGap())
         );
@@ -130,9 +129,7 @@ public class CategoryRegistration extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator1)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, 0)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -166,17 +163,17 @@ public class CategoryRegistration extends javax.swing.JPanel {
 
         if (category.equals("")) {
             JOptionPane.showMessageDialog(this, "Enter Brand Name", "Warning", JOptionPane.ERROR_MESSAGE);
-        } else if (catCode.equals("")) {
-            JOptionPane.showMessageDialog(this, "Enter Description", "Warning", JOptionPane.ERROR_MESSAGE);
+//        } else if (catCode.equals("")) {
+//            JOptionPane.showMessageDialog(this, "Enter Description", "Warning", JOptionPane.ERROR_MESSAGE);
         } else {
             try {
                 String tt = new SQLDateFormatter().getStringDate(new Date());
-                MySQL.execute("INSERT INTO `categories` (`code`,`name`,`created_at`)"
-                        + "VALUES ('" + catCode + "','" + category + "','" + tt + "')");
+                MySQL.execute("INSERT INTO `expense_categories` (`description`,`name`,`created_at`, `user_id`)"
+                        + "VALUES ('" + catCode + "','" + category + "','" + tt + "', '" + Application.getUser().getStringId() + "')");
 
                 categoryName.setText("");
                 this.categoryCode.setText("");
-                Application.appService.openCreateProduct();
+                Application.appService.openCreateExpense();
                 modal.closeModal();
             } catch (SQLException e) {
                 DatabaseLogger.logger.log(Level.SEVERE, "Expense Category registration error: " + e.getMessage(), e.getMessage());

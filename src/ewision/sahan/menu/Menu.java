@@ -45,6 +45,7 @@ public class Menu extends JPanel {
         {"~Transactions~"},
         {"Sales"},
         {"Purchases"},
+        {"Expenses"},
         {"~Human Resourses~"},
         {"Customers"},
         {"Suppliers"},

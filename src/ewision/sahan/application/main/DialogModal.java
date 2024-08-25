@@ -3,6 +3,7 @@ package ewision.sahan.application.main;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import ewision.sahan.customer.CreateCustomer;
+import ewision.sahan.expenses.ExpenseCategoryRegistration;
 import ewision.sahan.model.Product;
 import ewision.sahan.pos.POSUI;
 import ewision.sahan.product.BrandRegistration;
@@ -116,6 +117,12 @@ public class DialogModal extends javax.swing.JDialog {
         CategoryRegistration categoryReg = new CategoryRegistration();
         categoryReg.setModal(this);
         openPanel(categoryReg);
+    }
+    
+    public void openExpenseCategoryReg() {
+        ExpenseCategoryRegistration expenseCategoryReg = new ExpenseCategoryRegistration();
+        expenseCategoryReg.setModal(this);
+        openPanel(expenseCategoryReg);
     }
     
     public void openCreateUser() {

@@ -112,10 +112,12 @@ public class MainForm extends JLayeredPane {
             } else if (index == 5) {
                 Application.appService.openPurchaseList();
             } else if (index == 6) {
-                Application.appService.openCustomerList();
+                Application.appService.openCreateExpense();
             } else if (index == 7) {
-                Application.appService.openSupplierList();
+                Application.appService.openCustomerList();
             } else if (index == 8) {
+                Application.appService.openSupplierList();
+            } else if (index == 9) {
 //                Application.appService.openPOS();
                 if (Application.getUser().getRoleId() == 1) {
                     Application.appService.openUserList();
@@ -126,13 +128,13 @@ public class MainForm extends JLayeredPane {
 
 //                    Application.logout();
                 }
-            } else if (index == 9) {
+            } else if (index == 10) {
                 if (Application.getUser().getRoleId() == 1) {
                     Application.appService.openUpdateStock();
                 } else {
                     JOptionPane.showMessageDialog(this, "You don't have access to view User management", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
-            } else if (index == 10) {
+            } else if (index == 11) {
                 Application.logout();
 //            } else if (index == 9) {
             } else {

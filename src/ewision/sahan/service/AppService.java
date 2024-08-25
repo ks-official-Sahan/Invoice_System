@@ -42,6 +42,10 @@ public interface AppService {
 
     public void openCreateCustomer();
 
+    public void openExpenseList();
+
+    public void openCreateExpense();
+
     public void openCreateSupplier();
 
     public void openSupplierList();

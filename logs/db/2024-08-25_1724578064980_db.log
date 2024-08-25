@@ -1,0 +1,4 @@
+Aug 25, 2024 2:57:44 PM ewision.sahan.model.MySQL creteConnection
+INFO: 1724578064986 :: DB CONNECTED 
+Aug 25, 2024 2:58:14 PM ewision.sahan.expenses.CreateExpense addButtonActionPerformed
+SEVERE: SQLException in ewision.sahan.expenses.CreateExpense Expense insert: Unknown column 'sale_id' in 'field list'

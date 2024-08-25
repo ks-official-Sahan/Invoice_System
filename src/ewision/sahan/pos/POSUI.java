@@ -782,10 +782,11 @@ public class POSUI extends javax.swing.JPanel {
                     CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate shipping: " + e.getMessage(), e.getMessage());
                 }
 
-                double sub = (subtotal - orderDiscount) + orderShipping;
+//                double sub = (subtotal - orderDiscount) + orderShipping;
+                double sub = (subtotal);
                 int tax = (int) (sub * (orderTax / 100));
 
-                total = sub + tax;
+//                total = sub + tax;
 
                 paymentAmount = 0.00;
                 try {
@@ -841,10 +842,12 @@ public class POSUI extends javax.swing.JPanel {
                             }
                         }
 
+                        double grossTotal = 0;
                         if (isComplete) {
                             for (Stock stock : stockMap.values()) {
                                 double itemTotal = stock.getStock_price() * stock.getQuantity() - stock.getStock_discount() + stock.getStock_tax();
-//                                String saleItemQuery = "INSERT INTO "
+                               grossTotal += itemTotal;
+ //                                String saleItemQuery = "INSERT INTO "
 //                                        + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
 //                                        + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`, `stocks_id`) "
 //                                        + "VALUES ('" + currentDate + "', '" + id + "', '" + stock.getStringId() + "', NULL, NULL, '" + stock.getStock_price() + "', NULL, "
@@ -881,7 +884,8 @@ public class POSUI extends javax.swing.JPanel {
                         if (isComplete) {
                             for (Service service : serviceMap.values()) {
                                 double itemTotal = service.getPrice() * service.getQuantity() - service.getDiscount() + service.getTax();
-                                String saleItemQuery = "INSERT INTO "
+                               grossTotal += itemTotal;
+                                 String saleItemQuery = "INSERT INTO "
                                         + "`sale_details` (`date`, `sale_id`, `product_id`, `product_variant_id`, `imei_number`, `price`, `sale_unit_id`, "
                                         + "`TaxNet`, `discount`, `discount_method`, `total`, `quantity`, `created_at`, `updated_at`, `tax_method_id`) "
                                         + "VALUES ('" + currentDate + "', '" + id + "', '" + service.getStringId() + "', NULL, NULL, '" + service.getPrice() + "', NULL, "
@@ -912,7 +916,7 @@ public class POSUI extends javax.swing.JPanel {
                             parameters.put("Tax", String.valueOf(tax));
                             parameters.put("Discount", String.valueOf(orderDiscount));
                             parameters.put("Method", "Cash");
-                            parameters.put("Total", String.valueOf(total));
+                            parameters.put("Total", String.valueOf(grossTotal));
                             parameters.put("NetAmount ", String.valueOf(total));
                             parameters.put("Payment", String.valueOf(payment));
                             parameters.put("Balance", String.valueOf(balance));

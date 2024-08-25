@@ -1,0 +1,6 @@
+Aug 25, 2024 2:06:31 PM ewision.sahan.model.Stock setStock_commission_price
+SEVERE: ParseException in ewision.sahan.model.Stock set Stock Commission Price: For input string: "null"
+Aug 25, 2024 2:07:50 PM ewision.sahan.model.Stock setStock_commission_price
+SEVERE: ParseException in ewision.sahan.model.Stock set Stock Commission Price: For input string: "null"
+Aug 25, 2024 2:11:31 PM ewision.sahan.model.Stock setStock_commission_price
+SEVERE: ParseException in ewision.sahan.model.Stock set Stock Commission Price: For input string: "null"

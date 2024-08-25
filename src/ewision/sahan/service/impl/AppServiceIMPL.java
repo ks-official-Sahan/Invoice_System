@@ -3,6 +3,7 @@ package ewision.sahan.service.impl;
 import ewision.sahan.application.main.Dashboard;
 import ewision.sahan.customer.CreateCustomer;
 import ewision.sahan.customer.CustomerList;
+import ewision.sahan.expenses.CreateExpense;
 import ewision.sahan.login.LoginForm;
 import ewision.sahan.pos.POS;
 import ewision.sahan.pos.POSUI;
@@ -158,6 +159,16 @@ public class AppServiceIMPL extends AppServiceAbstract {
     public void openUpdateStock() {
         UpdateStock updateStock = new UpdateStock();
         showMainPanel((JPanel) updateStock);        
+    }
+
+    @Override
+    public void openExpenseList() {
+    }
+
+    @Override
+    public void openCreateExpense() {
+        CreateExpense panel = new CreateExpense();
+        showMainPanel((JPanel) panel);        
     }
 
 }
