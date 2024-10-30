@@ -53,13 +53,13 @@ public class ExpenseList extends javax.swing.JPanel {
             System.out.println("View: " + row);
             String id = String.valueOf(jTable1.getValueAt(row, 0));
             System.out.println("View: " + id);
-            Application.appService.openUpdateSale(id, false);
+            Application.appService.openViewExpense(id, true);
         });
         eventMap.put("edit", (ActionButtonEvent) (int row) -> {
             System.out.println("Edit: " + row);
             String id = String.valueOf(jTable1.getValueAt(row, 0));
             System.out.println("Edit: " + id);
-            Application.appService.openUpdateSale(id, true);
+            Application.appService.openViewExpense(id, true);
         });
         if (Application.getUser().getRoleId() == 1) {
             eventMap.put("delete", (ActionButtonEvent) (int row) -> {
@@ -76,7 +76,7 @@ public class ExpenseList extends javax.swing.JPanel {
     }
 
     private void deleteSale(String id) {
-        int result = JOptionPane.showConfirmDialog(this, "Are you sure about deleting this Sale?", "Delete Warning", JOptionPane.YES_NO_OPTION);
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure about deleting this Expense?", "Delete Warning", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
 
 //            try {
@@ -138,10 +138,10 @@ public class ExpenseList extends javax.swing.JPanel {
         try {
             String query = "SELECT * FROM `expenses` "
                     + "INNER JOIN `users` ON `users`.`id`=`expenses`.`user_id` "
-                    + "INNER JOIN `clients` ON `clients`.`id`=`expenses`.`client_id` "
+                    + "INNER JOIN `clients` ON `clients`.`id`=`expenses`.`clientsId` "
                     + "WHERE (`expenses`.`Ref` LIKE '%" + txt + "%' "
                     + "OR `users`.`username` LIKE '%" + txt + "%' "
-                    + "OR `clients`.`name` LIKE '%" + txt + "%') AND `statut`<>'Inactive' "
+                    + "OR `clients`.`name` LIKE '%" + txt + "%') AND `expenses`.`status`<>'Inactive' "
                     + "ORDER BY `date` DESC";
             ResultSet resultSet = MySQL.execute(query);
 

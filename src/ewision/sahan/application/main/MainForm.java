@@ -112,7 +112,8 @@ public class MainForm extends JLayeredPane {
             } else if (index == 5) {
                 Application.appService.openPurchaseList();
             } else if (index == 6) {
-                Application.appService.openCreateExpense();
+                // Application.appService.openCreateExpense();
+                Application.appService.openExpenseList();
             } else if (index == 7) {
                 Application.appService.openCustomerList();
             } else if (index == 8) {

@@ -920,7 +920,8 @@ public class POSUI extends javax.swing.JPanel {
                             parameters.put("NetAmount ", String.valueOf(total));
                             parameters.put("Payment", String.valueOf(payment));
                             parameters.put("Balance", String.valueOf(balance));
-                            new PrintReport().PrintReport("/ewision/sahan/report/jasper/posInvoice3.jasper", parameters, new JRTableModelDataSource(productChargeTable.getModel()));
+                            //new PrintReport().PrintReport("/ewision/sahan/report/jasper/posInvoice3.jasper", parameters, new JRTableModelDataSource(productChargeTable.getModel()));
+                            new PrintReport().PrintViewReport("/ewision/sahan/report/jasper/posInvoice3.jasper", parameters, new JRTableModelDataSource(productChargeTable.getModel()));
 
                             JOptionPane.showMessageDialog(this, "Successfully completed!", "Successful", JOptionPane.INFORMATION_MESSAGE);
                             //Application.appService.openCreateSale();

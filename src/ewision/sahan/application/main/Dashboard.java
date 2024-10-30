@@ -35,6 +35,7 @@ public class Dashboard extends javax.swing.JPanel {
                 + "arc:30;"
                 + "background:rgba(240,240,240,10)");
         loadSales("");
+        loadExpenses("");
         loadData();
     }
 
@@ -63,6 +64,12 @@ public class Dashboard extends javax.swing.JPanel {
 
     int todayCount = 0;
     double tValue = 0;
+
+    int todayEpenseCount = 0;
+    double tExpenseValue = 0;
+
+    int expenseCount = 0;
+    double expenseValue = 0;
 
     private void loadSales(String txt) {
         try {
@@ -110,6 +117,48 @@ public class Dashboard extends javax.swing.JPanel {
         }
     }
 
+    private void loadExpenses(String txt) {
+        try {
+            String query = "SELECT * FROM `expenses` "
+                    + "INNER JOIN `users` ON `users`.`id`=`expenses`.`user_id` "
+                    + "INNER JOIN `clients` ON `clients`.`id`=`expenses`.`clientsId` "
+                    + "WHERE (`expenses`.`Ref` LIKE '%" + txt + "%' "
+                    + "OR `users`.`username` LIKE '%" + txt + "%' "
+                    + "OR `clients`.`name` LIKE '%" + txt + "%') AND `expenses`.`status`<>'Inactive' "
+                    + "ORDER BY `date` DESC";
+            ResultSet resultSet = MySQL.execute(query);
+
+            Date today = new Date();
+            String todayString = new SQLDateFormatter().getStringDate(today);
+
+            while (resultSet.next()) {
+                Vector row = new Vector();
+
+                double payment = Double.parseDouble(resultSet.getString("expenses.amount"));
+
+                row.add(resultSet.getString("expenses.Ref"));
+
+                String date = resultSet.getString("date");
+                row.add(payment);
+
+                if (date.equalsIgnoreCase(todayString)) {
+                    todayEpenseCount++;
+                    tExpenseValue += payment;
+                }
+                expenseCount++;
+                expenseValue += payment;
+
+                totalExpenses.setText(String.valueOf(expenseCount));
+                totalExpenseValue.setText(String.valueOf(expenseValue));
+                todayExpenses.setText(String.valueOf(todayEpenseCount));
+                todayExpenseValue.setText(String.valueOf(tExpenseValue));
+            }
+        } catch (SQLException ex) {
+            //ex.printStackTrace();
+            DatabaseLogger.logger.log(Level.SEVERE, "Expense loading error: " + ex.getMessage(), ex.getMessage());
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -131,9 +180,21 @@ public class Dashboard extends javax.swing.JPanel {
         todaySales = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         todayValue = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        totalExpenses = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        totalExpenseValue = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        todayExpenses = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        todayExpenseValue = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         chart = new ewision.sahan.chart.Chart();
         chart1 = new ewision.sahan.chart.Chart();
+
+        setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         jLabel2.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
         jLabel2.setText("Dashboard");
@@ -142,18 +203,18 @@ public class Dashboard extends javax.swing.JPanel {
 
         jPanel2.setBackground(new java.awt.Color(102, 255, 255));
 
-        jLabel1.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
         jLabel1.setText("All Time Sales");
 
-        totalSales.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        totalSales.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
         totalSales.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         totalSales.setText("0");
 
-        jLabel6.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Value");
 
-        totalValue.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        totalValue.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
         totalValue.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         totalValue.setText("0");
 
@@ -167,7 +228,7 @@ public class Dashboard extends javax.swing.JPanel {
                     .addComponent(totalSales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(0, 162, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -192,18 +253,18 @@ public class Dashboard extends javax.swing.JPanel {
 
         jPanel3.setBackground(new java.awt.Color(102, 102, 255));
 
-        jLabel4.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
         jLabel4.setText("Today Sales");
 
-        todaySales.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        todaySales.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
         todaySales.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         todaySales.setText("0");
 
-        jLabel8.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel8.setText("Value");
 
-        todayValue.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        todayValue.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
         todayValue.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         todayValue.setText("0");
 
@@ -217,7 +278,7 @@ public class Dashboard extends javax.swing.JPanel {
                     .addComponent(todaySales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel4)
-                        .addGap(0, 192, Short.MAX_VALUE))
+                        .addGap(0, 50, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -240,6 +301,106 @@ public class Dashboard extends javax.swing.JPanel {
 
         jPanel1.add(jPanel3);
 
+        jPanel5.setBackground(new java.awt.Color(102, 255, 255));
+
+        jLabel3.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        jLabel3.setText("Expenses");
+
+        totalExpenses.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        totalExpenses.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        totalExpenses.setText("0");
+
+        jLabel7.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel7.setText("Value");
+
+        totalExpenseValue.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        totalExpenseValue.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        totalExpenseValue.setText("0");
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(totalExpenses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(0, 79, Short.MAX_VALUE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(totalExpenseValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(totalExpenses)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(totalExpenseValue))
+                .addGap(25, 25, 25))
+        );
+
+        jPanel1.add(jPanel5);
+
+        jPanel6.setBackground(new java.awt.Color(102, 102, 255));
+
+        jLabel5.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        jLabel5.setText("Today Expenses");
+
+        todayExpenses.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        todayExpenses.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        todayExpenses.setText("0");
+
+        jLabel9.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("Value");
+
+        todayExpenseValue.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        todayExpenseValue.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        todayExpenseValue.setText("0");
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(todayExpenses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(todayExpenseValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(todayExpenses)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel9)
+                    .addComponent(todayExpenseValue))
+                .addGap(25, 25, 25))
+        );
+
+        jPanel1.add(jPanel6);
+
         jPanel4.setLayout(new java.awt.GridLayout(1, 0, 30, 20));
         jPanel4.add(chart);
         jPanel4.add(chart1);
@@ -249,14 +410,13 @@ public class Dashboard extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -277,15 +437,25 @@ public class Dashboard extends javax.swing.JPanel {
     private ewision.sahan.chart.Chart chart1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JLabel todayExpenseValue;
+    private javax.swing.JLabel todayExpenses;
     private javax.swing.JLabel todaySales;
     private javax.swing.JLabel todayValue;
+    private javax.swing.JLabel totalExpenseValue;
+    private javax.swing.JLabel totalExpenses;
     private javax.swing.JLabel totalSales;
     private javax.swing.JLabel totalValue;
     // End of variables declaration//GEN-END:variables

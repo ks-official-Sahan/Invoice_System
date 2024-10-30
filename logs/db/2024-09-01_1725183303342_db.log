@@ -1,0 +1,4 @@
+Sep 01, 2024 3:05:03 PM ewision.sahan.model.MySQL creteConnection
+INFO: 1725183303348 :: DB CONNECTED 
+Sep 01, 2024 3:05:06 PM ewision.sahan.expenses.ExpenseList loadExpenses
+SEVERE: Expense loading error: Unknown column 'statut' in 'where clause'

@@ -1,0 +1,4 @@
+Oct 10, 2024 9:33:08 AM ewision.sahan.model.MySQL creteConnection
+SEVERE: 1728532988235 :: Cannot load connection class because of underlying exception: com.mysql.cj.exceptions.WrongArgumentException: Malformed database URL, failed to parse the connection string near ';allowPublicKeyRetrieval=true'. -- java.sql.SQLNonTransientConnectionException
+Oct 10, 2024 9:33:08 AM ewision.sahan.model.MySQL execute
+SEVERE: 1728532988251 :: Cannot invoke "java.sql.Connection.createStatement()" because "ewision.sahan.model.MySQL.connection" is null -- java.lang.NullPointerException

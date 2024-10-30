@@ -12,6 +12,7 @@ import ewision.sahan.product.UnitRegistration;
 import ewision.sahan.purchase.AddStock;
 import ewision.sahan.purchase.CreatePurchase1;
 import ewision.sahan.sale.CreateSale1;
+import ewision.sahan.sale.SalesReport;
 import ewision.sahan.sale.SelectStock1;
 import ewision.sahan.supplier.CreateSupplier;
 import ewision.sahan.users.CreateUser;
@@ -119,6 +120,12 @@ public class DialogModal extends javax.swing.JDialog {
         openPanel(categoryReg);
     }
     
+    public void openSalesReport() {
+        SalesReport saleReport = new SalesReport();
+        saleReport.setModal(this);
+        openPanel(saleReport);
+    }
+    
     public void openExpenseCategoryReg() {
         ExpenseCategoryRegistration expenseCategoryReg = new ExpenseCategoryRegistration();
         expenseCategoryReg.setModal(this);
@@ -150,7 +157,6 @@ public class DialogModal extends javax.swing.JDialog {
         jImagePanel1 = new main.JImagePanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setAlwaysOnTop(true);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         jPanel1.setMinimumSize(new java.awt.Dimension(720, 250));

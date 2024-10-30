@@ -1,0 +1,8 @@
+Oct 30, 2024 7:15:22 AM ewision.sahan.model.MySQL creteConnection
+SEVERE: 1730252722633 :: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server. -- com.mysql.cj.jdbc.exceptions.CommunicationsException
+Oct 30, 2024 7:15:22 AM ewision.sahan.model.MySQL execute
+SEVERE: 1730252722648 :: Cannot invoke "java.sql.Connection.createStatement()" because "ewision.sahan.model.MySQL.connection" is null -- java.lang.NullPointerException
+Oct 30, 2024 7:15:24 AM ewision.sahan.model.MySQL execute
+SEVERE: 1730252724032 :: Cannot invoke "java.sql.Connection.createStatement()" because "ewision.sahan.model.MySQL.connection" is null -- java.lang.NullPointerException

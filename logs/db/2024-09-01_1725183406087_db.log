@@ -1,0 +1,4 @@
+Sep 01, 2024 3:06:46 PM ewision.sahan.model.MySQL creteConnection
+INFO: 1725183406099 :: DB CONNECTED 
+Sep 01, 2024 3:06:49 PM ewision.sahan.expenses.ExpenseList loadExpenses
+SEVERE: Expense loading error: Unknown column 'expenses.client_id' in 'on clause'

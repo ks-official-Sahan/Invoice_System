@@ -969,12 +969,13 @@ public class CreatePurchase1 extends javax.swing.JPanel {
                     CommonLogger.logger.log(Level.SEVERE, "Exception in " + getClass().getName() + " calculate shipping: " + e.getMessage(), e.getMessage());
                 }
 
-                double sub = (subtotal - orderDiscount) + orderShipping;
+//                double sub = (subtotal - orderDiscount) + orderShipping;
+                double sub = subtotal;
                 int tax = (int) (sub * (orderTax / 100));
 
                 total = 0.00;
                 //total = subtotal - orderDiscount + orderShipping + orderTax;
-                total = sub + tax;
+                total = subtotal;
 
                 paymentAmount = 0.00;
                 try {

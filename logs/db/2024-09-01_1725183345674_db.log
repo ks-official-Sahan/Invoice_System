@@ -1,0 +1,4 @@
+Sep 01, 2024 3:05:45 PM ewision.sahan.model.MySQL creteConnection
+INFO: 1725183345693 :: DB CONNECTED 
+Sep 01, 2024 3:05:48 PM ewision.sahan.expenses.ExpenseList loadExpenses
+SEVERE: Expense loading error: Column 'status' in where clause is ambiguous

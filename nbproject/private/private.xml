@@ -2,18 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/D:/Programming/Projects/Java/Projects/Invoice%20System/AlphaIS/src/ewision/sahan/application/Application.java</file>
-            <file>file:/D:/Programming/Projects/Java/Projects/Invoice%20System/AlphaIS/src/ewision/sahan/purchase/PurchaseList.java</file>
-            <file>file:/D:/Programming/Projects/Java/Projects/Invoice%20System/AlphaIS/src/ewision/sahan/application/main/MainForm.java</file>
-            <file>file:/D:/Programming/Projects/Java/Projects/Invoice%20System/AlphaIS/src/ewision/sahan/application/main/LoginForm1.java</file>
-            <file>file:/D:/Programming/Projects/Java/Projects/Invoice%20System/AlphaIS/src/ewision/sahan/menu/Menu.java</file>
-            <file>file:/D:/Programming/Projects/Java/Projects/Invoice%20System/AlphaIS/src/ewision/sahan/sale/SalesList.java</file>
-            <file>file:/D:/Programming/Projects/Java/Projects/Invoice%20System/AlphaIS/src/ewision/sahan/pos/POSUI.java</file>
-            <file>file:/D:/Programming/Projects/Java/Projects/Invoice%20System/AlphaIS/src/ewision/sahan/service/impl/AppServiceIMPL.java</file>
-            <file>file:/D:/Programming/Projects/Java/Projects/Invoice%20System/AlphaIS/src/ewision/sahan/application/main/Dashboard.java</file>
-            <file>file:/D:/Programming/Projects/Java/Projects/Invoice%20System/AlphaIS/src/ewision/sahan/stock/UpdateStock.java</file>
-            <file>file:/D:/Programming/Projects/Java/Projects/Invoice%20System/AlphaIS/src/ewision/sahan/table/spinner/TableSpinnerCellEditor.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

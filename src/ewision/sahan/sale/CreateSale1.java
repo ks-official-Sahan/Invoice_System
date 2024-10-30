@@ -1135,6 +1135,7 @@ public class CreateSale1 extends javax.swing.JPanel {
                             parameters.put("NetAmount ", String.valueOf(total));
                             parameters.put("Payment", String.valueOf(payment));
                             parameters.put("Balance", String.valueOf(balance));
+                            //new PrintReport().PrintViewReport("/ewision/sahan/report/jasper/posInvoice3A43.jasper", parameters, new JRTableModelDataSource(productChargeTable.getModel()));
                             new PrintReport().ViewReport("/ewision/sahan/report/jasper/posInvoice3A43.jasper", parameters, new JRTableModelDataSource(productChargeTable.getModel()));
 
                             JOptionPane.showMessageDialog(this, "Successfully completed!", "Successful", JOptionPane.INFORMATION_MESSAGE);

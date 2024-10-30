@@ -52,14 +52,18 @@ public class ServiceList extends javax.swing.JPanel {
     private void init() {
         renderTable();
         //loadTestData();
-        loadServices("");
+        Thread load = new Thread(() -> {
+            loadServices("");
+        });
+        load.start();
+        // loadServices("");
     }
 
     private void renderTable() {
         new TableCenterCellRenderer().renderTables(jTable1);
 
         jTable1.getColumnModel().getColumn(0).setHeaderRenderer(new TableCheckBoxHeaderRenderer(jTable1, 0));
-        jTable1.getColumn("Image").setCellRenderer(new TableImageCellRenderer());
+        // jTable1.getColumn("Image").setCellRenderer(new TableImageCellRenderer());
 
         HashMap<String, ActionButtonEvent> eventMap = new HashMap<>();
         eventMap.put("delete", (ActionButtonEvent) (int row) -> {
@@ -107,7 +111,8 @@ public class ServiceList extends javax.swing.JPanel {
                 Vector row = new Vector();
                 row.add(false);
                 row.add(resultSet.getInt("products.id"));
-                row.add(image);
+                // row.add(image);
+                row.add("");
                 row.add(resultSet.getString("products.name"));
                 row.add(resultSet.getString("products.code"));
                 //row.add(resultSet.getString("price"));
@@ -166,7 +171,7 @@ public class ServiceList extends javax.swing.JPanel {
 //                    + "VALUES ('" + dataRow[2] + "', '" + dataRow[1] + "', '" + dataRow[3] + "', '" + dataRow[4] + "', '" + category + "', '" + barcodeType + "', '" + dataRow[8] + "', '" + dataRow[10] + "')";
             try {
                 PreparedStatement ps = MySQL.getPreparedStatement("INSERT IGNORE INTO `products` (`code`, `name`, `cost`, `price`, `category_id`, `barcode_type_id`, `note`, `product_type`) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, 'service')");
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, 'service')");
 
                 ps.setString(1, dataRow[4]);
                 ps.setString(2, dataRow[1]);
@@ -442,8 +447,9 @@ public class ServiceList extends javax.swing.JPanel {
             jTable1.getColumnModel().getColumn(0).setMaxWidth(50);
             jTable1.getColumnModel().getColumn(1).setPreferredWidth(50);
             jTable1.getColumnModel().getColumn(1).setMaxWidth(50);
-            jTable1.getColumnModel().getColumn(2).setMinWidth(75);
-            jTable1.getColumnModel().getColumn(2).setPreferredWidth(100);
+            jTable1.getColumnModel().getColumn(2).setMinWidth(0);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(0);
+            jTable1.getColumnModel().getColumn(2).setMaxWidth(0);
             jTable1.getColumnModel().getColumn(3).setMinWidth(150);
             jTable1.getColumnModel().getColumn(3).setPreferredWidth(300);
             jTable1.getColumnModel().getColumn(3).setMaxWidth(300);

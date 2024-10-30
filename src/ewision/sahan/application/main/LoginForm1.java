@@ -6,6 +6,7 @@ import ewision.sahan.loggers.FileLogger;
 import ewision.sahan.model.MySQL;
 import ewision.sahan.model.Shop;
 import ewision.sahan.model.User;
+import ewision.sahan.utils.SQLDateFormatter;
 import java.awt.HeadlessException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +16,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -121,6 +123,16 @@ public class LoginForm1 extends javax.swing.JPanel {
         String username = txtUser.getText();
         String pass = String.valueOf(txtPass.getPassword());
 
+        String date = new SQLDateFormatter().getStringDate(new Date());
+
+        if (date == "2025-06-01") {
+            JOptionPane.showMessageDialog(this, "Renew your software license. Contact developer: +94 768701148", "Warning", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (date == "2025-05-01") {
+            JOptionPane.showMessageDialog(this, "Software license expires on 2025-06-01. \nContact developer: +94 768701148", "Warning", JOptionPane.ERROR_MESSAGE);
+        }
+
         if (username.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Enter Your Username", "Warning", JOptionPane.ERROR_MESSAGE);
         } else if (pass.isEmpty()) {
@@ -145,6 +157,24 @@ public class LoginForm1 extends javax.swing.JPanel {
                                 ObjectInputStream ois = new ObjectInputStream(fis);
                                 Object result = ois.readObject();
                                 shop = (Shop) result;
+
+                                ResultSet shopRs = MySQL.execute("SELECT * FROM `shop` WHERE `id`='" + resultSet.getString("shop_id") + "'");
+                                shop = new Shop();
+                                if (shopRs.next()) {
+                                    shop.setId(shopRs.getInt("id"));
+                                    shop.setName(shopRs.getString("name"));
+                                    shop.setAddress(shopRs.getString("address"));
+                                    shop.setEmail(shopRs.getString("email"));
+                                    shop.setMobile(shopRs.getString("mobile"));
+                                    shop.setLogoPath(shopRs.getString("logoPath"));
+                                    shop.setLogo2Path(shopRs.getString("logo_black_path"));
+                                } else {
+                                    // Add shop information popup
+                                }
+
+                                FileOutputStream fos = new FileOutputStream(shop_file);
+                                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                                oos.writeObject(shop);
                             } else {
                                 ResultSet shopRs = MySQL.execute("SELECT * FROM `shop` WHERE `id`='" + resultSet.getString("shop_id") + "'");
                                 shop = new Shop();
@@ -170,7 +200,7 @@ public class LoginForm1 extends javax.swing.JPanel {
                             Application.setShop(shop);
                             Application.login();
                         } catch (IOException | ClassNotFoundException e) {
-                            FileLogger.logger.log(Level.SEVERE, "Serialization failed "+ e.getMessage(), e.getMessage());
+                            FileLogger.logger.log(Level.SEVERE, "Serialization failed " + e.getMessage(), e.getMessage());
                             JOptionPane.showMessageDialog(this, "Something went wrong", "Warning", JOptionPane.ERROR_MESSAGE);
                         }
 

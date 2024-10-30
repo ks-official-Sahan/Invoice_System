@@ -1,0 +1,4 @@
+Sep 01, 2024 3:22:42 PM ewision.sahan.model.MySQL creteConnection
+INFO: 1725184362587 :: DB CONNECTED 
+Sep 01, 2024 3:22:47 PM ewision.sahan.expenses.ViewExpense loadExpense
+SEVERE: Expense loading error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1

@@ -42,6 +42,10 @@ public class PurchaseList extends javax.swing.JPanel {
     private void init() {
         renderTable();
         //loadTestData();
+//        Thread load = new Thread(() -> {
+//            loadSales("");
+//        });
+//        load.start();
         loadSales("");
     }
 
@@ -155,7 +159,7 @@ public class PurchaseList extends javax.swing.JPanel {
                     + "WHERE (`purchases`.`Ref` LIKE '%" + txt + "%' "
                     + "OR `users`.`username` LIKE '%" + txt + "%' "
                     + "OR `providers`.`name` LIKE '%" + txt + "%') AND `statut`<>'delete' "
-                    + "ORDER BY `date` DESC";
+                    + "ORDER BY `date` DESC, `purchases`.`created_at` DESC";
             ResultSet resultSet = MySQL.execute(query);
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();

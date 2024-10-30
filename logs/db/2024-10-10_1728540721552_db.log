@@ -1,0 +1,8 @@
+Oct 10, 2024 11:42:01 AM ewision.sahan.model.MySQL creteConnection
+INFO: 1728540721556 :: DB CONNECTED
+Oct 10, 2024 11:45:16 AM ewision.sahan.sale.SalesList loadSales
+SEVERE: Sale loading error: Column 'created_at' in order clause is ambiguous
+Oct 10, 2024 11:45:24 AM ewision.sahan.purchase.PurchaseList loadSales
+SEVERE: Sale loading error: Column 'created_at' in order clause is ambiguous
+Oct 10, 2024 11:45:26 AM ewision.sahan.sale.SalesList loadSales
+SEVERE: Sale loading error: Column 'created_at' in order clause is ambiguous

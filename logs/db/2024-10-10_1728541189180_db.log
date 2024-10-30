@@ -1,0 +1,28 @@
+Oct 10, 2024 11:49:49 AM ewision.sahan.model.MySQL creteConnection
+INFO: 1728541189185 :: DB CONNECTED
+Oct 10, 2024 11:59:45 AM ewision.sahan.users.UserList loadUsers
+SEVERE: Users loading error: Communications link failure
+
+The last packet successfully received from the server was 530,864 milliseconds ago. The last packet sent successfully to the server was 532,805 milliseconds ago.
+Oct 10, 2024 11:59:45 AM ewision.sahan.purchase.PurchaseList loadSales
+SEVERE: Sale loading error: No operations allowed after connection closed.
+Oct 10, 2024 11:59:46 AM ewision.sahan.users.UserList loadUsers
+SEVERE: Users loading error: No operations allowed after connection closed.
+Oct 10, 2024 11:59:46 AM ewision.sahan.sale.SalesList loadSales
+SEVERE: Sale loading error: No operations allowed after connection closed.
+Oct 10, 2024 12:00:07 PM ewision.sahan.services.ServiceList loadServices
+SEVERE: Services loading error: No operations allowed after connection closed.
+Oct 10, 2024 12:00:11 PM ewision.sahan.users.UserList loadUsers
+SEVERE: Users loading error: No operations allowed after connection closed.
+Oct 10, 2024 12:00:11 PM ewision.sahan.sale.SalesList loadSales
+SEVERE: Sale loading error: No operations allowed after connection closed.
+Oct 10, 2024 12:00:14 PM ewision.sahan.users.UserList loadUsers
+SEVERE: Users loading error: No operations allowed after connection closed.
+Oct 10, 2024 12:00:14 PM ewision.sahan.purchase.PurchaseList loadSales
+SEVERE: Sale loading error: No operations allowed after connection closed.
+Oct 10, 2024 12:00:15 PM ewision.sahan.services.ServiceList loadServices
+SEVERE: Services loading error: No operations allowed after connection closed.
+Oct 10, 2024 12:00:22 PM ewision.sahan.users.UserList loadUsers
+SEVERE: Users loading error: No operations allowed after connection closed.
+Oct 10, 2024 12:00:22 PM ewision.sahan.sale.SalesList loadSales
+SEVERE: Sale loading error: No operations allowed after connection closed.

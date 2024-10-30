@@ -645,7 +645,8 @@ public class CreateExpense extends javax.swing.JPanel {
 
         if (isSuccess) {
             reset();
-            Application.appService.openCreateExpense();
+            Application.appService.openExpenseList();
+//            Application.appService.openCreateExpense();
         } else {
             JOptionPane.showMessageDialog(this, "Something went wrong", "Warning", JOptionPane.INFORMATION_MESSAGE);
         }

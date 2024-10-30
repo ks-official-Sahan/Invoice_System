@@ -46,6 +46,8 @@ public interface AppService {
 
     public void openCreateExpense();
 
+    public void openViewExpense(String expenseId, boolean isUpdate);
+
     public void openCreateSupplier();
 
     public void openSupplierList();

@@ -4,6 +4,8 @@ import ewision.sahan.application.main.Dashboard;
 import ewision.sahan.customer.CreateCustomer;
 import ewision.sahan.customer.CustomerList;
 import ewision.sahan.expenses.CreateExpense;
+import ewision.sahan.expenses.ExpenseList;
+import ewision.sahan.expenses.ViewExpense;
 import ewision.sahan.login.LoginForm;
 import ewision.sahan.pos.POS;
 import ewision.sahan.pos.POSUI;
@@ -163,11 +165,19 @@ public class AppServiceIMPL extends AppServiceAbstract {
 
     @Override
     public void openExpenseList() {
+        ExpenseList panel = new ExpenseList();
+        showMainPanel((JPanel) panel);        
     }
 
     @Override
     public void openCreateExpense() {
         CreateExpense panel = new CreateExpense();
+        showMainPanel((JPanel) panel);        
+    }
+
+    @Override
+    public void openViewExpense(String expenseId, boolean isUpdate) {
+        ViewExpense panel = new ViewExpense(expenseId, isUpdate);
         showMainPanel((JPanel) panel);        
     }
 

@@ -1,0 +1,8 @@
+Oct 10, 2024 3:34:05 PM ewision.sahan.model.MySQL creteConnection
+INFO: 1728554645513 :: DB CONNECTED
+Oct 10, 2024 3:34:30 PM ewision.sahan.users.UserList loadUsers
+SEVERE: Users loading error: Communications link failure
+
+The last packet successfully received from the server was 5,959 milliseconds ago. The last packet sent successfully to the server was 13,910 milliseconds ago.
+Oct 10, 2024 3:34:35 PM ewision.sahan.model.MySQL execute
+SEVERE: 1728554675664 :: No operations allowed after connection closed. -- java.sql.SQLNonTransientConnectionException

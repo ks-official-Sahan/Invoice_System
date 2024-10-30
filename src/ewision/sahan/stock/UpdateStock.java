@@ -93,7 +93,7 @@ public class UpdateStock extends javax.swing.JPanel {
         costField.setEnabled(enable);
         jDateChooser1.setEnabled(enable);
         jDateChooser2.setEnabled(enable);
-        quantitySpinner.setEnabled(enable);
+        quantitySpinner.setEnabled(false);
         if (!codeField.getText().isEmpty()) {
             codeField.setEnabled(false);
         } else {
@@ -744,6 +744,7 @@ public class UpdateStock extends javax.swing.JPanel {
                 }
                 
                 stock.setStock_quantity(String.valueOf(stockTable.getValueAt(selectedRow, 3)));
+                quantitySpinner.setValue(stockTable.getValueAt(selectedRow, 3));
                 
                 String cost = String.valueOf(stockTable.getValueAt(selectedRow, 4));
                 stock.setStock_cost(cost);

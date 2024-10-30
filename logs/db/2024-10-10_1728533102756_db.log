@@ -1,0 +1,4 @@
+Oct 10, 2024 9:35:02 AM ewision.sahan.model.MySQL creteConnection
+SEVERE: 1728533102767 :: Access denied for user 'sereneh1_harvest'@'45.121.91.242' (using password: YES) -- java.sql.SQLException
+Oct 10, 2024 9:35:02 AM ewision.sahan.model.MySQL execute
+SEVERE: 1728533102785 :: Cannot invoke "java.sql.Connection.createStatement()" because "ewision.sahan.model.MySQL.connection" is null -- java.lang.NullPointerException
